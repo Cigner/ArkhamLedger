@@ -9,7 +9,7 @@ import { bootstrapAdmin } from '@/lib/auth'
  */
 async function main(): Promise<void> {
   const email = process.env.SEED_ADMIN_EMAIL
-  const name = process.env.SEED_ADMIN_NAME ?? 'Administrator'
+  const name = process.env.SEED_ADMIN_NAME ?? 'Admin'
   const password = process.env.SEED_ADMIN_PASSWORD
 
   if (!email || !password) {

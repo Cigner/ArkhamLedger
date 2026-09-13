@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { db } from '@/db/client'
-import { authAccount, authUser } from '@/db/schema'
+import { authAccount, authUser, campaign, campaignMember } from '@/db/schema'
 import { newId } from '@/lib/ids'
 import type { GlobalRole, UserStatus } from '@/modules/identity/domain/types'
 
@@ -59,4 +59,55 @@ export async function createUserRow(overrides: {
   })
 
   return { id, email, name }
+}
+
+export async function createCampaignRow(input: {
+  ownerId: string
+  name?: string
+  status?: 'PLANNING' | 'ACTIVE' | 'ON_HIATUS' | 'COMPLETED' | 'ARCHIVED'
+}): Promise<{ id: string }> {
+  const id = newId()
+  const now = new Date()
+
+  await db.insert(campaign).values({
+    id,
+    name: input.name ?? 'The Haunting',
+    ownerId: input.ownerId,
+    status: input.status ?? 'PLANNING',
+    timezone: 'Europe/Warsaw',
+    createdAt: now,
+    updatedAt: now,
+  })
+
+  await db.insert(campaignMember).values({
+    id: newId(),
+    campaignId: id,
+    userId: input.ownerId,
+    role: 'KEEPER',
+    status: 'ACTIVE',
+    joinedAt: now,
+    createdAt: now,
+    updatedAt: now,
+  })
+
+  return { id }
+}
+
+export async function addMemberRow(input: {
+  campaignId: string
+  userId: string
+  role?: 'KEEPER' | 'INVESTIGATOR'
+  status?: 'ACTIVE' | 'LEFT' | 'REMOVED'
+}): Promise<void> {
+  const now = new Date()
+  await db.insert(campaignMember).values({
+    id: newId(),
+    campaignId: input.campaignId,
+    userId: input.userId,
+    role: input.role ?? 'INVESTIGATOR',
+    status: input.status ?? 'ACTIVE',
+    joinedAt: now,
+    createdAt: now,
+    updatedAt: now,
+  })
 }
