@@ -1,0 +1,84 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/*
+ * Global styles.
+ *
+ * Everything here is either a reset the application depends on, or part of the
+ * atmospheric layer that would read as unmaintainable utility soup inline: the
+ * grain field, the vignette, and the reduced-motion and reduced-transparency
+ * escape hatches.
+ */
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-surface-canvas);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    position: relative;
+  }
+
+  /*
+   * Fine-grained noise over the page background. Generated with an SVG
+   * turbulence filter rather than a raster image: no network cost, resolution
+   * independent, and intensity is driven by one custom property.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--texture-grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+  }
+
+  /* Time labels must not shift width as digits change. */
+  time,
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * Two-tone focus ring: a single ring disappears either against the canvas or
+   * against a dense heatmap cell, so one half is always guaranteed to contrast.
+   */
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--color-ink-1);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root {
+    --texture-grain-opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

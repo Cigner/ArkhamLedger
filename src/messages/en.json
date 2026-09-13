@@ -1,0 +1,59 @@
+{
+  "common": {
+    "appName": "Arkham Ledger",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "loading": "Loading…",
+    "signOut": "Sign out"
+  },
+  "errors": {
+    "unauthorized": "You need to sign in to continue.",
+    "forbidden": "You do not have permission to do that.",
+    "notFound": "That page or record does not exist.",
+    "rateLimited": "Too many attempts. Try again in {retryAfterSeconds} seconds.",
+    "unexpected": "Something went wrong. Reference: {correlationId}"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgotPassword": "Forgot your password?",
+      "invalidCredentials": "Invalid credentials."
+    },
+    "activate": {
+      "title": "Set your password",
+      "intro": "Choose a password to finish setting up your account.",
+      "submit": "Set password",
+      "tokenExpired": "This activation link has expired. Ask an administrator for a new one.",
+      "tokenUsed": "This activation link has already been used.",
+      "tokenInvalid": "This activation link is not valid."
+    }
+  },
+  "roles": {
+    "keeper": "Keeper of Arcane Lore",
+    "investigator": "Investigator",
+    "admin": "Administrator"
+  },
+  "campaigns": {
+    "title": "Campaigns",
+    "empty": "No campaigns yet. The archive is empty.",
+    "create": "Create campaign",
+    "noNextSession": "No next session is scheduled."
+  },
+  "availability": {
+    "title": "Set your availability",
+    "timezoneNotice": "Times shown in {timeZone}",
+    "states": {
+      "yes": "Available",
+      "ifNeedBe": "If need be",
+      "no": "Unavailable"
+    },
+    "quorumMet": "Quorum met",
+    "quorumNotMet": "Below quorum",
+    "groupSummary": "{available} of {total} available"
+  }
+}

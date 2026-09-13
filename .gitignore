@@ -1,0 +1,28 @@
+# dependencies
+node_modules
+
+# next
+.next
+out
+next-env.d.ts
+*.tsbuildinfo
+
+# build output
+dist-worker
+
+# env
+.env
+.env.local
+.env.*.local
+
+# test
+coverage
+playwright-report
+test-results
+
+# runtime
+backups
+logs
+
+# os
+.DS_Store

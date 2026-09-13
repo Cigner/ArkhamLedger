@@ -1,0 +1,10 @@
+# Development overlay.
+#
+# The database port is published for drizzle-kit and local tooling. The app runs
+# on the host rather than in a container so that hot reload and the debugger work
+# without bind-mount latency.
+
+services:
+  db:
+    ports:
+      - '3306:3306'

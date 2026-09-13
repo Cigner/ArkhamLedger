@@ -1,0 +1,130 @@
+/*
+ * Design tokens.
+ *
+ * Single source of truth for the visual language: every token declared here is
+ * emitted as a CSS custom property and as a Tailwind utility, so the same value
+ * is reachable from utility classes and from hand-written CSS.
+ *
+ * The palette is dark-only by decision. Surfaces gain depth through lightness
+ * steps rather than shadows, which are effectively invisible on dark grounds,
+ * and borders use alpha so they composite over the grain layer instead of
+ * punching an opaque rectangle through it.
+ */
+
+@theme {
+  /* --- ink: neutral scale, cool near-black with a green cast --------------- */
+  --color-ink-1: #0e100c;
+  --color-ink-2: #14170f;
+  --color-ink-3: #1c2016;
+  --color-ink-4: #23271c;
+  --color-ink-5: #2a2f22;
+  --color-ink-6: #343a2a;
+  --color-ink-7: #434a36;
+  --color-ink-8: #5c6549;
+  --color-ink-9: #7d8a63;
+  --color-ink-10: #8d9a72;
+  --color-ink-11: #b3bd9e;
+  --color-ink-12: #e6e9dc;
+
+  --color-ink-a6: rgb(226 240 190 / 0.13);
+  --color-ink-a7: rgb(228 243 189 / 0.19);
+  --color-ink-a8: rgb(230 247 187 / 0.31);
+  --color-ink-a11: rgb(239 252 214 / 0.71);
+
+  /* --- sanguine: primary accent, desaturated oxblood ---------------------- */
+  --color-sanguine-3: #2d1517;
+  --color-sanguine-4: #3d191b;
+  --color-sanguine-5: #4d1d20;
+  --color-sanguine-9: #8a2b2b;
+  --color-sanguine-10: #9c3433;
+  --color-sanguine-11: #e2837c;
+  --color-sanguine-12: #ffd4cc;
+
+  /* --- candle: secondary accent, muted brass ------------------------------ */
+  --color-candle-3: #241b0d;
+  --color-candle-7: #6b5226;
+  --color-candle-8: #8a6a31;
+  --color-candle-9: #b98a3e;
+  --color-candle-11: #e0b872;
+
+  --color-candle-a3: rgb(255 202 112 / 0.09);
+  --color-candle-a5: rgb(255 204 116 / 0.18);
+  --color-candle-a7: rgb(255 206 120 / 0.3);
+  --color-candle-a9: rgb(255 208 124 / 0.46);
+  --color-candle-a11: rgb(255 212 130 / 0.68);
+
+  /* --- semantic surfaces: elevation by colour, never by shadow ------------ */
+  --color-surface-canvas: var(--color-ink-1);
+  --color-surface-subtle: var(--color-ink-2);
+  --color-surface-raised: var(--color-ink-3);
+  --color-surface-overlay: var(--color-ink-4);
+  --color-surface-hover: var(--color-ink-4);
+  --color-surface-active: var(--color-ink-5);
+
+  /* --- semantic borders: alpha so they composite over texture ------------- */
+  --color-border-subtle: var(--color-ink-a6);
+  --color-border-default: var(--color-ink-a7);
+  --color-border-strong: var(--color-ink-a8);
+  --color-border-ornament: var(--color-candle-a7);
+
+  /* --- semantic text: never pure white ----------------------------------- */
+  --color-text-primary: var(--color-ink-12);
+  --color-text-secondary: var(--color-ink-11);
+  --color-text-muted: var(--color-ink-a11);
+  --color-text-on-solid: var(--color-ink-1);
+
+  --color-accent-solid: var(--color-sanguine-9);
+  --color-accent-hover: var(--color-sanguine-10);
+  --color-accent-text: var(--color-sanguine-11);
+  --color-accent-bg: var(--color-sanguine-3);
+
+  /* --- availability heatmap: alpha ramp over the surface ------------------ */
+  --color-avail-1: var(--color-candle-a3);
+  --color-avail-2: var(--color-candle-a5);
+  --color-avail-3: var(--color-candle-a7);
+  --color-avail-4: var(--color-candle-a9);
+  --color-avail-5: var(--color-candle-a11);
+  --color-avail-best-ring: var(--color-candle-8);
+
+  --color-focus-ring: var(--color-candle-8);
+
+  /* --- typography --------------------------------------------------------- */
+  --font-display: var(--font-cinzel), 'Trajan Pro', Georgia, serif;
+  --font-body: var(--font-spectral), Georgia, 'Times New Roman', serif;
+  --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-ornament: var(--font-im-fell), Georgia, serif;
+
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+
+  --leading-tight: 1.15;
+  --leading-body: 1.65;
+  --leading-ui: 1.4;
+
+  --tracking-display: 0.08em;
+  --tracking-smallcaps: 0.06em;
+
+  /* --- radii: restrained, so the UI does not read as a modern SaaS app ---- */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+
+  /* --- motion ------------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-occult: cubic-bezier(0.34, 0.01, 0.28, 1);
+
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-normal: 220ms;
+  --duration-slow: 380ms;
+
+  /* --- atmosphere --------------------------------------------------------- */
+  --texture-grain-opacity: 0.04;
+}
