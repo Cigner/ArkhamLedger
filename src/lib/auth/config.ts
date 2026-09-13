@@ -6,6 +6,9 @@ import { db } from '@/db/client'
 import * as schema from '@/db/schema'
 import { env, isProduction } from '@/lib/env'
 import { newId } from '@/lib/ids'
+import { securityLogger } from '@/lib/logger'
+import { mailer } from '@/lib/mail'
+import { passwordChangedEmail, passwordResetEmail } from '@/modules/identity/domain/emails'
 
 /**
  * Authentication instance.
@@ -23,6 +26,7 @@ import { newId } from '@/lib/ids'
  */
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
 const SESSION_REFRESH_SECONDS = 60 * 60 * 24
+const RESET_TOKEN_TTL_SECONDS = 60 * 60
 
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
@@ -46,6 +50,31 @@ export const auth = betterAuth({
     minPasswordLength: 12,
     maxPasswordLength: 128,
     requireEmailVerification: false,
+
+    resetPasswordTokenExpiresIn: RESET_TOKEN_TTL_SECONDS,
+    // A password change must end every other session: otherwise a user who
+    // resets because they suspect compromise leaves the intruder signed in.
+    revokeSessionsOnPasswordReset: true,
+
+    sendResetPassword: async ({ user, token }) => {
+      // The library's default URL points at its own API base; the link has to
+      // reach our page instead.
+      const url = `${env.BETTER_AUTH_URL}/reset-password/${token}`
+      const body = passwordResetEmail(user.name, url)
+
+      const result = await mailer().send({ to: user.email, ...body })
+      if (!result.ok) {
+        securityLogger.error(
+          { userId: user.id, retryable: result.retryable },
+          'password reset email could not be delivered',
+        )
+      }
+    },
+
+    onPasswordReset: async ({ user }) => {
+      securityLogger.info({ userId: user.id }, 'password reset completed')
+      await mailer().send({ to: user.email, ...passwordChangedEmail(user.name) })
+    },
   },
 
   session: {
@@ -85,7 +114,7 @@ export const auth = betterAuth({
     customRules: {
       // Credential endpoints are throttled far harder than the default.
       '/sign-in/email': { window: 60, max: 5 },
-      '/forget-password': { window: 300, max: 3 },
+      '/request-password-reset': { window: 300, max: 3 },
       '/reset-password': { window: 300, max: 5 },
     },
   },

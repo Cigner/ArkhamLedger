@@ -10,6 +10,10 @@ import { cn } from '@/lib/cn'
  * Base UI renders a listbox rather than a native select, which is what makes it
  * stylable; keyboard behaviour, typeahead and aria wiring come from the
  * primitive. The trigger matches Input so a form reads as one system.
+ *
+ * Pass `items` to the root as a value-to-label record. Without it the trigger
+ * displays the raw value — "user" rather than "User" — because the primitive has
+ * no other way to know what an item's text was.
  */
 export const Select = SelectPrimitive.Root
 export const SelectValue = SelectPrimitive.Value
@@ -23,8 +27,8 @@ export function SelectTrigger({ className, children, ...props }: SelectPrimitive
         'flex h-10 w-full items-center justify-between gap-2 rounded-sm px-3 py-2',
         'border border-border-default bg-surface-subtle',
         'font-ui text-sm text-text-primary',
-        'transition-colors duration-[--duration-fast]',
-        'hover:border-border-strong',
+        'transition-interactive',
+        'hover:border-border-strong active:bg-surface-hover',
         'disabled:cursor-not-allowed disabled:opacity-45',
         'data-[invalid]:border-status-danger',
         className,
@@ -42,11 +46,15 @@ export function SelectTrigger({ className, children, ...props }: SelectPrimitive
 export function SelectContent({ className, children, ...props }: SelectPrimitive.Popup.Props) {
   return (
     <SelectPrimitive.Portal>
-      <SelectPrimitive.Positioner sideOffset={4} alignItemWithTrigger={false}>
+      <SelectPrimitive.Positioner
+        className="z-popover"
+        sideOffset={4}
+        alignItemWithTrigger={false}
+      >
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            'z-50 max-h-72 min-w-[var(--anchor-width)] overflow-y-auto rounded-sm p-1',
+            'max-h-72 min-w-[var(--anchor-width)] overflow-y-auto rounded-sm p-1',
             'border border-border-default bg-surface-overlay',
             'data-[open]:animate-in data-[open]:fade-in-0',
             'data-[closed]:animate-out data-[closed]:fade-out-0',

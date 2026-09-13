@@ -60,7 +60,17 @@
    * Two-tone focus ring. The bright inner outline carries most backgrounds; the
    * dark outer halo carries the dense heatmap cells where the bright one fades
    * to about 1.5:1. Both halves are required — see tokens.css.
+   *
+   * The ring is declared up front as transparent rather than absent so that only
+   * its COLOUR changes on focus. A ring that appears by switching outline-style
+   * cannot transition, and animating outline-width would shift layout.
    */
+  :where(a, button, input, textarea, select, summary, [tabindex]) {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0 transparent;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
@@ -75,6 +85,21 @@
  * four positioned pseudo-element layers, which read as noise when spelled out as
  * utilities. It is decoration only and never indicates a state.
  */
+/*
+ * Transition for interactive state changes.
+ *
+ * Declared once as a utility because the property list matters and is easy to
+ * get wrong: Tailwind's `transition-colors` omits `outline-color` and
+ * `box-shadow`, so a component using it animates its hover but snaps its focus
+ * ring into place. Every interactive primitive uses this instead.
+ */
+@utility transition-interactive {
+  transition-property:
+    color, background-color, border-color, outline-color, box-shadow, opacity, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
 @layer components {
   .ornament-corners::before,
   .ornament-corners::after {

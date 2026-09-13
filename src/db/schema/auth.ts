@@ -182,3 +182,7 @@ export const authSessionRelations = relations(authSession, ({ one }) => ({
 export const authAccountRelations = relations(authAccount, ({ one }) => ({
   user: one(authUser, { fields: [authAccount.userId], references: [authUser.id] }),
 }))
+
+export const userActivationTokenRelations = relations(userActivationToken, ({ one }) => ({
+  user: one(authUser, { fields: [userActivationToken.userId], references: [authUser.id] }),
+}))

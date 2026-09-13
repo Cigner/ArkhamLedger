@@ -204,4 +204,17 @@
 
   /* --- layout ------------------------------------------------------------- */
   --touch-target-min: 44px;
+
+  /*
+   * Stacking order for portalled layers.
+   *
+   * Explicit rather than "everything is 50", because equal z-index falls back to
+   * DOM order and the order these portals mount in is not something a component
+   * author controls. A select opened inside a dialog must sit above it, and a
+   * tooltip above that.
+   */
+  --z-index-dialog: 50;
+  --z-index-popover: 60;
+  --z-index-tooltip: 70;
+  --z-index-toast: 80;
 }

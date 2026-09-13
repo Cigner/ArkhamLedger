@@ -7,16 +7,17 @@ import * as schema from './schema'
 /**
  * Shared database connection pool.
  *
- * Cached on globalThis because Next's development server re-evaluates modules on
- * every hot reload, and a fresh pool per reload exhausts MySQL connections
- * within minutes.
+ * Only the POOL is cached across hot reloads — creating one per reload exhausts
+ * MySQL connections within minutes. The Drizzle wrapper is rebuilt every time
+ * because it captures the schema at construction: caching it too means a newly
+ * added relation is invisible until the dev server restarts, which costs more
+ * confusion than the wrapper costs to build.
  *
  * `timezone: 'Z'` makes the driver treat every DATETIME as UTC in both
  * directions, matching the server's --default-time-zone=+00:00.
  */
 const globalForDb = globalThis as unknown as {
   __arkhamPool?: mysql.Pool
-  __arkhamDb?: MySql2Database<typeof schema>
 }
 
 function createPool(): mysql.Pool {
@@ -33,13 +34,12 @@ function createPool(): mysql.Pool {
 }
 
 export const pool: mysql.Pool = globalForDb.__arkhamPool ?? createPool()
-export const db: MySql2Database<typeof schema> =
-  globalForDb.__arkhamDb ?? drizzle(pool, { schema, mode: 'default' })
 
 if (!isProduction) {
   globalForDb.__arkhamPool = pool
-  globalForDb.__arkhamDb = db
 }
+
+export const db: MySql2Database<typeof schema> = drizzle(pool, { schema, mode: 'default' })
 
 export type Database = typeof db
 /** Transaction handle; accepted anywhere a Database is, so helpers compose. */

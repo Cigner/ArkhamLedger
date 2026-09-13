@@ -19,20 +19,22 @@ const buttonVariants = cva(
     'inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap',
     'font-ui font-medium tracking-[0.01em]',
     'rounded-md border border-transparent',
-    'transition-colors duration-[--duration-fast] ease-[--ease-out]',
+    'transition-interactive',
     'disabled:pointer-events-none disabled:opacity-45',
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   ],
   {
     variants: {
       variant: {
-        accent: 'bg-accent-solid text-text-on-accent hover:bg-accent-hover',
+        accent:
+          'border-accent-solid bg-accent-solid text-text-on-accent hover:border-accent-hover hover:bg-accent-hover active:brightness-90',
         outline:
-          'border-border-default bg-surface-raised text-text-primary hover:bg-surface-hover hover:border-border-strong',
-        ghost: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary',
+          'border-border-default bg-surface-raised text-text-primary hover:border-border-strong hover:bg-surface-hover active:bg-surface-active',
+        ghost:
+          'text-text-secondary hover:bg-surface-hover hover:text-text-primary active:bg-surface-active',
         danger:
-          'border-border-default bg-transparent text-status-danger hover:bg-sanguine-3 hover:border-status-danger',
-        link: 'text-accent-text underline-offset-4 hover:underline',
+          'border-status-danger/60 bg-transparent text-status-danger hover:border-status-danger hover:bg-sanguine-3 active:bg-sanguine-4',
+        link: 'text-accent-text underline-offset-4 hover:underline active:opacity-80',
       },
       size: {
         sm: 'h-8 px-3 text-xs',

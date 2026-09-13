@@ -27,8 +27,8 @@ export function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
       data-slot="tabs-trigger"
       className={cn(
         'relative -mb-px border-b-2 border-transparent px-3 py-2',
-        'font-ui text-sm text-text-secondary transition-colors duration-[--duration-fast]',
-        'hover:text-text-primary',
+        'font-ui text-sm text-text-secondary transition-interactive',
+        'hover:text-text-primary active:text-text-primary',
         'data-[selected]:border-candle-9 data-[selected]:font-medium data-[selected]:text-text-primary',
         className,
       )}

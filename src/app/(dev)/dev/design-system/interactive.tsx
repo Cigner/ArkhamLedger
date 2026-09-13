@@ -30,6 +30,12 @@ import { ConfirmDialog } from '@/components/patterns/confirm-dialog'
  * Split from the page so the catalogue itself stays a server component and only
  * the overlays that genuinely need state ship to the browser.
  */
+const PRIORITY_LABELS = {
+  required: 'Required',
+  preferred: 'Preferred',
+  optional: 'Optional',
+} as const
+
 export function DesignSystemInteractive() {
   const [confirmOpen, setConfirmOpen] = useState(false)
 
@@ -50,8 +56,19 @@ export function DesignSystemInteractive() {
                   Availability closes on Thursday at midnight.
                 </DialogDescription>
               </DialogHeader>
-              <DialogBody className="font-ui text-sm text-text-secondary">
-                Focus is trapped, the page behind is locked, and Escape dismisses.
+              <DialogBody className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
+                <p>Focus is trapped, the page behind is locked, and Escape dismisses.</p>
+                {/* Stacking check: a select opened here must render above the dialog. */}
+                <Select items={PRIORITY_LABELS} defaultValue="required">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="required">Required</SelectItem>
+                    <SelectItem value="preferred">Preferred</SelectItem>
+                    <SelectItem value="optional">Optional</SelectItem>
+                  </SelectContent>
+                </Select>
               </DialogBody>
               <DialogFooter>
                 <Button variant="ghost">Cancel</Button>
@@ -80,7 +97,7 @@ export function DesignSystemInteractive() {
         </div>
 
         <div className="max-w-xs">
-          <Select defaultValue="required">
+          <Select items={PRIORITY_LABELS} defaultValue="required">
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>

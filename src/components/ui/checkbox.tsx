@@ -18,8 +18,8 @@ export function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) 
       className={cn(
         'inline-flex size-5 shrink-0 items-center justify-center rounded-sm',
         'border border-border-default bg-surface-subtle',
-        'transition-colors duration-[--duration-fast]',
-        'hover:border-border-strong',
+        'transition-interactive',
+        'hover:border-border-strong active:bg-surface-hover',
         'data-[checked]:border-transparent data-[checked]:bg-accent-solid',
         'data-[indeterminate]:border-transparent data-[indeterminate]:bg-accent-solid',
         'disabled:cursor-not-allowed disabled:opacity-45',

@@ -33,7 +33,7 @@ export function ToastViewport({ className }: { className?: string }) {
     <ToastPrimitive.Portal>
       <ToastPrimitive.Viewport
         className={cn(
-          'fixed bottom-4 right-4 z-[100] flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-2',
+          'fixed bottom-4 right-4 z-toast flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-2',
           className,
         )}
       >
@@ -52,7 +52,7 @@ export function ToastViewport({ className }: { className?: string }) {
             <ToastPrimitive.Title className="font-ui text-sm font-medium text-text-primary" />
             <ToastPrimitive.Description className="mt-1 font-ui text-xs leading-[--leading-ui] text-text-secondary" />
             <ToastPrimitive.Close
-              className="absolute right-2 top-2 rounded-sm p-1.5 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
+              className="absolute right-2 top-2 rounded-sm p-1.5 text-text-muted transition-interactive hover:bg-surface-hover hover:text-text-primary active:bg-surface-active"
               aria-label="Dismiss"
             >
               <X className="size-4" aria-hidden="true" />

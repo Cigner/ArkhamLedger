@@ -46,7 +46,7 @@ export function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     <tr
       data-slot="table-row"
       className={cn(
-        'border-b border-border-subtle transition-colors duration-[--duration-fast] last:border-0 hover:bg-surface-hover',
+        'border-b border-border-subtle transition-interactive last:border-0 hover:bg-surface-hover',
         className,
       )}
       {...props}

@@ -14,3 +14,4 @@ export {
   type UserStatus,
 } from './port'
 export { getOptionalUser, requireAdmin, requireUser } from './guards'
+export { bootstrapAdmin } from './bootstrap'

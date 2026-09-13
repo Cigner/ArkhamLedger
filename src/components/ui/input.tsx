@@ -17,7 +17,7 @@ export function Input({ className, ...props }: InputPrimitive.Props) {
         'flex h-10 w-full rounded-sm border border-border-default bg-surface-subtle px-3 py-2',
         'font-ui text-sm text-text-primary',
         'placeholder:text-text-muted placeholder:italic',
-        'transition-colors duration-[--duration-fast]',
+        'transition-interactive',
         'hover:border-border-strong',
         'disabled:cursor-not-allowed disabled:opacity-45',
         'data-[invalid]:border-status-danger',

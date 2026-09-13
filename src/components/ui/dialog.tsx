@@ -24,7 +24,7 @@ export function DialogBackdrop({ className, ...props }: DialogPrimitive.Backdrop
     <DialogPrimitive.Backdrop
       data-slot="dialog-backdrop"
       className={cn(
-        'fixed inset-0 z-50 bg-scrim supports-[backdrop-filter]:backdrop-blur-[2px]',
+        'fixed inset-0 z-dialog bg-scrim supports-[backdrop-filter]:backdrop-blur-[2px]',
         'data-[open]:animate-in data-[open]:fade-in-0',
         'data-[closed]:animate-out data-[closed]:fade-out-0',
         className,
@@ -46,7 +46,7 @@ export function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2',
+          'fixed left-1/2 top-1/2 z-dialog w-full max-w-lg -translate-x-1/2 -translate-y-1/2',
           'rounded-lg border border-border-default bg-surface-overlay',
           'max-h-[calc(100dvh-2rem)] overflow-y-auto',
           'data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-[0.98]',

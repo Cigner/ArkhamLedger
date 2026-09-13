@@ -22,11 +22,11 @@ export function TooltipContent({
 }: TooltipPrimitive.Popup.Props & Pick<TooltipPrimitive.Positioner.Props, 'sideOffset' | 'side'>) {
   return (
     <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Positioner sideOffset={sideOffset} side={side}>
+      <TooltipPrimitive.Positioner className="z-tooltip" sideOffset={sideOffset} side={side}>
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            'z-50 max-w-64 rounded-sm border border-border-default bg-surface-overlay px-2.5 py-1.5',
+            'max-w-64 rounded-sm border border-border-default bg-surface-overlay px-2.5 py-1.5',
             'font-ui text-xs leading-[--leading-ui] text-text-primary',
             'data-[open]:animate-in data-[open]:fade-in-0',
             'data-[closed]:animate-out data-[closed]:fade-out-0',
