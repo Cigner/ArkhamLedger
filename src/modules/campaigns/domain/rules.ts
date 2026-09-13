@@ -77,6 +77,24 @@ export function canModifyContent(status: CampaignStatus): Result<void> {
   return ok()
 }
 
+/**
+ * Whether a settings submission may be applied.
+ *
+ * Archiving must not be a one-way door. Refusing every change while archived
+ * would also refuse the change that lifts the archive, leaving no way back
+ * except direct database access — so a submission that moves the status out of
+ * ARCHIVED is always allowed, and only edits that leave it archived are refused.
+ */
+export function canUpdateCampaign(
+  currentStatus: CampaignStatus,
+  nextStatus: CampaignStatus,
+): Result<void> {
+  if (currentStatus === 'ARCHIVED' && nextStatus === 'ARCHIVED') {
+    return fail('campaigns.errors.campaignArchived')
+  }
+  return ok()
+}
+
 /** A campaign needs at least one Keeper to run sessions. */
 export function wouldLeaveNoKeeper(
   members: readonly { userId: string; role: CampaignRole }[],

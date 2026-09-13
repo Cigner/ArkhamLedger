@@ -7,6 +7,7 @@ import {
   canModifyContent,
   canRemoveMember,
   canTransferOwnership,
+  canUpdateCampaign,
   roleAtLeast,
   wouldLeaveNoKeeper,
 } from '@/modules/campaigns/domain/rules'
@@ -113,6 +114,27 @@ describe('canTransferOwnership', () => {
       canTransferOwnership(membership({ role: 'KEEPER' }), { userId: 'user-2', status: 'ACTIVE' })
         .ok,
     ).toBe(false)
+  })
+})
+
+describe('canUpdateCampaign', () => {
+  /*
+   * Archiving must not be a one-way door. Refusing every change while archived
+   * would also refuse the one that lifts the archive, leaving no route back
+   * except direct database access.
+   */
+  it('refuses an edit that leaves the campaign archived', () => {
+    expect(canUpdateCampaign('ARCHIVED', 'ARCHIVED').ok).toBe(false)
+  })
+
+  it('allows a change that lifts the archive', () => {
+    expect(canUpdateCampaign('ARCHIVED', 'ACTIVE').ok).toBe(true)
+    expect(canUpdateCampaign('ARCHIVED', 'ON_HIATUS').ok).toBe(true)
+  })
+
+  it('allows ordinary edits and allows archiving', () => {
+    expect(canUpdateCampaign('ACTIVE', 'ACTIVE').ok).toBe(true)
+    expect(canUpdateCampaign('ACTIVE', 'ARCHIVED').ok).toBe(true)
   })
 })
 

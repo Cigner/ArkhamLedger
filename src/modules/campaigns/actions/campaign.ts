@@ -22,6 +22,7 @@ import {
   canArchiveCampaign,
   canModifyContent,
   canTransferOwnership,
+  canUpdateCampaign,
 } from '../domain/rules'
 import {
   campaignIdSchema,
@@ -71,7 +72,7 @@ export const updateCampaign = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     const context = await requireKeeper(parsedInput.campaignId)
 
-    const modifiable = canModifyContent(context.status)
+    const modifiable = canUpdateCampaign(context.status, parsedInput.status)
     if (!modifiable.ok) throw new DomainRuleError(modifiable.error.key)
 
     if (!isValidTimeZone(parsedInput.timezone)) {

@@ -110,17 +110,40 @@ export function CampaignSettingsForm({
     transferCandidates.map((member) => [member.userId, member.name]),
   )
 
+  const archived = settings.status === 'ARCHIVED'
+
   return (
     <div className="flex max-w-xl flex-col gap-10">
+      {archived ? (
+        <p
+          role="status"
+          className="rounded-sm border border-border-ornament bg-candle-3 px-3 py-2 font-ui text-sm leading-[--leading-ui] text-candle-11"
+        >
+          This campaign is archived and read-only. Change its status to something else and save to
+          bring it back.
+        </p>
+      ) : null}
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
         <Field>
           <FieldLabel htmlFor="name">Name</FieldLabel>
-          <Input id="name" name="name" defaultValue={settings.name} required />
+          <Input
+            id="name"
+            name="name"
+            defaultValue={settings.name}
+            required
+            readOnly={archived}
+          />
         </Field>
 
         <Field>
           <FieldLabel htmlFor="description">Description</FieldLabel>
-          <Textarea id="description" name="description" defaultValue={settings.description ?? ''} />
+          <Textarea
+            id="description"
+            name="description"
+            defaultValue={settings.description ?? ''}
+            readOnly={archived}
+          />
         </Field>
 
         <Field>
@@ -145,7 +168,13 @@ export function CampaignSettingsForm({
 
         <Field>
           <FieldLabel htmlFor="timezone">Time zone</FieldLabel>
-          <Input id="timezone" name="timezone" defaultValue={settings.timezone} required />
+          <Input
+            id="timezone"
+            name="timezone"
+            defaultValue={settings.timezone}
+            required
+            readOnly={archived}
+          />
           <FieldDescription>
             An IANA identifier such as Europe/Warsaw. The availability grid is drawn in this zone
             for every member, so that everyone is looking at the same hours.
@@ -213,8 +242,12 @@ export function CampaignSettingsForm({
               Hides the campaign and makes it read-only. Sessions and availability are kept.
             </p>
             <div className="mt-1">
-              <Button variant="danger" onClick={() => setConfirmingArchive(true)}>
-                Archive campaign
+              <Button
+                variant="danger"
+                disabled={archived}
+                onClick={() => setConfirmingArchive(true)}
+              >
+                {archived ? 'Already archived' : 'Archive campaign'}
               </Button>
             </div>
           </div>

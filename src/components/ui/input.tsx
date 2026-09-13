@@ -20,6 +20,8 @@ export function Input({ className, ...props }: InputPrimitive.Props) {
         'transition-interactive',
         'hover:border-border-strong',
         'disabled:cursor-not-allowed disabled:opacity-45',
+        // readOnly keeps the value in the form payload; disabled would drop it.
+        'read-only:cursor-default read-only:border-border-subtle read-only:text-text-secondary',
         'data-[invalid]:border-status-danger',
         className,
       )}

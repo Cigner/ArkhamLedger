@@ -38,6 +38,22 @@ The application is then on <http://localhost:3000>, the database on port 3306.
 | `npm run test:e2e` | Playwright end-to-end tests |
 | `npm run db:generate` | Generate a migration from the schema |
 | `npm run db:migrate` | Apply pending migrations |
+| `npm run db:seed` | Create the first administrator (idempotent, safe on every deploy) |
+| `npm run db:seed:dev` | **Wipe** and rebuild the development fixture |
+
+## Development data
+
+`npm run db:seed:dev` rebuilds a fixture that covers every status a record can
+hold, so each screen, badge and rejection page is reachable without constructing
+the state by hand: ten accounts including one awaiting activation and one
+disabled, five campaigns across every status, a member who left, six invitations
+covering each way one can be refused, and seven sessions across the lifecycle.
+
+It prints the shared password, the activation link and every invitation link —
+those exist nowhere else once generated, since only their digests are stored.
+
+It truncates every table, including the administrator created by `db:seed`, and
+refuses to run unless `NODE_ENV` is not production and the database host is local.
 
 ## Architecture in one paragraph
 

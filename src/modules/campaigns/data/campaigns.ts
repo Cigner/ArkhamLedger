@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, count, desc, eq, isNull } from 'drizzle-orm'
+import { and, count, desc, eq, isNull, sql } from 'drizzle-orm'
 import { type DbOrTx, db } from '@/db/client'
 import { authUser, campaign, campaignMember, scenario } from '@/db/schema'
 import { requireUser } from '@/lib/auth'
@@ -55,7 +55,8 @@ export async function listMyCampaigns(): Promise<CampaignListItem[]> {
     .leftJoin(scenario, eq(scenario.id, campaign.scenarioId))
     .leftJoin(memberCounts, eq(memberCounts.campaignId, campaign.id))
     .where(isNull(campaign.deletedAt))
-    .orderBy(desc(campaign.updatedAt))
+    // Archived campaigns stay reachable but sink to the bottom of the list.
+    .orderBy(sql`${campaign.status} = 'ARCHIVED'`, desc(campaign.updatedAt))
 
   return rows.map((row) => ({
     id: row.id,
@@ -202,10 +203,15 @@ export async function updateCampaign(
 }
 
 /**
- * Soft-deletes a campaign.
+ * Archives a campaign.
  *
- * Sessions and availability hang off it and are worth keeping: a campaign that
- * was archived by mistake can be restored, whereas a cascade cannot be undone.
+ * Sets the status only. `deletedAt` is deliberately left alone: the two mean
+ * different things, and setting both would make an archived campaign
+ * indistinguishable from a deleted one — which in turn makes the ARCHIVED status
+ * unobservable and its read-only rule impossible to verify.
+ *
+ * Archived campaigns stay listed, below the rest, and refuse modification
+ * through canModifyContent.
  */
 export async function archiveCampaign(
   campaignId: string,
@@ -214,7 +220,7 @@ export async function archiveCampaign(
 ): Promise<void> {
   await executor
     .update(campaign)
-    .set({ status: 'ARCHIVED', deletedAt: now, updatedAt: now })
+    .set({ status: 'ARCHIVED', updatedAt: now })
     .where(eq(campaign.id, campaignId))
 }
 
