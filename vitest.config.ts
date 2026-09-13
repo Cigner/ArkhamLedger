@@ -29,12 +29,27 @@ export default defineConfig({
         },
       },
       {
+        resolve: {
+          alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            /*
+             * `server-only` throws outside a bundler that understands the
+             * react-server condition. Aliased to its own empty entry here, and
+             * deliberately NOT in the unit project: a unit test that reaches into
+             * a server-only module should still fail loudly.
+             */
+            'server-only': fileURLToPath(
+              new URL('./node_modules/server-only/empty.js', import.meta.url),
+            ),
+          },
+        },
         test: {
           name: 'integration',
           environment: 'node',
           globals: true,
           include: ['tests/integration/**/*.{test,spec}.ts'],
           setupFiles: ['./tests/setup/integration.ts'],
+          globalSetup: ['./tests/integration/global-setup.ts'],
           testTimeout: 60_000,
           hookTimeout: 60_000,
           pool: 'forks',

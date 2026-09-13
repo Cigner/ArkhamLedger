@@ -31,7 +31,10 @@ const serverEnvSchema = z.object({
     .optional()
     .transform((value) => value === 'true'),
 
-  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  /** Pino levels, plus `silent` which suppresses output entirely (used by tests). */
+  LOG_LEVEL: z
+    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+    .default('info'),
 
   /** Default IANA zone for new campaigns and users. */
   DEFAULT_TIMEZONE: z.string().default('Europe/Warsaw'),

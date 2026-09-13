@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin } from 'better-auth/plugins/admin'
 import { nextCookies } from 'better-auth/next-js'
@@ -9,6 +10,7 @@ import { newId } from '@/lib/ids'
 import { securityLogger } from '@/lib/logger'
 import { mailer } from '@/lib/mail'
 import { passwordChangedEmail, passwordResetEmail } from '@/modules/identity/domain/emails'
+import { clearAttempts, consumeAttempt, type ThrottleScope } from './email-throttle'
 
 /**
  * Authentication instance.
@@ -27,6 +29,12 @@ import { passwordChangedEmail, passwordResetEmail } from '@/modules/identity/dom
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
 const SESSION_REFRESH_SECONDS = 60 * 60 * 24
 const RESET_TOKEN_TTL_SECONDS = 60 * 60
+
+/** Endpoints throttled by email address in addition to the library's IP limit. */
+const THROTTLED_PATHS: Record<string, ThrottleScope | undefined> = {
+  '/sign-in/email': 'signin',
+  '/request-password-reset': 'reset',
+}
 
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
@@ -125,6 +133,41 @@ export const auth = betterAuth({
       timezone: { type: 'string', required: false, input: false },
       locale: { type: 'string', required: false, input: false },
     },
+  },
+
+  /**
+   * Per-address throttling.
+   *
+   * Runs before the endpoint so a refused attempt never reaches password
+   * verification, and clears the counter afterwards on success so a legitimate
+   * user who mistyped twice is not held back by their own earlier attempts.
+   */
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      const scope = THROTTLED_PATHS[ctx.path]
+      if (!scope) return
+
+      const email = (ctx.body as { email?: unknown } | undefined)?.email
+      if (typeof email !== 'string' || email.length === 0) return
+
+      const decision = await consumeAttempt(scope, email)
+      if (decision.allowed) return
+
+      throw new APIError('TOO_MANY_REQUESTS', {
+        message: 'Too many attempts. Try again later.',
+        code: 'TOO_MANY_ATTEMPTS',
+        retryAfter: decision.retryAfterSeconds,
+      })
+    }),
+
+    after: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== '/sign-in/email') return
+
+      const email = (ctx.body as { email?: unknown } | undefined)?.email
+      if (typeof email === 'string' && ctx.context.newSession) {
+        await clearAttempts('signin', email)
+      }
+    }),
   },
 
   plugins: [

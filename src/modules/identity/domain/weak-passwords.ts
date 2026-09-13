@@ -72,29 +72,52 @@ const WEAK_PASSWORD_STEMS = [
 
 const NUMERIC_SEQUENCES = ['123456', '1234567', '12345678', '123456789', '1234567890', '000000']
 
+/** Classic character substitutions, so `p@ssw0rd` collapses onto `password`. */
+const LEET: ReadonlyArray<readonly [RegExp, string]> = [
+  [/[@4]/g, 'a'],
+  [/0/g, 'o'],
+  [/[1!|]/g, 'i'],
+  [/3/g, 'e'],
+  [/[$5]/g, 's'],
+  [/7/g, 't'],
+]
+
+/**
+ * Reduces a password to the word an attacker would actually guess.
+ *
+ * Order matters and is the part that is easy to get wrong: trailing digits are
+ * stripped BEFORE substitutions are applied. Doing it the other way round turns
+ * the year in "letmein2026" into letters, after which it can no longer be
+ * stripped and the password looks novel.
+ */
+function stems(password: string): string[] {
+  const lower = password.toLowerCase()
+  const trimmed = lower.replace(/[^a-z@!|$]+$/, '')
+
+  const substituted = LEET.reduce(
+    (value, [pattern, replacement]) => value.replace(pattern, replacement),
+    trimmed,
+  )
+
+  // Substitution can reveal new trailing junk, e.g. "p@ssword!" -> "password i".
+  const substitutedTrimmed = substituted.replace(/[^a-z]+$/, '')
+
+  return [...new Set([trimmed, substituted, substitutedTrimmed])]
+}
+
 /**
  * Reports whether a password is an obvious guess.
  *
- * Strips case, trailing digits and common leet substitutions before matching, so
- * padding a known-bad password does not slip past.
+ * Matches against the reduced stem rather than the literal input, so padding a
+ * known-bad password with a year or swapping letters for digits does not slip past.
  */
 export function isWeakPassword(password: string): boolean {
-  const normalized = password
-    .toLowerCase()
-    .replace(/[0@]/g, 'o')
-    .replace(/[1!|]/g, 'i')
-    .replace(/3/g, 'e')
-    .replace(/\$|5/g, 's')
-    .replace(/4/g, 'a')
-    .replace(/7/g, 't')
-
-  const stem = normalized.replace(/[^a-z]+$/, '')
-
   if (NUMERIC_SEQUENCES.some((sequence) => password.includes(sequence))) return true
-  if (WEAK_PASSWORD_STEMS.some((weak) => stem === weak || stem === weak.repeat(2))) return true
 
-  // A password made of one repeated character, however long.
+  // One character repeated, however long.
   if (/^(.)\1+$/.test(password)) return true
 
-  return false
+  return stems(password).some((stem) =>
+    WEAK_PASSWORD_STEMS.some((weak) => stem === weak || stem === weak.repeat(2)),
+  )
 }

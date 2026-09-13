@@ -142,6 +142,30 @@ export const authRateLimit = mysqlTable(
 )
 
 /**
+ * Per-identity throttle counters.
+ *
+ * Separate from the library's own IP-keyed table because it answers a different
+ * question: how many times has anyone tried THIS address, from anywhere. IP
+ * rotation is free; a target address is not.
+ *
+ * Defined here rather than left to the rate-limiting library's automatic table
+ * creation, so the schema stays entirely inside the migrations.
+ */
+export const identityThrottle = mysqlTable(
+  'identity_throttle',
+  {
+    /** `<scope>:<lowercased identifier>`, e.g. `signin:anna@example.test`. */
+    id: varchar('id', { length: 320 }).primaryKey(),
+    attempts: int('attempts').notNull().default(0),
+    /** Start of the current counting window. */
+    windowStartedAt: datetime('window_started_at', { mode: 'date', fsp: 3 }).notNull(),
+    /** Set once the limit is exceeded; requests are refused until it passes. */
+    blockedUntil: datetime('blocked_until', { mode: 'date', fsp: 3 }),
+  },
+  (t) => [index('ix_throttle_window').on(t.windowStartedAt)],
+)
+
+/**
  * First-login activation links.
  *
  * Kept out of `auth_verification` because the lifecycle differs: an activation

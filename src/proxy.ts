@@ -17,6 +17,7 @@ import { NextResponse, type NextRequest } from 'next/server'
  */
 const SESSION_COOKIE = 'arkham.session_token'
 const CORRELATION_HEADER = 'x-correlation-id'
+const NONCE_HEADER = 'x-nonce'
 
 const PUBLIC_PREFIXES = [
   '/sign-in',
@@ -37,29 +38,66 @@ function isPublicPath(pathname: string): boolean {
   )
 }
 
+/**
+ * Content Security Policy.
+ *
+ * Built per request because script-src carries a fresh nonce; Next reads the
+ * nonce from the request header and stamps it onto its own script tags.
+ *
+ * `style-src` allows inline styles, which is not ideal but is unavoidable while
+ * Next injects critical CSS inline. `connect-src` is limited to same-origin —
+ * there is no third-party telemetry in this application and no reason for the
+ * page to reach anywhere else.
+ */
+function contentSecurityPolicy(nonce: string): string {
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  // The dev server evaluates code for hot reloading; production never may.
+  const scriptSrc = isProduction
+    ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`
+    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'`
+
+  return [
+    `default-src 'self'`,
+    scriptSrc,
+    `style-src 'self' 'unsafe-inline'`,
+    `img-src 'self' data: blob:`,
+    `font-src 'self'`,
+    // 'self' does not cover the ws: scheme, which the dev server's hot reload uses.
+    isProduction ? `connect-src 'self'` : `connect-src 'self' ws: wss:`,
+    `form-action 'self'`,
+    `frame-ancestors 'none'`,
+    `object-src 'none'`,
+    `base-uri 'self'`,
+    ...(isProduction ? ['upgrade-insecure-requests'] : []),
+  ].join('; ')
+}
+
+function withSecurityHeaders(response: NextResponse, nonce: string): NextResponse {
+  response.headers.set('Content-Security-Policy', contentSecurityPolicy(nonce))
+  return response
+}
+
 export function proxy(request: NextRequest): NextResponse {
   const { pathname, search } = request.nextUrl
 
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set(CORRELATION_HEADER, crypto.randomUUID())
+  requestHeaders.set(NONCE_HEADER, nonce)
 
   // Defence in depth: strip the header behind CVE-2025-29927 regardless of the
   // running version, in case the reverse proxy in front is misconfigured.
   requestHeaders.delete('x-middleware-subrequest')
 
-  if (isPublicPath(pathname)) {
-    return NextResponse.next({ request: { headers: requestHeaders } })
-  }
-
-  const hasSessionCookie = request.cookies.has(SESSION_COOKIE)
-
-  if (!hasSessionCookie) {
+  if (!isPublicPath(pathname) && !request.cookies.has(SESSION_COOKIE)) {
     const signIn = new URL('/sign-in', request.url)
     if (pathname !== '/') signIn.searchParams.set('next', `${pathname}${search}`)
-    return NextResponse.redirect(signIn)
+    return withSecurityHeaders(NextResponse.redirect(signIn), nonce)
   }
 
-  return NextResponse.next({ request: { headers: requestHeaders } })
+  return withSecurityHeaders(NextResponse.next({ request: { headers: requestHeaders } }), nonce)
 }
 
 export const config = {
