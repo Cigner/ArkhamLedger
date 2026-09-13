@@ -9,27 +9,52 @@
  * steps rather than shadows, which are effectively invisible on dark grounds,
  * and borders use alpha so they composite over the grain layer instead of
  * punching an opaque rectangle through it.
+ *
+ * Every value below is checked by tests/unit/design-system/contrast.test.ts.
+ * Changing a colour without re-reading that file will fail the build.
  */
 
-@theme {
+/*
+ * `static` is required, not stylistic.
+ *
+ * By default Tailwind removes theme variables it cannot see referenced in the
+ * source, which silently deletes any token consumed dynamically — the
+ * availability grid maps a participant count to a ramp step at runtime, so the
+ * literal `--color-avail-3` never appears anywhere for the scanner to find.
+ * Without `static`, those tokens resolve to nothing and cells render blank.
+ */
+@theme static {
   /* --- ink: neutral scale, cool near-black with a green cast --------------- */
   --color-ink-1: #0e100c;
-  --color-ink-2: #14170f;
-  --color-ink-3: #1c2016;
-  --color-ink-4: #23271c;
-  --color-ink-5: #2a2f22;
-  --color-ink-6: #343a2a;
-  --color-ink-7: #434a36;
+  --color-ink-2: #171a13;
+  --color-ink-3: #202519;
+  --color-ink-4: #262b1e;
+  --color-ink-5: #2e3423;
+  --color-ink-6: #3a4130;
+  --color-ink-7: #4a5340;
   --color-ink-8: #5c6549;
   --color-ink-9: #7d8a63;
   --color-ink-10: #8d9a72;
   --color-ink-11: #b3bd9e;
   --color-ink-12: #e6e9dc;
 
-  --color-ink-a6: rgb(226 240 190 / 0.13);
-  --color-ink-a7: rgb(228 243 189 / 0.19);
-  --color-ink-a8: rgb(230 247 187 / 0.31);
+  /*
+   * Alpha neutrals. The step numbering follows the Radix convention, but the
+   * opacities are chosen to clear contrast thresholds over BOTH the page canvas
+   * and the most elevated surface — a border tuned only against the canvas
+   * silently fails inside a dialog.
+   */
+  --color-ink-a6: rgb(226 240 190 / 0.13); /* decorative separators only */
+  --color-ink-a7: rgb(226 240 190 / 0.4); /* interactive boundaries, >= 3:1 */
+  --color-ink-a8: rgb(226 240 190 / 0.52);
   --color-ink-a11: rgb(239 252 214 / 0.71);
+
+  /*
+   * Dark alpha. The alpha neutrals above are LIGHT — they exist to lift borders
+   * and muted text off a dark ground. A modal scrim needs the opposite, and
+   * reaching for a light alpha there washes the page out instead of dimming it.
+   */
+  --color-scrim: rgb(6 8 5 / 0.74);
 
   /* --- sanguine: primary accent, desaturated oxblood ---------------------- */
   --color-sanguine-3: #2d1517;
@@ -47,46 +72,95 @@
   --color-candle-9: #b98a3e;
   --color-candle-11: #e0b872;
 
-  --color-candle-a3: rgb(255 202 112 / 0.09);
-  --color-candle-a5: rgb(255 204 116 / 0.18);
-  --color-candle-a7: rgb(255 206 120 / 0.3);
-  --color-candle-a9: rgb(255 208 124 / 0.46);
+  --color-candle-a3: rgb(255 212 130 / 0.09);
+  --color-candle-a5: rgb(255 212 130 / 0.18);
+  --color-candle-a7: rgb(255 212 130 / 0.3);
+  --color-candle-a9: rgb(255 212 130 / 0.46);
   --color-candle-a11: rgb(255 212 130 / 0.68);
+  --color-candle-ornament: rgb(255 206 120 / 0.43);
 
   /* --- semantic surfaces: elevation by colour, never by shadow ------------ */
   --color-surface-canvas: var(--color-ink-1);
   --color-surface-subtle: var(--color-ink-2);
   --color-surface-raised: var(--color-ink-3);
   --color-surface-overlay: var(--color-ink-4);
-  --color-surface-hover: var(--color-ink-4);
-  --color-surface-active: var(--color-ink-5);
+  --color-surface-hover: var(--color-ink-5);
+  --color-surface-active: var(--color-ink-6);
 
   /* --- semantic borders: alpha so they composite over texture ------------- */
   --color-border-subtle: var(--color-ink-a6);
   --color-border-default: var(--color-ink-a7);
   --color-border-strong: var(--color-ink-a8);
-  --color-border-ornament: var(--color-candle-a7);
+  --color-border-ornament: var(--color-candle-ornament);
 
   /* --- semantic text: never pure white ----------------------------------- */
   --color-text-primary: var(--color-ink-12);
   --color-text-secondary: var(--color-ink-11);
   --color-text-muted: var(--color-ink-a11);
-  --color-text-on-solid: var(--color-ink-1);
+
+  /*
+   * Foreground colours for solid fills. These differ per accent and are NOT
+   * interchangeable: the oxblood step 9 is dark and needs light text, the brass
+   * step 9 is light and needs dark text. Using one for the other drops the pair
+   * to roughly 2:1, which is why they are separate tokens rather than a single
+   * "on solid" value.
+   */
+  --color-text-on-accent: #f5efe6;
+  --color-text-on-candle: var(--color-ink-1);
 
   --color-accent-solid: var(--color-sanguine-9);
   --color-accent-hover: var(--color-sanguine-10);
   --color-accent-text: var(--color-sanguine-11);
   --color-accent-bg: var(--color-sanguine-3);
 
-  /* --- availability heatmap: alpha ramp over the surface ------------------ */
+  /* --- availability: discrete states in the editing grid ------------------ */
+  /*
+   * Each state clears 3:1 against the canvas, but the three are NOT mutually
+   * distinguishable by contrast (green against amber is about 1.1:1). Colour
+   * alone therefore cannot carry this information, and every cell renders a
+   * glyph as well. This is enforced in the grid component, not here.
+   */
+  --color-slot-yes: #5f9a63;
+  --color-slot-if-need-be: #b98a3e;
+  --color-slot-no: #c04b47;
+  --color-slot-empty: var(--color-ink-3);
+
+  /* --- availability: density ramp in the Keeper heatmap ------------------- */
+  /*
+   * A five-step ramp cannot place 3:1 between every adjacent pair — that would
+   * need an 81:1 range and the maximum available is 21:1. The ramp is therefore
+   * supplementary: the participant count is printed in every cell, and the top
+   * step clears 3:1 against the canvas so a dense cell is unmistakably filled.
+   */
   --color-avail-1: var(--color-candle-a3);
   --color-avail-2: var(--color-candle-a5);
   --color-avail-3: var(--color-candle-a7);
   --color-avail-4: var(--color-candle-a9);
   --color-avail-5: var(--color-candle-a11);
-  --color-avail-best-ring: var(--color-candle-8);
 
-  --color-focus-ring: var(--color-candle-8);
+  /*
+   * The best-slot marker is DARK, which is counter-intuitive until measured: a
+   * light ring on the densest amber cell reaches only 2.3:1, whereas a dark one
+   * reaches 6.7:1. Best slots are by definition the densest cells, so the ring
+   * only ever appears where a dark outline reads.
+   */
+  --color-avail-best-ring: var(--color-ink-1);
+
+  /*
+   * The focus ring is a PAIR, not a colour. No single value works everywhere:
+   * a bright ring reads on every surface but disappears on a dense amber
+   * heatmap cell (1.5:1), and a dark ring does the opposite. Rendering both,
+   * inner bright and outer dark, guarantees that one half always clears 3:1.
+   * Removing either half breaks focus visibility somewhere in the grid.
+   */
+  --color-focus-ring: var(--color-candle-11);
+  --color-focus-ring-contrast: var(--color-ink-1);
+
+  /* --- status --------------------------------------------------------------- */
+  --color-status-positive: #5f9a63;
+  --color-status-warning: #b98a3e;
+  --color-status-danger: #c04b47;
+  --color-status-neutral: var(--color-ink-9);
 
   /* --- typography --------------------------------------------------------- */
   --font-display: var(--font-cinzel), 'Trajan Pro', Georgia, serif;
@@ -127,4 +201,7 @@
 
   /* --- atmosphere --------------------------------------------------------- */
   --texture-grain-opacity: 0.04;
+
+  /* --- layout ------------------------------------------------------------- */
+  --touch-target-min: 44px;
 }

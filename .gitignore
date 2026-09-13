@@ -26,3 +26,4 @@ logs
 
 # os
 .DS_Store
+.idea/

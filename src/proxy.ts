@@ -28,6 +28,10 @@ const PUBLIC_PREFIXES = [
 ]
 
 function isPublicPath(pathname: string): boolean {
+  // The design system gallery is a development-only catalogue; the page itself
+  // also returns 404 in production, so this never widens the production surface.
+  if (process.env.NODE_ENV !== 'production' && pathname.startsWith('/dev/')) return true
+
   return PUBLIC_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   )

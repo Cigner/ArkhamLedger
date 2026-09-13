@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
+@import 'tw-animate-css';
 
 /*
  * Global styles.
@@ -56,19 +57,57 @@
   }
 
   /*
-   * Two-tone focus ring: a single ring disappears either against the canvas or
-   * against a dense heatmap cell, so one half is always guaranteed to contrast.
+   * Two-tone focus ring. The bright inner outline carries most backgrounds; the
+   * dark outer halo carries the dense heatmap cells where the bright one fades
+   * to about 1.5:1. Both halves are required — see tokens.css.
    */
   :focus-visible {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
-    box-shadow: 0 0 0 4px var(--color-ink-1);
+    box-shadow: 0 0 0 5px var(--color-focus-ring-contrast);
+  }
+}
+
+/*
+ * Brass corner rules.
+ *
+ * The atmospheric flourish lives in plain CSS rather than utility classes: it is
+ * four positioned pseudo-element layers, which read as noise when spelled out as
+ * utilities. It is decoration only and never indicates a state.
+ */
+@layer components {
+  .ornament-corners::before,
+  .ornament-corners::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    border-color: var(--color-border-ornament);
+    border-style: solid;
+  }
+
+  .ornament-corners::before {
+    top: -1px;
+    left: -1px;
+    border-width: 1px 0 0 1px;
+  }
+
+  .ornament-corners::after {
+    right: -1px;
+    bottom: -1px;
+    border-width: 0 1px 1px 0;
   }
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root {
     --texture-grain-opacity: 0;
+  }
+
+  .ornament-corners::before,
+  .ornament-corners::after {
+    display: none;
   }
 }
 
