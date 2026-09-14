@@ -1,5 +1,6 @@
 'use client'
 
+import { CalendarDays, FileText, Settings2, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
@@ -16,10 +17,10 @@ export function CampaignTabs({ campaignId, isKeeper }: { campaignId: string; isK
   const base = `/campaigns/${campaignId}`
 
   const tabs = [
-    { href: base, label: 'Overview' },
-    { href: `${base}/sessions`, label: 'Sessions' },
-    { href: `${base}/members`, label: 'Members' },
-    ...(isKeeper ? [{ href: `${base}/settings`, label: 'Settings' }] : []),
+    { href: base, label: 'Overview', icon: FileText },
+    { href: `${base}/sessions`, label: 'Sessions', icon: CalendarDays },
+    { href: `${base}/members`, label: 'Members', icon: Users },
+    ...(isKeeper ? [{ href: `${base}/settings`, label: 'Settings', icon: Settings2 }] : []),
   ]
 
   return (
@@ -32,12 +33,13 @@ export function CampaignTabs({ campaignId, isKeeper }: { campaignId: string; isK
             href={tab.href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              '-mb-px border-b-2 px-3 py-2 font-ui text-sm transition-interactive',
+              '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 font-ui text-sm transition-interactive',
               active
                 ? 'border-candle-9 font-medium text-text-primary'
                 : 'border-transparent text-text-secondary hover:text-text-primary',
             )}
           >
+            <tab.icon className="size-4" aria-hidden="true" />
             {tab.label}
           </Link>
         )

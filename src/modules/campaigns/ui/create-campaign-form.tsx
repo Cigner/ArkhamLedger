@@ -1,5 +1,6 @@
 'use client'
 
+import { Check } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -84,6 +85,7 @@ export function CreateCampaignForm() {
 
       <div className="flex items-center gap-2">
         <Button type="submit" variant="accent" disabled={busy}>
+          <Check className="size-4" aria-hidden="true" />
           {busy ? 'Creating…' : 'Create campaign'}
         </Button>
         <Button variant="ghost" onClick={() => router.push('/campaigns')} disabled={busy}>

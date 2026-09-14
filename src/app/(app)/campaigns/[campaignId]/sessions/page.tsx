@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CalendarDays, Plus } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button-link'
 import {
   Table,
@@ -47,6 +48,7 @@ export default async function CampaignSessionsPage({
         </h2>
         {isKeeper ? (
           <ButtonLink variant="accent" href={`/campaigns/${campaignId}/sessions/new`}>
+            <Plus className="size-4" aria-hidden="true" />
             New session
           </ButtonLink>
         ) : null}
@@ -55,6 +57,7 @@ export default async function CampaignSessionsPage({
       {sessions.length === 0 ? (
         <EmptyState
           title="Nothing is planned"
+          icon={<CalendarDays className="size-8" strokeWidth={1.25} />}
           description={
             isKeeper
               ? 'Create a session and ask the party when they are free.'
@@ -63,6 +66,7 @@ export default async function CampaignSessionsPage({
           action={
             isKeeper ? (
               <ButtonLink variant="accent" href={`/campaigns/${campaignId}/sessions/new`}>
+                <Plus className="size-4" aria-hidden="true" />
                 New session
               </ButtonLink>
             ) : undefined

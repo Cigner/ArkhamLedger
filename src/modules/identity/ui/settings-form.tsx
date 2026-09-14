@@ -1,5 +1,6 @@
 'use client'
 
+import { Bell, Check, KeyRound, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -82,7 +83,10 @@ export function SettingsForm({
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>You</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <UserRound className="size-4 text-text-muted" aria-hidden="true" />
+            You
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form
@@ -114,8 +118,8 @@ export function SettingsForm({
                 maxLength={64}
               />
               <FieldDescription>
-                An IANA name such as Europe/Warsaw. Session times are always shown in the
-                campaign&rsquo;s zone; this one is used for your own reminders.
+                An IANA name such as Europe/Warsaw. Sessions always show the campaign&rsquo;s zone;
+                this one is for your own reminders.
               </FieldDescription>
             </Field>
 
@@ -123,6 +127,7 @@ export function SettingsForm({
 
             <div className="flex items-center gap-3">
               <Button type="submit" variant="accent" disabled={save.isPending}>
+                <Check className="size-4" aria-hidden="true" />
                 {save.isPending ? 'Saving…' : 'Save'}
               </Button>
               {saved === 'profile' ? (
@@ -137,7 +142,10 @@ export function SettingsForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Notifications</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="size-4 text-text-muted" aria-hidden="true" />
+            Notifications
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <label className="flex items-start gap-3">
@@ -161,7 +169,7 @@ export function SettingsForm({
             and turning it off would leave somebody unable to find out at all.
           */}
           <p className="font-ui text-xs text-text-muted">
-            Everything is always kept in your notifications here, whether or not it is emailed.
+            Everything is kept here whether or not it is emailed.
           </p>
 
           {saved === 'channel' ? (
@@ -174,7 +182,10 @@ export function SettingsForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Password</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <KeyRound className="size-4 text-text-muted" aria-hidden="true" />
+            Password
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form

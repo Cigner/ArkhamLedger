@@ -1,3 +1,4 @@
+import { Activity } from 'lucide-react'
 import type { Metadata } from 'next'
 import { PageHeader } from '@/components/patterns/page-header'
 import { getOperationsSnapshot } from '@/modules/operations/data/metrics'
@@ -20,7 +21,8 @@ export default async function AdminOverviewPage() {
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Operations"
-        description="How this deployment is doing. Counts only — no campaign is named here."
+        icon={<Activity className="size-6" strokeWidth={1.5} />}
+        description="Counts only — no campaign is named here."
       />
       <OperationsPanel snapshot={snapshot} />
     </div>

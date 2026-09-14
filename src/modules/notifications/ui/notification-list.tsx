@@ -1,5 +1,17 @@
 'use client'
 
+import {
+  BellOff,
+  CalendarCheck,
+  CalendarClock,
+  CalendarPlus,
+  CalendarX,
+  CheckCheck,
+  Clock3,
+  ListChecks,
+  UserPlus,
+  Users,
+} from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -8,7 +20,26 @@ import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/patterns/empty-state'
 import { cn } from '@/lib/cn'
 import { markAllNotificationsRead, markNotificationsRead } from '../actions/notifications'
-import type { InboxItem } from '../domain/types'
+import type { InboxItem, NotificationType } from '../domain/types'
+
+/**
+ * One icon per kind of event.
+ *
+ * An inbox is read by scanning, and the shape of a line tells you what it is
+ * about before the words do. Decorative: the subject says the same thing.
+ */
+const ICONS: Record<NotificationType, typeof CalendarCheck> = {
+  CAMPAIGN_INVITED: UserPlus,
+  CAMPAIGN_MEMBER_JOINED: Users,
+  SESSION_CREATED: CalendarPlus,
+  AVAILABILITY_REQUESTED: CalendarClock,
+  AVAILABILITY_REMINDER: Clock3,
+  COLLECTION_CLOSED: ListChecks,
+  SESSION_SCHEDULED: CalendarCheck,
+  SESSION_RESCHEDULED: CalendarClock,
+  SESSION_CANCELLED: CalendarX,
+  NO_NEXT_SESSION: BellOff,
+}
 
 /**
  * The inbox.
@@ -47,7 +78,8 @@ export function NotificationList({
     return (
       <EmptyState
         title="Nothing has happened yet"
-        description="Invitations, availability requests and confirmed dates all arrive here."
+        icon={<BellOff className="size-8" strokeWidth={1.25} />}
+        description="Invitations, availability requests and confirmed dates arrive here."
       />
     )
   }
@@ -69,6 +101,7 @@ export function NotificationList({
               markAll.execute()
             }}
           >
+            <CheckCheck className="size-4" aria-hidden="true" />
             Mark all as read
           </Button>
         ) : null}
@@ -78,10 +111,18 @@ export function NotificationList({
         {items.map((item) => {
           const isUnread = item.readAt === null
 
+          const Icon = ICONS[item.type]
+
           const content = (
             <>
               <span className="flex items-baseline justify-between gap-3">
-                <span className="font-ui text-sm font-medium text-text-primary">{item.title}</span>
+                <span className="flex items-baseline gap-2 font-ui text-sm font-medium text-text-primary">
+                  <Icon
+                    className="size-4 shrink-0 translate-y-0.5 text-text-muted"
+                    aria-hidden="true"
+                  />
+                  {item.title}
+                </span>
                 <time
                   dateTime={item.createdAt.toISOString()}
                   data-tabular
@@ -96,7 +137,7 @@ export function NotificationList({
                   })}
                 </time>
               </span>
-              <span className="font-ui text-xs text-text-secondary">{item.body}</span>
+              <span className="pl-6 font-ui text-xs text-text-secondary">{item.body}</span>
             </>
           )
 

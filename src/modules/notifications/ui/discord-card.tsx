@@ -1,5 +1,6 @@
 'use client'
 
+import { Send, Trash2, Webhook } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -90,14 +91,17 @@ export function DiscordCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Discord</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Webhook className="size-4 text-text-muted" aria-hidden="true" />
+          Discord
+        </CardTitle>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
         <p className="font-ui text-sm text-text-secondary">
           {status.configured
-            ? 'This campaign posts to a Discord channel when a session is announced, confirmed, moved or cancelled.'
-            : 'Paste a channel webhook to have the group told in Discord as well as by email.'}
+            ? 'Posts when a session is announced, confirmed, moved or cancelled.'
+            : 'Paste a channel webhook to tell the group in Discord as well as by email.'}
         </p>
 
         {status.lastError ? (
@@ -151,9 +155,11 @@ export function DiscordCard({
                     test.execute({ campaignId })
                   }}
                 >
-                  {test.isPending ? 'Posting…' : 'Send a test post'}
+                  <Send className="size-4" aria-hidden="true" />
+                  {test.isPending ? 'Posting…' : 'Test'}
                 </Button>
                 <Button variant="danger" onClick={() => setRemoving(true)}>
+                  <Trash2 className="size-4" aria-hidden="true" />
                   Remove
                 </Button>
               </>

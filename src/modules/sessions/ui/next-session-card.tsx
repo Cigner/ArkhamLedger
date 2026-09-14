@@ -1,3 +1,4 @@
+import { CalendarCheck, CalendarClock, CalendarPlus, CalendarX, Download } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { ButtonLink } from '@/components/ui/button-link'
@@ -33,7 +34,10 @@ export function NextSessionCard({
     return (
       <Card className="border-status-positive/40">
         <CardHeader>
-          <CardTitle>Next session</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarCheck className="size-4 text-status-positive" aria-hidden="true" />
+            Next session
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -57,10 +61,11 @@ export function NextSessionCard({
               forget. One press puts it in the calendar that already wakes them up.
             */}
             <ButtonLink href={`/api/sessions/${next.id}/ics`} variant="outline" size="sm">
+              <Download className="size-4" aria-hidden="true" />
               Add to calendar
             </ButtonLink>
             <ButtonLink href={`/sessions/${next.id}`} variant="ghost" size="sm">
-              Open session
+              Open
             </ButtonLink>
           </div>
         </CardContent>
@@ -72,12 +77,13 @@ export function NextSessionCard({
     return (
       <Card className="border-candle-8">
         <CardHeader>
-          <CardTitle>Being arranged</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock className="size-4 text-candle-11" aria-hidden="true" />
+            Being arranged
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <p className="font-ui text-sm text-text-secondary">
-            No date is settled yet. {isKeeper ? 'These are waiting on you or on answers.' : ''}
-          </p>
+          <p className="font-ui text-sm text-text-secondary">No date settled yet.</p>
 
           <ul className="flex flex-col gap-2">
             {diary.arranging.map((entry) => (
@@ -103,23 +109,26 @@ export function NextSessionCard({
   return (
     <Card className="border-status-warning/50">
       <CardHeader>
-        <CardTitle>No next session</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <CalendarX className="size-4 text-status-warning" aria-hidden="true" />
+          No next session
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <p className="font-ui text-sm text-text-secondary">
-          Nothing is planned and nothing is being arranged. This is the state campaigns quietly end
-          in — a fortnight becomes a month, and the thread is lost.
+          Nothing planned and nothing being arranged. This is the state campaigns quietly end in.
         </p>
 
         {isKeeper ? (
           <div>
             <ButtonLink href={`/campaigns/${campaignId}/sessions/new`} variant="accent" size="sm">
+              <CalendarPlus className="size-4" aria-hidden="true" />
               Plan the next one
             </ButtonLink>
           </div>
         ) : (
           <p className="font-ui text-xs text-text-muted">
-            Your Keeper is the one who starts a session. A nudge in their direction usually does it.
+            Only a Keeper can start one. A nudge usually does it.
           </p>
         )}
 

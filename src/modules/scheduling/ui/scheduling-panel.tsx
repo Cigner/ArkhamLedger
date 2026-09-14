@@ -1,5 +1,6 @@
 'use client'
 
+import { CalendarSearch, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -98,6 +99,11 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
 
         {view.canRun ? (
           <Button variant="accent" disabled={search.isPending} onClick={runSearch}>
+            {view.run ? (
+              <RefreshCw className="size-4" aria-hidden="true" />
+            ) : (
+              <CalendarSearch className="size-4" aria-hidden="true" />
+            )}
             {search.isPending ? 'Searching…' : view.run ? 'Search again' : 'Find dates'}
           </Button>
         ) : null}
@@ -154,10 +160,12 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
       ) : (
         <EmptyState
           title="No dates worked out yet"
-          description="Search once enough people have answered. Nothing is decided by searching — it only ranks the evenings that would work."
+          icon={<CalendarSearch className="size-8" strokeWidth={1.25} />}
+          description="Searching decides nothing — it ranks the evenings that would work."
           action={
             view.canRun ? (
               <Button variant="accent" disabled={search.isPending} onClick={runSearch}>
+                <CalendarSearch className="size-4" aria-hidden="true" />
                 {search.isPending ? 'Searching…' : 'Find dates'}
               </Button>
             ) : null

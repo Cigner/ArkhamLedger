@@ -1,5 +1,6 @@
 'use client'
 
+import { CalendarClock, CalendarSearch, FileText, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
@@ -24,11 +25,13 @@ export function SessionTabs({
   const base = `/sessions/${sessionId}`
 
   const tabs = [
-    { href: base, label: 'Overview' },
+    { href: base, label: 'Overview', icon: FileText },
     // Only somebody who was invited has an answer to give or a grid to read.
-    ...(isParticipant ? [{ href: `${base}/availability`, label: 'Availability' }] : []),
-    ...(isKeeper ? [{ href: `${base}/scheduling`, label: 'Dates' }] : []),
-    ...(isKeeper ? [{ href: `${base}/participants`, label: 'Participants' }] : []),
+    ...(isParticipant
+      ? [{ href: `${base}/availability`, label: 'Availability', icon: CalendarClock }]
+      : []),
+    ...(isKeeper ? [{ href: `${base}/scheduling`, label: 'Dates', icon: CalendarSearch }] : []),
+    ...(isKeeper ? [{ href: `${base}/participants`, label: 'Participants', icon: Users }] : []),
   ]
 
   return (
@@ -41,12 +44,13 @@ export function SessionTabs({
             href={tab.href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              '-mb-px border-b-2 px-3 py-2 font-ui text-sm transition-interactive',
+              '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 font-ui text-sm transition-interactive',
               active
                 ? 'border-candle-9 font-medium text-text-primary'
                 : 'border-transparent text-text-secondary hover:text-text-primary',
             )}
           >
+            <tab.icon className="size-4" aria-hidden="true" />
             {tab.label}
           </Link>
         )

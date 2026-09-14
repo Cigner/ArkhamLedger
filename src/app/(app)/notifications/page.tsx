@@ -1,3 +1,4 @@
+import { Bell } from 'lucide-react'
 import type { Metadata } from 'next'
 import { PageHeader } from '@/components/patterns/page-header'
 import { requireUser } from '@/lib/auth'
@@ -19,7 +20,7 @@ export default async function NotificationsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Notifications" />
+      <PageHeader title="Notifications" icon={<Bell className="size-6" strokeWidth={1.5} />} />
       {/* Times in the reader's own zone: these are personal, not a campaign's. */}
       <NotificationList items={items} timezone={user.timezone} />
     </div>

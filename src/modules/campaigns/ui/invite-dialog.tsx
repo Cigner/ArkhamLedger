@@ -1,5 +1,6 @@
 'use client'
 
+import { Link2, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
@@ -106,7 +107,10 @@ export function InviteDialog({
 
   return (
     <Dialog open={open} onOpenChange={reset}>
-      <DialogTrigger render={<Button variant="accent" />}>Invite</DialogTrigger>
+      <DialogTrigger render={<Button variant="accent" />}>
+        <UserPlus className="size-4" aria-hidden="true" />
+        Invite
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{issued ? 'Invitation ready' : 'Invite to the campaign'}</DialogTitle>
@@ -229,6 +233,7 @@ export function InviteDialog({
                 variant="accent"
                 disabled={isPending || (mode === 'personal' && noCandidates)}
               >
+                <Link2 className="size-4" aria-hidden="true" />
                 {isPending ? 'Creating…' : 'Create link'}
               </Button>
             </DialogFooter>

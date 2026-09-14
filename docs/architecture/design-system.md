@@ -98,6 +98,35 @@ never under text directly; contrast is measured against the _brightest_ pixel of
 the texture rather than its average; and it is switched off entirely under
 `prefers-reduced-transparency` or `prefers-contrast: more`.
 
+## Icons
+
+**lucide-react**, and only lucide-react. It was already a dependency; a second
+icon set is the usual way an icon system rots, because two sets never agree on
+weight, optical size or metaphor.
+
+It suits the setting better than it first appears. At `size-4` with
+`strokeWidth={1.5}` the geometry reads as fine engraving rather than as a mobile
+app — the same reason the radii are 2–4px and the rules are hairlines.
+
+Conventions:
+
+| Where                          | Size                  | Notes                                    |
+| ------------------------------ | --------------------- | ---------------------------------------- |
+| Inside a button, beside a word | `size-4`              | `aria-hidden`; the word is the name      |
+| Page heading                   | `size-6`, stroke 1.5  | Decorative; the heading text is the name |
+| Card title, tab, inline meta   | `size-4`              | Muted colour unless it carries a state   |
+| Empty state                    | `size-8`, stroke 1.25 |                                          |
+
+**Icon-only controls** use `IconButton`, which requires a `label`. That label
+becomes both the accessible name and the tooltip, so the control works for
+somebody reading the screen, hovering a mouse, or listening to it. A tooltip is
+unreachable by touch, which is why the label must exist as a _name_ and not only
+as a hint.
+
+Icon-only is for dense places — a table row, a card corner — where a word per
+action turns a scannable list into a wall. Everywhere else a button says what it
+does in words: an icon alone is a guess until you have learnt it.
+
 ## Primitives
 
 Generated once with shadcn/ui in a throwaway project, then rewritten. What was

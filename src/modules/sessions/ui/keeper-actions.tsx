@@ -1,5 +1,15 @@
 'use client'
 
+import {
+  CalendarCheck,
+  CalendarSearch,
+  CircleCheck,
+  Lock,
+  Pencil,
+  Send,
+  Undo2,
+  XCircle,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -14,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldLabel, FieldNote } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { ConfirmDialog } from '@/components/patterns/confirm-dialog'
@@ -148,43 +158,54 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
               publish.execute({ sessionId: session.id })
             }}
           >
+            <Send className="size-4" aria-hidden="true" />
             {publish.isPending ? 'Opening…' : 'Ask for availability'}
           </Button>
         ) : null}
 
         {status === 'COLLECTING' || status === 'PROPOSED' ? (
           <ButtonLink href={`/sessions/${session.id}/scheduling`} variant="accent">
+            <CalendarSearch className="size-4" aria-hidden="true" />
             Find dates
           </ButtonLink>
         ) : null}
 
         {status === 'COLLECTING' ? (
           <Button variant="ghost" onClick={() => setCloseOpen(true)}>
+            <Lock className="size-4" aria-hidden="true" />
             Close answers
           </Button>
         ) : null}
 
         {!terminal ? (
           <Button variant="outline" onClick={() => setSchedulingOpen(true)}>
+            {status === 'SCHEDULED' ? (
+              <Pencil className="size-4" aria-hidden="true" />
+            ) : (
+              <CalendarCheck className="size-4" aria-hidden="true" />
+            )}
             {status === 'SCHEDULED' ? 'Change the date' : 'Set a date'}
           </Button>
         ) : null}
 
         {status === 'PROPOSED' || status === 'SCHEDULED' ? (
           <Button variant="ghost" onClick={() => setReopenOpen(true)}>
-            Reopen availability
+            <Undo2 className="size-4" aria-hidden="true" />
+            Reopen
           </Button>
         ) : null}
 
         {status === 'SCHEDULED' ? (
           <Button variant="ghost" onClick={() => setCompleteOpen(true)}>
+            <CircleCheck className="size-4" aria-hidden="true" />
             Mark as played
           </Button>
         ) : null}
 
         {!terminal ? (
           <Button variant="danger" onClick={() => setCancelOpen(true)}>
-            Cancel session
+            <XCircle className="size-4" aria-hidden="true" />
+            Cancel
           </Button>
         ) : null}
       </div>
@@ -255,9 +276,9 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
                 </Field>
               </div>
 
-              <FieldDescription>
+              <FieldNote>
                 Setting a date by hand overrides what people said they could do.
-              </FieldDescription>
+              </FieldNote>
             </DialogBody>
 
             <DialogFooter>

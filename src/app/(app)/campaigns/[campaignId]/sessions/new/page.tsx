@@ -1,3 +1,4 @@
+import { CalendarPlus } from 'lucide-react'
 import type { Metadata } from 'next'
 import { PageHeader } from '@/components/patterns/page-header'
 import { guardPage } from '@/lib/page-guards'
@@ -24,7 +25,8 @@ export default async function NewSessionPage({
     <div className="flex flex-col gap-8">
       <PageHeader
         title="New session"
-        description="Starts as a draft. Nobody is asked anything until you open it for availability."
+        icon={<CalendarPlus className="size-6" strokeWidth={1.5} />}
+        description="Starts as a draft. Nobody is asked anything until you open it."
       />
       <CreateSessionForm campaignId={campaignId} />
     </div>

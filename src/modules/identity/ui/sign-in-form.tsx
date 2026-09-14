@@ -1,5 +1,6 @@
 'use client'
 
+import { LogIn } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -77,6 +78,7 @@ export function SignInForm({ next }: { next: string }) {
       <FormError>{error}</FormError>
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>
+        <LogIn className="size-4" aria-hidden="true" />
         {pending ? 'Signing in…' : 'Sign in'}
       </Button>
     </form>

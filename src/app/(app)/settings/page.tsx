@@ -1,3 +1,4 @@
+import { Settings2 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { PageHeader } from '@/components/patterns/page-header'
 import { requireUser } from '@/lib/auth'
@@ -22,7 +23,11 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Settings" description="Your details, and how you hear from us." />
+      <PageHeader
+        title="Settings"
+        icon={<Settings2 className="size-6" strokeWidth={1.5} />}
+        description="Your details, and how you hear from us."
+      />
       <SettingsForm
         profile={{ name: user.name, timezone: user.timezone, email: user.email }}
         emailNotifications={preferences.EMAIL}

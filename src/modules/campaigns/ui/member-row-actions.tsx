@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useAction } from 'next-safe-action/hooks'
-import { Button } from '@/components/ui/button'
+import { BookOpen, UserMinus, UserRound } from 'lucide-react'
+import { IconButton } from '@/components/patterns/icon-button'
 import { ConfirmDialog } from '@/components/patterns/confirm-dialog'
 import { changeMemberRole, removeMember } from '../actions/members'
 import type { CampaignMemberListItem, Membership } from '../domain/types'
@@ -37,18 +38,27 @@ export function MemberRowActions({
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <Button
+      <IconButton
         variant="ghost"
-        size="sm"
+        label={member.role === 'KEEPER' ? 'Make an Investigator' : 'Make a Keeper'}
+        icon={
+          member.role === 'KEEPER' ? (
+            <UserRound className="size-4" aria-hidden="true" />
+          ) : (
+            <BookOpen className="size-4" aria-hidden="true" />
+          )
+        }
         disabled={busy}
         onClick={() => changeRole.execute({ campaignId, userId: member.userId, role: nextRole })}
-      >
-        {member.role === 'KEEPER' ? 'Make Investigator' : 'Make Keeper'}
-      </Button>
+      />
 
-      <Button variant="ghost" size="sm" disabled={busy} onClick={() => setConfirmingRemoval(true)}>
-        Remove
-      </Button>
+      <IconButton
+        variant="ghost"
+        label="Remove from the campaign"
+        icon={<UserMinus className="size-4" aria-hidden="true" />}
+        disabled={busy}
+        onClick={() => setConfirmingRemoval(true)}
+      />
 
       <ConfirmDialog
         open={confirmingRemoval}

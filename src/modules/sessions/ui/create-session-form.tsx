@@ -1,10 +1,11 @@
 'use client'
 
+import { Check } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
-import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldLabel, FieldNote } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { readString } from '@/lib/form-data'
@@ -193,16 +194,17 @@ export function CreateSessionForm({ campaignId }: { campaignId: string }) {
             />
           </Field>
         </div>
-        <FieldDescription>
+        <FieldNote>
           A session runs from its start to the end of the offered hours unless somebody&rsquo;s
           availability cuts it short. The minimum is the shortest run worth gathering for.
-        </FieldDescription>
+        </FieldNote>
       </fieldset>
 
       <FormError>{error}</FormError>
 
       <div className="flex items-center gap-2">
         <Button type="submit" variant="accent" disabled={busy}>
+          <Check className="size-4" aria-hidden="true" />
           {busy ? 'Creating…' : 'Create draft'}
         </Button>
         <Button

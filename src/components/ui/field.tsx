@@ -45,6 +45,24 @@ export function FieldDescription({ className, ...props }: FieldPrimitive.Descrip
   )
 }
 
+/**
+ * A note about a group of fields rather than about one.
+ *
+ * Deliberately not a Field part: the primitive's Description reads the Field
+ * context to wire itself to a control with aria-describedby, and rendering one
+ * outside a Field throws. A fieldset-level hint belongs to no single control, so
+ * it is a plain paragraph that merely looks the same.
+ */
+export function FieldNote({ className, ...props }: React.ComponentProps<'p'>) {
+  return (
+    <p
+      data-slot="field-note"
+      className={cn('font-ui text-xs leading-[--leading-ui] text-text-muted', className)}
+      {...props}
+    />
+  )
+}
+
 export function FieldError({ className, children, ...props }: FieldPrimitive.Error.Props) {
   return (
     <FieldPrimitive.Error

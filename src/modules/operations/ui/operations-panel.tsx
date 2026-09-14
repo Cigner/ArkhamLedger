@@ -1,3 +1,4 @@
+import { CircleAlert, CircleCheck, Cog, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/cn'
@@ -19,13 +20,20 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
     <div className="flex flex-col gap-6">
       <Card className={snapshot.worker.stale ? 'border-status-danger/50' : undefined}>
         <CardHeader>
-          <CardTitle>Worker</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            {snapshot.worker.stale ? (
+              <CircleAlert className="size-4 text-status-danger" aria-hidden="true" />
+            ) : (
+              <Cog className="size-4 text-text-muted" aria-hidden="true" />
+            )}
+            Worker
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <p className="font-ui text-sm text-text-secondary">
             {snapshot.worker.stale
-              ? 'The worker has not reported recently. Nothing is being delivered, no deadline will close and no reminder will go out until it is back.'
-              : 'Running. Deliveries, deadlines and reminders are being handled.'}
+              ? 'Not reporting. Nothing is being delivered and no deadline will close until it is back.'
+              : 'Running.'}
           </p>
           <p data-tabular className="font-ui text-xs text-text-muted">
             {beat ? (
@@ -67,13 +75,16 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
         </Metric>
 
         <Metric label="Sessions ahead" value={snapshot.sessions.scheduledAhead}>
-          Confirmed and still to come
+          Confirmed, still to come
         </Metric>
       </div>
 
       <Card className={snapshot.deliveries.failed > 0 ? 'border-status-warning/50' : undefined}>
         <CardHeader>
-          <CardTitle>Delivery</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Send className="size-4 text-text-muted" aria-hidden="true" />
+            Delivery
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <p className="font-ui text-sm text-text-secondary">
@@ -96,9 +107,9 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
               ))}
             </ul>
           ) : (
-            <p className="font-ui text-xs text-text-muted">
-              Nothing has failed. A message that cannot be delivered is kept here rather than
-              discarded, so this list is the record of anybody who was not told.
+            <p className="flex items-center gap-2 font-ui text-xs text-text-muted">
+              <CircleCheck className="size-4 text-status-positive" aria-hidden="true" />
+              Nothing has failed.
             </p>
           )}
         </CardContent>

@@ -11,11 +11,14 @@ export function PageHeader({
   title,
   description,
   actions,
+  icon,
   className,
 }: {
   title: React.ReactNode
   description?: React.ReactNode
   actions?: React.ReactNode
+  /** Decorative: names the section at a glance, never the only thing that does. */
+  icon?: React.ReactNode
   className?: string
 }) {
   return (
@@ -26,7 +29,12 @@ export function PageHeader({
       )}
     >
       <div className="flex flex-col gap-1.5">
-        <h1 className="font-display text-2xl leading-[--leading-tight] tracking-[--tracking-display] text-text-primary">
+        <h1 className="flex items-center gap-2.5 font-display text-2xl leading-[--leading-tight] tracking-[--tracking-display] text-text-primary">
+          {icon ? (
+            <span className="text-text-muted" aria-hidden="true">
+              {icon}
+            </span>
+          ) : null}
           {title}
         </h1>
         {description ? (

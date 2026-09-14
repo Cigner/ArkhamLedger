@@ -1,3 +1,4 @@
+import { CalendarClock, FileText, TriangleAlert, Users, Wand2 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -47,7 +48,10 @@ export default async function SessionOverviewPage({
         {session.status === 'CANCELLED' && session.cancelledReason ? (
           <Card className="border-status-danger/40">
             <CardHeader>
-              <CardTitle>Cancelled</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <TriangleAlert className="size-4 text-status-danger" aria-hidden="true" />
+                Cancelled
+              </CardTitle>
             </CardHeader>
             <CardContent className="font-ui text-sm text-text-secondary">
               {session.cancelledReason}
@@ -57,7 +61,10 @@ export default async function SessionOverviewPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>When</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <CalendarClock className="size-4 text-text-muted" aria-hidden="true" />
+              When
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             <SessionWhen
@@ -104,7 +111,10 @@ export default async function SessionOverviewPage({
         {session.description ? (
           <Card>
             <CardHeader>
-              <CardTitle>What happens</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="size-4 text-text-muted" aria-hidden="true" />
+                What happens
+              </CardTitle>
             </CardHeader>
             <CardContent className="font-body text-base leading-[--leading-body] text-text-secondary">
               {session.description}
@@ -115,7 +125,10 @@ export default async function SessionOverviewPage({
         {session.viewer.isKeeper ? (
           <Card>
             <CardHeader>
-              <CardTitle>Keeper</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Wand2 className="size-4 text-text-muted" aria-hidden="true" />
+                Keeper
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <KeeperActions session={session} />
@@ -126,7 +139,10 @@ export default async function SessionOverviewPage({
 
       <Card className="h-fit">
         <CardHeader>
-          <CardTitle>Invited</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="size-4 text-text-muted" aria-hidden="true" />
+            Invited
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="flex flex-col gap-3">
@@ -154,7 +170,7 @@ export default async function SessionOverviewPage({
             ))}
           </ul>
           <p className="mt-4 font-ui text-xs text-text-muted">
-            {session.quorum} of the {playerCount} players have to be free for this to happen.
+            Needs {session.quorum} of {playerCount} players free.
           </p>
         </CardContent>
       </Card>

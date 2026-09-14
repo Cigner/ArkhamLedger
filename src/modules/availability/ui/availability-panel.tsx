@@ -1,5 +1,6 @@
 'use client'
 
+import { Check, Clock3, Globe, Undo2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -114,12 +115,14 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <p className="font-ui text-sm text-text-secondary">
-          Times shown in <strong className="text-text-primary">{view.timezone}</strong>
+        <p className="flex items-center gap-1.5 font-ui text-sm text-text-secondary">
+          <Globe className="size-4 text-text-muted" aria-hidden="true" />
+          <strong className="font-medium text-text-primary">{view.timezone}</strong>
         </p>
         {deadlineLabel ? (
-          <p className="font-ui text-sm text-text-secondary">
-            Answers close <time>{deadlineLabel}</time>
+          <p className="flex items-center gap-1.5 font-ui text-sm text-text-secondary">
+            <Clock3 className="size-4 text-text-muted" aria-hidden="true" />
+            Closes <time>{deadlineLabel}</time>
           </p>
         ) : null}
       </div>
@@ -225,7 +228,8 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
             disabled={save.isPending || !editor.isDirty}
             onClick={handleSave}
           >
-            {save.isPending ? 'Saving…' : 'Save my answer'}
+            <Check className="size-4" aria-hidden="true" />
+            {save.isPending ? 'Saving…' : 'Save'}
           </Button>
 
           {editor.isDirty ? (
@@ -235,7 +239,8 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
               onClick={() => editor.reset()}
               disabled={save.isPending}
             >
-              Undo changes
+              <Undo2 className="size-4" aria-hidden="true" />
+              Undo
             </Button>
           ) : null}
 
@@ -258,8 +263,8 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
           When the group could play
         </h2>
         <p className="font-ui text-xs text-text-muted">
-          {view.respondentCount} of {view.participantCount} have answered. Who said what stays
-          between each player and the Keeper.
+          {view.respondentCount} of {view.participantCount} answered. Who said what stays between
+          each player and the Keeper.
         </p>
         <WindowSummaryList windows={view.windows} timezone={view.timezone} />
       </section>

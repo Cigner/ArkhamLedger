@@ -1,3 +1,4 @@
+import { Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -34,7 +35,8 @@ export default async function AdminUsersPage() {
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Users"
-        description="Accounts are created here and activated by their owner through a link."
+        icon={<Users className="size-6" strokeWidth={1.5} />}
+        description="Created here, activated by their owner through a link."
         actions={<CreateUserDialog />}
       />
 

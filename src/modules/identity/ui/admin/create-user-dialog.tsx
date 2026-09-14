@@ -1,5 +1,6 @@
 'use client'
 
+import { Plus, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
@@ -88,7 +89,10 @@ export function CreateUserDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button variant="accent" />}>New user</DialogTrigger>
+      <DialogTrigger render={<Button variant="accent" />}>
+        <Plus className="size-4" aria-hidden="true" />
+        New user
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{issued ? 'Account created' : 'New user'}</DialogTitle>
@@ -152,6 +156,7 @@ export function CreateUserDialog() {
                 Cancel
               </Button>
               <Button type="submit" variant="accent" disabled={isPending}>
+                <UserPlus className="size-4" aria-hidden="true" />
                 {isPending ? 'Creating…' : 'Create account'}
               </Button>
             </DialogFooter>

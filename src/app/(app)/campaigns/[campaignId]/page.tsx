@@ -1,3 +1,4 @@
+import { ScrollText, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaignDetail } from '@/modules/campaigns/data/campaigns'
@@ -50,7 +51,10 @@ export default async function CampaignOverviewPage({
       <div className="flex flex-col gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>The party</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="size-4 text-text-muted" aria-hidden="true" />
+              The party
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="flex flex-col gap-3">
@@ -74,7 +78,10 @@ export default async function CampaignOverviewPage({
         {campaign.scenario ? (
           <Card>
             <CardHeader>
-              <CardTitle>Scenario</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <ScrollText className="size-4 text-text-muted" aria-hidden="true" />
+                Scenario
+              </CardTitle>
             </CardHeader>
             <CardContent className="font-ui text-sm text-text-secondary">
               {campaign.scenario.name}

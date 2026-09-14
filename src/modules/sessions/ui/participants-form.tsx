@@ -1,5 +1,6 @@
 'use client'
 
+import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -230,6 +231,7 @@ export function ParticipantsForm({
 
       <div className="flex items-center gap-3">
         <Button type="submit" variant="accent" disabled={save.isPending}>
+          <Check className="size-4" aria-hidden="true" />
           {save.isPending ? 'Saving…' : 'Save roster'}
         </Button>
         {saved ? (

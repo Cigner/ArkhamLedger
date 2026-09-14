@@ -1,3 +1,4 @@
+import { BookOpen, ScrollText, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { CampaignListItem } from '../domain/types'
@@ -9,39 +10,54 @@ import { CampaignRoleBadge, CampaignStatusBadge } from './campaign-status-badge'
  * Leads with the viewer's own role, because the first thing somebody opening
  * this screen needs to know is which of these they are running and which they
  * are playing in.
+ *
+ * The whole card is the link. It used to be the title alone, which meant
+ * pointing at a card the size of a postcard and finding that only three words
+ * of it responded — there is nothing else to click here, so the target is the
+ * card.
  */
 export function CampaignCard({ campaign }: { campaign: CampaignListItem }) {
   return (
-    <Card
-      ornamented={campaign.role === 'KEEPER'}
-      className="transition-interactive hover:border-border-default"
+    <Link
+      href={`/campaigns/${campaign.id}`}
+      // Named explicitly: without it the accessible name is the whole card read
+      // out as one run-on sentence, badges and counts included.
+      aria-label={`${campaign.name}, ${campaign.role === 'KEEPER' ? 'you keep this' : 'you play in this'}`}
+      className="group block rounded-lg focus-visible:outline-none"
     >
-      <CardHeader className="gap-2">
-        <div className="flex items-start justify-between gap-3">
-          <CardTitle>
-            <Link href={`/campaigns/${campaign.id}`} className="hover:underline">
-              {campaign.name}
-            </Link>
-          </CardTitle>
-          <CampaignStatusBadge status={campaign.status} />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <CampaignRoleBadge role={campaign.role} />
-          {campaign.isOwner ? (
-            <span className="font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-text-muted">
-              Owner
+      <Card
+        ornamented={campaign.role === 'KEEPER'}
+        className="h-full transition-interactive group-hover:border-border-strong group-focus-visible:border-focus-ring group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-focus-ring"
+      >
+        <CardHeader className="gap-2">
+          <div className="flex items-start justify-between gap-3">
+            <CardTitle className="group-hover:underline">{campaign.name}</CardTitle>
+            <CampaignStatusBadge status={campaign.status} />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <CampaignRoleBadge role={campaign.role} />
+            {campaign.isOwner ? (
+              <span className="inline-flex items-center gap-1 font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-text-muted">
+                <BookOpen className="size-3" aria-hidden="true" />
+                Owner
+              </span>
+            ) : null}
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex items-center justify-between gap-3 font-ui text-sm text-text-secondary">
+          <span className="inline-flex items-center gap-1.5">
+            <Users className="size-4 text-text-muted" aria-hidden="true" />
+            <span data-tabular>{campaign.memberCount}</span>
+          </span>
+          {campaign.scenarioName ? (
+            <span className="inline-flex min-w-0 items-center gap-1.5 text-text-muted">
+              <ScrollText className="size-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">{campaign.scenarioName}</span>
             </span>
           ) : null}
-        </div>
-      </CardHeader>
-      <CardContent className="flex items-center justify-between gap-3 font-ui text-sm text-text-secondary">
-        <span>
-          {campaign.memberCount} {campaign.memberCount === 1 ? 'member' : 'members'}
-        </span>
-        {campaign.scenarioName ? (
-          <span className="truncate text-text-muted">{campaign.scenarioName}</span>
-        ) : null}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
