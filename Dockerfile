@@ -21,9 +21,23 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Server-side env vars are read at runtime, but NEXT_PUBLIC_* values are inlined
-# here, so any build-time public value must be passed as a build arg.
-RUN npm run build
+# NEXT_PUBLIC_* values are inlined here, so any build-time public value must be
+# passed as a build arg.
+#
+# The server-side variables below are placeholders, needed only so the build can
+# import its own modules. `next build` loads every route to read its exports —
+# including `dynamic = 'force-dynamic'` — and those imports reach src/lib/env.ts,
+# which validates the environment at module load. Without values the import
+# throws and the build fails at "Failed to collect page data for /api/health".
+#
+# Nothing here reaches the running application: none is NEXT_PUBLIC_*, so none is
+# inlined into the client bundle, and the builder stage is discarded — the runner
+# image reads the real values from the environment at startup.
+RUN DATABASE_URL="mysql://build:build@127.0.0.1:3306/build?charset=utf8mb4" \
+    BETTER_AUTH_SECRET="build-time-placeholder-value-not-a-secret" \
+    BETTER_AUTH_URL="http://localhost:3000" \
+    ENCRYPTION_KEY="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" \
+    npm run build
 # The worker and the migrator are bundled to single files. They cannot run from
 # source in the runtime image: `output: standalone` ships a traced subset of
 # node_modules, so neither tsx nor the application's own sources are there.
