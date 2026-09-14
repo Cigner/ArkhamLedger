@@ -12,8 +12,7 @@ import {
 } from '@/db/schema'
 import { provisionAccount } from '@/lib/auth'
 import { issueToken } from '@/lib/crypto'
-import { generateGridSlots } from '@/lib/datetime/slots'
-import { Temporal } from '@/lib/datetime/temporal'
+import { generateGridSlots, localHourToInstant } from '@/lib/datetime/slots'
 import { newId } from '@/lib/ids'
 import {
   DEV_PASSWORD,
@@ -81,13 +80,6 @@ async function wipe(): Promise<void> {
     await db.execute(sql.raw(`TRUNCATE TABLE \`${table}\``))
   }
   await db.execute(sql`SET FOREIGN_KEY_CHECKS = 1`)
-}
-
-/** Converts a local wall-clock hour in the campaign's zone to its UTC instant. */
-function instantAt(date: string, hour: number, timeZone: string): Date {
-  const zoned = Temporal.PlainDate.from(date)
-    .toZonedDateTime({ timeZone, plainTime: Temporal.PlainTime.from({ hour }) })
-  return new Date(zoned.toInstant().epochMilliseconds)
 }
 
 export async function seedDevelopmentData(baseUrl: string): Promise<SeedReport> {
@@ -280,10 +272,10 @@ async function insertSession(
         : new Date(now.getTime() + seed.deadlineInDays * MS_PER_DAY),
     timezone: DEFAULT_TIMEZONE,
     confirmedStartUtc: seed.confirmed
-      ? instantAt(seed.confirmed.date, seed.confirmed.fromHour, DEFAULT_TIMEZONE)
+      ? localHourToInstant(seed.confirmed.date, seed.confirmed.fromHour, DEFAULT_TIMEZONE)
       : null,
     confirmedEndUtc: seed.confirmed
-      ? instantAt(seed.confirmed.date, seed.confirmed.toHour, DEFAULT_TIMEZONE)
+      ? localHourToInstant(seed.confirmed.date, seed.confirmed.toHour, DEFAULT_TIMEZONE)
       : null,
     acceptedProposalId: null,
     setManually: false,

@@ -248,10 +248,24 @@ export async function touchCampaign(
 export async function findCampaignState(
   campaignId: string,
   executor: DbOrTx = db,
-): Promise<{ id: string; name: string; ownerId: string; status: CampaignStatus }> {
+): Promise<{
+  id: string
+  name: string
+  ownerId: string
+  status: CampaignStatus
+  timezone: string
+  defaultMinSessionHours: number
+}> {
   const row = await executor.query.campaign.findFirst({
     where: and(eq(campaign.id, campaignId), isNull(campaign.deletedAt)),
-    columns: { id: true, name: true, ownerId: true, status: true },
+    columns: {
+      id: true,
+      name: true,
+      ownerId: true,
+      status: true,
+      timezone: true,
+      defaultMinSessionHours: true,
+    },
   })
 
   if (!row) throw new NotFoundError()

@@ -1,5 +1,6 @@
 import { AppNav } from '@/components/patterns/app-nav'
 import { requireAdmin } from '@/lib/auth'
+import { guardPage } from '@/lib/page-guards'
 
 /**
  * Layout for the administration area.
@@ -9,7 +10,7 @@ import { requireAdmin } from '@/lib/auth'
  * queries beneath enforce it again regardless.
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdmin()
+  const user = await guardPage(() => requireAdmin())
 
   return (
     <div className="relative z-10 flex min-h-dvh flex-col">

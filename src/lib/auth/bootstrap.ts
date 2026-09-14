@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/db/client'
 import { authAccount, authUser } from '@/db/schema'
 import { newId } from '@/lib/ids'
+import { passwordSchema } from '@/modules/identity/domain/schemas'
 
 /**
  * Account provisioning that bypasses the admin API.
@@ -41,9 +42,23 @@ export async function provisionAccount(
 
   if (existing) return { id: existing.id, created: false }
 
+  /*
+   * These functions write the account row directly and therefore skip the
+   * action layer, which is where every other password is checked. Applying the
+   * policy here too means a seed or a bootstrap cannot create an account whose
+   * password the application would refuse — a gap that is invisible until
+   * somebody tries to sign in.
+   */
+  const password = passwordSchema.safeParse(input.password)
+  if (!password.success) {
+    throw new Error(
+      `Refusing to provision ${input.email}: the password does not meet the policy (${password.error.issues[0]?.message ?? 'invalid'}).`,
+    )
+  }
+
   const userId = newId()
   const now = new Date()
-  const digest = await hashPassword(input.password)
+  const digest = await hashPassword(password.data)
   const status = input.status ?? 'ACTIVE'
 
   await db.transaction(async (tx) => {

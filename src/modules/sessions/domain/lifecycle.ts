@@ -1,0 +1,73 @@
+import { type Result, fail, ok } from '@/lib/result'
+import type { SessionStatus } from './types'
+
+/**
+ * Session lifecycle.
+ *
+ * The transition table is data rather than a chain of conditionals, so the whole
+ * machine can be read at once and tested exhaustively: every pair of statuses is
+ * either listed here or impossible, with no third case hiding in an else branch.
+ *
+ *   DRAFT ─────┬─▶ COLLECTING ─┬─▶ PROPOSED ─┬─▶ SCHEDULED ─▶ COMPLETED
+ *              │       ▲       │      │      │       │
+ *              └───────┴───────┴──────┴──────┴───────┴─────▶ CANCELLED
+ *
+ * Two edges are less obvious and both exist because plans change: PROPOSED and
+ * SCHEDULED can return to COLLECTING, which is how a Keeper reopens a date that
+ * stopped working. COMPLETED and CANCELLED are terminal — a session that already
+ * happened is a historical record, and reviving a cancelled one would silently
+ * resurrect notifications people already acted on.
+ */
+export const SESSION_TRANSITIONS: Readonly<Record<SessionStatus, readonly SessionStatus[]>> = {
+  DRAFT: ['COLLECTING', 'SCHEDULED', 'CANCELLED'],
+  COLLECTING: ['DRAFT', 'PROPOSED', 'SCHEDULED', 'CANCELLED'],
+  PROPOSED: ['COLLECTING', 'SCHEDULED', 'CANCELLED'],
+  SCHEDULED: ['COLLECTING', 'COMPLETED', 'CANCELLED'],
+  COMPLETED: [],
+  CANCELLED: [],
+}
+
+export const TERMINAL_STATUSES: readonly SessionStatus[] = ['COMPLETED', 'CANCELLED']
+
+export function isTerminal(status: SessionStatus): boolean {
+  return TERMINAL_STATUSES.includes(status)
+}
+
+export function canTransition(from: SessionStatus, to: SessionStatus): Result<void> {
+  if (from === to) return fail('sessions.errors.alreadyInThatState')
+  if (isTerminal(from)) return fail('sessions.errors.sessionIsFinal')
+  if (!SESSION_TRANSITIONS[from].includes(to)) {
+    return fail('sessions.errors.invalidTransition')
+  }
+  return ok()
+}
+
+/**
+ * Statuses in which the Keeper may still change what the session is about.
+ *
+ * Editing the title or the search window after people have answered would
+ * invalidate their answers, so it stops once collection begins — except for
+ * DRAFT, where nobody has been asked anything yet.
+ */
+export function canEditDefinition(status: SessionStatus): Result<void> {
+  if (status === 'DRAFT') return ok()
+  return fail('sessions.errors.definitionLocked')
+}
+
+/** Whether participants and their priorities may still be changed. */
+export function canEditParticipants(status: SessionStatus): Result<void> {
+  if (status === 'DRAFT' || status === 'COLLECTING') return ok()
+  return fail('sessions.errors.participantsLocked')
+}
+
+/** Whether a participant may still record or change their availability. */
+export function canSubmitAvailability(status: SessionStatus): Result<void> {
+  if (status === 'COLLECTING') return ok()
+  return fail('sessions.errors.notCollecting')
+}
+
+/** Whether attendance may be recorded, which is what completing a session means. */
+export function canRecordAttendance(status: SessionStatus): Result<void> {
+  if (status === 'SCHEDULED') return ok()
+  return fail('sessions.errors.notScheduled')
+}

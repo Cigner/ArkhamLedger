@@ -133,3 +133,58 @@ function validateBounds(bounds: GridBounds): void {
     throw new RangeError('endDate must not precede startDate')
   }
 }
+
+/**
+ * Resolves a local wall-clock hour in a zone to the instant it names.
+ *
+ * The direction that matters for input: a Keeper types "the 24th at 18:00" and
+ * means it in the campaign's zone, not in theirs and not in UTC. Converting once
+ * here keeps that assumption in a single place.
+ *
+ * On a spring-forward day the named hour may not exist; Temporal resolves such a
+ * time forward by default rather than throwing, which is the behaviour a person
+ * expects from a form.
+ */
+export function localHourToInstant(date: string, hour: number, timeZone: string): Date {
+  const zoned = Temporal.PlainDate.from(date).toZonedDateTime({
+    timeZone,
+    plainTime: Temporal.PlainTime.from({ hour: hour % 24 }),
+  })
+
+  // Hour 24 means midnight at the end of the day, which Temporal cannot express
+  // as a PlainTime.
+  const resolved = hour >= 24 ? zoned.add({ days: 1 }) : zoned
+
+  return new Date(resolved.toInstant().epochMilliseconds)
+}
+
+/**
+ * Parses a `datetime-local` form value in a given zone.
+ *
+ * Browsers submit these with no offset because the control has no concept of
+ * one; interpreting them as UTC — which `new Date()` does for some formats and
+ * not others — silently shifts every deadline.
+ */
+export function localDateTimeToInstant(value: string, timeZone: string): Date | null {
+  const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/.exec(value)
+  if (!match?.[1] || !match[2] || !match[3]) return null
+
+  try {
+    const zoned = Temporal.PlainDate.from(match[1]).toZonedDateTime({
+      timeZone,
+      plainTime: Temporal.PlainTime.from({ hour: Number(match[2]), minute: Number(match[3]) }),
+    })
+    return new Date(zoned.toInstant().epochMilliseconds)
+  } catch {
+    return null
+  }
+}
+
+/** Renders an instant as a `datetime-local` value in a zone, for form defaults. */
+export function instantToLocalDateTime(instant: Date, timeZone: string): string {
+  const zoned = Temporal.Instant.fromEpochMilliseconds(instant.getTime()).toZonedDateTimeISO(
+    timeZone,
+  )
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${zoned.year}-${pad(zoned.month)}-${pad(zoned.day)}T${pad(zoned.hour)}:${pad(zoned.minute)}`
+}

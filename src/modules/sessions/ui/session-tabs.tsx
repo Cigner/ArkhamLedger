@@ -5,21 +5,18 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
 
 /**
- * Section navigation inside a campaign.
+ * Section navigation inside a session.
  *
- * Rendered as links rather than a tab widget so each section is a real URL that
- * can be bookmarked, shared and reloaded. Sections the viewer cannot reach are
- * omitted; the routes enforce that themselves.
+ * The participants tab is Keeper-only because it shows priorities, which are the
+ * Keeper's private working notes. The route enforces that itself.
  */
-export function CampaignTabs({ campaignId, isKeeper }: { campaignId: string; isKeeper: boolean }) {
+export function SessionTabs({ sessionId, isKeeper }: { sessionId: string; isKeeper: boolean }) {
   const pathname = usePathname()
-  const base = `/campaigns/${campaignId}`
+  const base = `/sessions/${sessionId}`
 
   const tabs = [
     { href: base, label: 'Overview' },
-    { href: `${base}/sessions`, label: 'Sessions' },
-    { href: `${base}/members`, label: 'Members' },
-    ...(isKeeper ? [{ href: `${base}/settings`, label: 'Settings' }] : []),
+    ...(isKeeper ? [{ href: `${base}/participants`, label: 'Participants' }] : []),
   ]
 
   return (

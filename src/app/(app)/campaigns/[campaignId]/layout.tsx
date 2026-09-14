@@ -1,3 +1,4 @@
+import { guardPage } from '@/lib/page-guards'
 import { getCampaignDetail } from '@/modules/campaigns/data/campaigns'
 import { PageHeader } from '@/components/patterns/page-header'
 import { CampaignStatusBadge } from '@/modules/campaigns/ui/campaign-status-badge'
@@ -19,7 +20,7 @@ export default async function CampaignLayout({
   params: Promise<{ campaignId: string }>
 }) {
   const { campaignId } = await params
-  const campaign = await getCampaignDetail(campaignId)
+  const campaign = await guardPage(() => getCampaignDetail(campaignId))
 
   return (
     <div className="flex flex-col gap-6">

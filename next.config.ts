@@ -30,7 +30,12 @@ const nextConfig: NextConfig = {
 
   // Self-hosted behind a reverse proxy: Server Action CSRF checks compare Origin
   // against this list, so it must name every public origin of the deployment.
-  experimental: allowedOrigins.length > 0 ? { serverActions: { allowedOrigins } } : {},
+  experimental: {
+    ...(allowedOrigins.length > 0 ? { serverActions: { allowedOrigins } } : {}),
+    // Enables forbidden() and unauthorized(), which let a page answer 403 or 401
+    // instead of collapsing every refused permission into a 500.
+    authInterrupts: true,
+  },
 
   // No remote images and no user uploads in the MVP; skipping optimization drops
   // the sharp/libheif dependency chain entirely.
