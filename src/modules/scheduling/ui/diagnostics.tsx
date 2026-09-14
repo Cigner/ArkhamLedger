@@ -108,9 +108,9 @@ export function SchedulingDiagnostics({
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-3 rounded-sm border border-status-warning/40 bg-surface-subtle px-4 py-4">
-      <h3 className="font-display text-base tracking-[--tracking-display] text-text-primary">
+      <h2 className="font-display text-base tracking-[--tracking-display] text-text-primary">
         {title}
-      </h3>
+      </h2>
       <div className="flex flex-col gap-3 font-ui text-sm text-text-secondary">{children}</div>
     </section>
   )

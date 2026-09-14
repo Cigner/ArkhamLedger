@@ -1,3 +1,4 @@
+import { AdminTabs } from '@/components/patterns/admin-tabs'
 import { AppNav } from '@/components/patterns/app-nav'
 import { requireAdmin } from '@/lib/auth'
 import { guardPage } from '@/lib/page-guards'
@@ -17,7 +18,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="relative z-10 flex min-h-dvh flex-col">
       <AppNav isAdmin userName={user.name} unreadCount={unreadCount} />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">{children}</main>
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-8">
+        <AdminTabs />
+        {children}
+      </main>
     </div>
   )
 }

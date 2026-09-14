@@ -77,8 +77,8 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          // Root-level config files live outside the tsconfig include globs.
-          allowDefaultProject: ['*.mjs', '*.js'],
+          // Config files and build scripts live outside the tsconfig include globs.
+          allowDefaultProject: ['*.mjs', '*.js', 'scripts/*.mjs'],
         },
         tsconfigRootDir: import.meta.dirname,
       },

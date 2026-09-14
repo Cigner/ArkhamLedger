@@ -258,9 +258,9 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
       )}
 
       <section className="flex flex-col gap-3 border-t border-border-subtle pt-6">
-        <h3 className="font-display text-base tracking-[--tracking-display] text-text-primary">
+        <h2 className="font-display text-base tracking-[--tracking-display] text-text-primary">
           When the group could play
-        </h3>
+        </h2>
         <p className="font-ui text-xs text-text-muted">
           {view.respondentCount} of {view.participantCount} have answered. Who said what stays
           between each player and the Keeper.

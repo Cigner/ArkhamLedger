@@ -1,15 +1,17 @@
 import type { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { EmptyState } from '@/components/patterns/empty-state'
 import { getCampaignDetail } from '@/modules/campaigns/data/campaigns'
 import { listMembers } from '@/modules/campaigns/data/members'
 import { CampaignRoleBadge } from '@/modules/campaigns/ui/campaign-status-badge'
+import { getCampaignDiary } from '@/modules/sessions/data/sessions'
+import { NextSessionCard } from '@/modules/sessions/ui/next-session-card'
 
 /**
  * Campaign overview.
  *
- * Placeholder for the next session card until the sessions module lands; the
- * roster and scenario are already real.
+ * Built around one question — when are we next playing — because the answer
+ * "nobody has arranged anything" is the one that decides whether a campaign
+ * survives. Everything else on this page is context for it.
  */
 export const dynamic = 'force-dynamic'
 
@@ -29,17 +31,19 @@ export default async function CampaignOverviewPage({
   params: Promise<{ campaignId: string }>
 }) {
   const { campaignId } = await params
-  const [campaign, members] = await Promise.all([
+  const [campaign, members, diary] = await Promise.all([
     getCampaignDetail(campaignId),
     listMembers(campaignId),
+    getCampaignDiary(campaignId),
   ])
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-2">
-        <EmptyState
-          title="No session is scheduled"
-          description="Session planning arrives in the next phase."
+        <NextSessionCard
+          diary={diary}
+          campaignId={campaignId}
+          isKeeper={campaign.viewer.role === 'KEEPER'}
         />
       </div>
 

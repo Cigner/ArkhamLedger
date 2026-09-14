@@ -38,9 +38,16 @@ export function CardHeader({ className, ...props }: React.ComponentProps<'div'>)
   )
 }
 
-export function CardTitle({ className, ...props }: React.ComponentProps<'h3'>) {
+/**
+ * A card's heading.
+ *
+ * Rendered as an h2, one level below the page's h1. It was an h3, which made
+ * every page skip a level — a screen reader user navigating by heading hears a
+ * gap and has to wonder what they missed.
+ */
+export function CardTitle({ className, ...props }: React.ComponentProps<'h2'>) {
   return (
-    <h3
+    <h2
       data-slot="card-title"
       className={cn(
         'font-display text-lg leading-[--leading-tight] tracking-[--tracking-display] text-text-primary',

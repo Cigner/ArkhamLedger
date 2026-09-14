@@ -78,3 +78,29 @@ export type ResponseProgress = {
   readonly responded: number
   readonly pending: number
 }
+
+/** One line in a campaign's diary: enough to render a card, and nothing more. */
+export type DiaryEntry = {
+  readonly id: string
+  readonly title: string
+  readonly status: SessionStatus
+  readonly confirmedStartUtc: Date | null
+  readonly confirmedEndUtc: Date | null
+  readonly availabilityDeadline: Date | null
+  readonly searchWindowStart: string
+  readonly searchWindowEnd: string
+  readonly timezone: string
+}
+
+/**
+ * What a campaign has coming.
+ *
+ * `next` is the invariant the dashboard exists to protect: a campaign with
+ * nothing in it is not idle, it is quietly ending, and that is the one state
+ * worth interrupting somebody about.
+ */
+export type CampaignDiary = {
+  readonly next: DiaryEntry | null
+  readonly arranging: readonly DiaryEntry[]
+  readonly recent: readonly DiaryEntry[]
+}

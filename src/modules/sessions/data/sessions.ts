@@ -5,7 +5,12 @@ import { authUser, campaign, gameSession, sessionParticipant } from '@/db/schema
 import { NotFoundError } from '@/lib/errors'
 import { requireCampaignMember } from '@/modules/campaigns/data/guards'
 import { presenceIsRequired } from '../domain/rules'
-import type { SessionDetail, SessionListItem, SessionParticipantDto } from '../domain/types'
+import type {
+  CampaignDiary,
+  SessionDetail,
+  SessionListItem,
+  SessionParticipantDto,
+} from '../domain/types'
 import { requireSessionMember } from './guards'
 
 /**
@@ -158,5 +163,63 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
       ownPresenceRequired: own ? presenceIsRequired(own.priority) : false,
       ownResponse: own?.respondedAt ?? null,
     },
+  }
+}
+
+/**
+ * What a campaign has coming, and what it just did.
+ *
+ * Behind the dashboard's one real job: answering "when are we next playing"
+ * without making anybody read a list. The answer has three shapes — a date is
+ * set, a date is being worked out, or nothing is happening at all — and the last
+ * one is the one worth acting on, because that is how campaigns end.
+ */
+export async function getCampaignDiary(campaignId: string): Promise<CampaignDiary> {
+  await requireCampaignMember(campaignId)
+
+  const rows = await db
+    .select({
+      id: gameSession.id,
+      title: gameSession.title,
+      status: gameSession.status,
+      confirmedStartUtc: gameSession.confirmedStartUtc,
+      confirmedEndUtc: gameSession.confirmedEndUtc,
+      availabilityDeadline: gameSession.availabilityDeadline,
+      searchWindowStart: gameSession.searchWindowStart,
+      searchWindowEnd: gameSession.searchWindowEnd,
+      timezone: gameSession.timezone,
+    })
+    .from(gameSession)
+    .where(eq(gameSession.campaignId, campaignId))
+    .orderBy(desc(gameSession.createdAt))
+
+  const now = new Date()
+
+  const scheduled = rows
+    .filter(
+      (row) =>
+        row.status === 'SCHEDULED' &&
+        row.confirmedStartUtc !== null &&
+        row.confirmedStartUtc.getTime() >= now.getTime(),
+    )
+    .sort(
+      (a, b) => (a.confirmedStartUtc?.getTime() ?? 0) - (b.confirmedStartUtc?.getTime() ?? 0),
+    )
+
+  const arranging = rows.filter(
+    (row) => row.status === 'COLLECTING' || row.status === 'PROPOSED' || row.status === 'DRAFT',
+  )
+
+  const past = rows
+    .filter((row) => row.status === 'COMPLETED')
+    .sort(
+      (a, b) => (b.confirmedStartUtc?.getTime() ?? 0) - (a.confirmedStartUtc?.getTime() ?? 0),
+    )
+    .slice(0, 3)
+
+  return {
+    next: scheduled[0] ?? null,
+    arranging: arranging.slice(0, 3),
+    recent: past,
   }
 }

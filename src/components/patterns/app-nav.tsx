@@ -29,7 +29,7 @@ export function AppNav({
 
   const links = [
     { href: '/campaigns', label: 'Campaigns' },
-    ...(isAdmin ? [{ href: '/admin/users', label: 'Administration' }] : []),
+    ...(isAdmin ? [{ href: '/admin', label: 'Administration' }] : []),
   ]
 
   async function handleSignOut() {
@@ -54,7 +54,9 @@ export function AppNav({
               <Link
                 href={link.href}
                 className={cn(
-                  'font-ui text-sm transition-colors duration-[--duration-fast]',
+                  // Padded to a 24px target: a nav link is not inline text, so
+                  // the exception that lets body links be small does not apply.
+                  'flex min-h-6 items-center rounded-sm px-1 py-1 font-ui text-sm transition-interactive',
                   pathname.startsWith(link.href)
                     ? 'text-text-primary'
                     : 'text-text-secondary hover:text-text-primary',
@@ -97,7 +99,7 @@ export function AppNav({
         <Link
           href="/settings"
           className={cn(
-            'font-ui text-sm transition-interactive',
+            'flex min-h-6 items-center rounded-sm px-1 py-1 font-ui text-sm transition-interactive',
             pathname.startsWith('/settings')
               ? 'text-text-primary'
               : 'text-text-secondary hover:text-text-primary',
