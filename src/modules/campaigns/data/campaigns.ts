@@ -102,7 +102,8 @@ export async function getCampaignDetail(campaignId: string): Promise<CampaignDet
     timezone: row.timezone,
     ownerId: row.ownerId,
     ownerName: row.ownerName,
-    scenario: row.scenarioId && row.scenarioName ? { id: row.scenarioId, name: row.scenarioName } : null,
+    scenario:
+      row.scenarioId && row.scenarioName ? { id: row.scenarioId, name: row.scenarioName } : null,
     createdAt: row.createdAt,
     viewer: membership,
   }
@@ -314,7 +315,5 @@ export async function listMemberRoles(
   return executor
     .select({ userId: campaignMember.userId, role: campaignMember.role })
     .from(campaignMember)
-    .where(
-      and(eq(campaignMember.campaignId, campaignId), eq(campaignMember.status, 'ACTIVE')),
-    )
+    .where(and(eq(campaignMember.campaignId, campaignId), eq(campaignMember.status, 'ACTIVE')))
 }

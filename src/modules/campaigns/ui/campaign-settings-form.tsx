@@ -127,13 +127,7 @@ export function CampaignSettingsForm({
       <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
         <Field>
           <FieldLabel htmlFor="name">Name</FieldLabel>
-          <Input
-            id="name"
-            name="name"
-            defaultValue={settings.name}
-            required
-            readOnly={archived}
-          />
+          <Input id="name" name="name" defaultValue={settings.name} required readOnly={archived} />
         </Field>
 
         <Field>
@@ -221,8 +215,8 @@ export function CampaignSettingsForm({
                 </SelectContent>
               </Select>
               <FieldDescription>
-                They become the owner and a Keeper. You stay a Keeper and can then leave if you
-                want to.
+                They become the owner and a Keeper. You stay a Keeper and can then leave if you want
+                to.
               </FieldDescription>
               <div className="mt-2">
                 <Button variant="outline" onClick={() => setConfirmingTransfer(true)}>

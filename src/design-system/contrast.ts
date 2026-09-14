@@ -14,7 +14,8 @@ export type Rgb = { readonly r: number; readonly g: number; readonly b: number }
 export type Rgba = Rgb & { readonly a: number }
 
 const HEX_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
-const RGB_PATTERN = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*(?:[/,]\s*([\d.]+%?)\s*)?\)$/i
+const RGB_PATTERN =
+  /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*(?:[/,]\s*([\d.]+%?)\s*)?\)$/i
 
 export function parseColor(value: string): Rgba {
   const input = value.trim()

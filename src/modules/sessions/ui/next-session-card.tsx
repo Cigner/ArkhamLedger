@@ -107,24 +107,19 @@ export function NextSessionCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <p className="font-ui text-sm text-text-secondary">
-          Nothing is planned and nothing is being arranged. This is the state campaigns quietly
-          end in — a fortnight becomes a month, and the thread is lost.
+          Nothing is planned and nothing is being arranged. This is the state campaigns quietly end
+          in — a fortnight becomes a month, and the thread is lost.
         </p>
 
         {isKeeper ? (
           <div>
-            <ButtonLink
-              href={`/campaigns/${campaignId}/sessions/new`}
-              variant="accent"
-              size="sm"
-            >
+            <ButtonLink href={`/campaigns/${campaignId}/sessions/new`} variant="accent" size="sm">
               Plan the next one
             </ButtonLink>
           </div>
         ) : (
           <p className="font-ui text-xs text-text-muted">
-            Your Keeper is the one who starts a session. A nudge in their direction usually does
-            it.
+            Your Keeper is the one who starts a session. A nudge in their direction usually does it.
           </p>
         )}
 

@@ -1,12 +1,7 @@
 import 'server-only'
 import { and, desc, eq } from 'drizzle-orm'
 import { type DbOrTx, db } from '@/db/client'
-import {
-  availabilitySlot,
-  scheduleProposal,
-  scheduleRun,
-  sessionParticipant,
-} from '@/db/schema'
+import { availabilitySlot, scheduleProposal, scheduleRun, sessionParticipant } from '@/db/schema'
 import { addHours, generateGridSlots } from '@/lib/datetime/slots'
 import { instantFromDate } from '@/lib/datetime/temporal'
 import { newId } from '@/lib/ids'

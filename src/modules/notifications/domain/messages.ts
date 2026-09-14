@@ -79,13 +79,11 @@ export function renderNotification(input: RenderInput): RenderedMessage {
     case 'AVAILABILITY_REQUESTED':
       return message({
         subject: `When are you free for ${session}?`,
-        body: [
-          `${campaign} is looking for a date for ${session}.`,
-          deadlineSentence(input.payload),
-        ]
+        body: [`${campaign} is looking for a date for ${session}.`, deadlineSentence(input.payload)]
           .filter(Boolean)
           .join(' '),
-        channelText: `${campaign} is looking for a date for ${session}. ${deadlineSentence(input.payload)}`.trim(),
+        channelText:
+          `${campaign} is looking for a date for ${session}. ${deadlineSentence(input.payload)}`.trim(),
         href,
         url,
       })
@@ -99,7 +97,8 @@ export function renderNotification(input: RenderInput): RenderedMessage {
         ]
           .filter(Boolean)
           .join(' '),
-        channelText: `Some answers are still missing for ${session}. ${deadlineSentence(input.payload)}`.trim(),
+        channelText:
+          `Some answers are still missing for ${session}. ${deadlineSentence(input.payload)}`.trim(),
         href,
         url,
       })

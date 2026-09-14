@@ -59,9 +59,7 @@ describe('one tap answers an evening', () => {
    * the more precise thing they said.
    */
   it('keeps hours already chosen when firmness changes', () => {
-    const { result } = setup([
-      { date: '2026-10-08', state: 'YES', fromHour: 20, toHour: 24 },
-    ])
+    const { result } = setup([{ date: '2026-10-08', state: 'YES', fromHour: 20, toHour: 24 }])
 
     act(() => result.current.cycleDay('2026-10-08'))
 
@@ -75,9 +73,7 @@ describe('one tap answers an evening', () => {
 
 describe('the per-day dialog', () => {
   it('sets firmness without touching the hours', () => {
-    const { result } = setup([
-      { date: '2026-10-08', state: 'YES', fromHour: 19, toHour: 23 },
-    ])
+    const { result } = setup([{ date: '2026-10-08', state: 'YES', fromHour: 19, toHour: 23 }])
 
     act(() => result.current.setState('2026-10-08', 'IF_NEED_BE'))
 
@@ -128,9 +124,7 @@ describe('the per-day dialog', () => {
   })
 
   it('clears an evening', () => {
-    const { result } = setup([
-      { date: '2026-10-08', state: 'YES', fromHour: 18, toHour: 24 },
-    ])
+    const { result } = setup([{ date: '2026-10-08', state: 'YES', fromHour: 18, toHour: 24 }])
 
     act(() => result.current.clearDay('2026-10-08'))
 
@@ -143,9 +137,7 @@ describe('the per-day dialog', () => {
    * marked free again.
    */
   it('drops the hours of a refusal', () => {
-    const { result } = setup([
-      { date: '2026-10-08', state: 'YES', fromHour: 18, toHour: 24 },
-    ])
+    const { result } = setup([{ date: '2026-10-08', state: 'YES', fromHour: 18, toHour: 24 }])
 
     act(() => result.current.setState('2026-10-08', 'NO'))
 

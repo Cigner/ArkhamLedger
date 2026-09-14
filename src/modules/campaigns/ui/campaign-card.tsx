@@ -12,7 +12,10 @@ import { CampaignRoleBadge, CampaignStatusBadge } from './campaign-status-badge'
  */
 export function CampaignCard({ campaign }: { campaign: CampaignListItem }) {
   return (
-    <Card ornamented={campaign.role === 'KEEPER'} className="transition-interactive hover:border-border-default">
+    <Card
+      ornamented={campaign.role === 'KEEPER'}
+      className="transition-interactive hover:border-border-default"
+    >
       <CardHeader className="gap-2">
         <div className="flex items-start justify-between gap-3">
           <CardTitle>

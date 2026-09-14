@@ -53,9 +53,9 @@ describe('text contrast', () => {
   })
 
   it('accent text clears the canvas at 4.5:1', () => {
-    expect(tokenContrast(tokens, 'color-accent-text', 'color-surface-canvas')).toBeGreaterThanOrEqual(
-      SECONDARY_TEXT_MIN,
-    )
+    expect(
+      tokenContrast(tokens, 'color-accent-text', 'color-surface-canvas'),
+    ).toBeGreaterThanOrEqual(SECONDARY_TEXT_MIN)
   })
 })
 
@@ -66,9 +66,9 @@ describe('foregrounds on solid fills', () => {
    * that produced a 2.2:1 primary button in the first draft of this palette.
    */
   it('light foreground on the oxblood accent clears 4.5:1', () => {
-    expect(tokenContrast(tokens, 'color-text-on-accent', 'color-accent-solid')).toBeGreaterThanOrEqual(
-      SECONDARY_TEXT_MIN,
-    )
+    expect(
+      tokenContrast(tokens, 'color-text-on-accent', 'color-accent-solid'),
+    ).toBeGreaterThanOrEqual(SECONDARY_TEXT_MIN)
   })
 
   it('dark foreground on the brass accent clears 4.5:1', () => {
@@ -138,10 +138,7 @@ describe('non-text contrast (WCAG 1.4.11)', () => {
     const outer = resolveToken(tokens, 'color-focus-ring-contrast')
 
     for (const background of backgrounds) {
-      const best = Math.max(
-        contrastRatio(inner, background),
-        contrastRatio(outer, background),
-      )
+      const best = Math.max(contrastRatio(inner, background), contrastRatio(outer, background))
       expect(round(best)).toBeGreaterThanOrEqual(NON_TEXT_MIN)
     }
   })
@@ -155,9 +152,9 @@ describe('non-text contrast (WCAG 1.4.11)', () => {
     expect(contrastRatio(resolveToken(tokens, 'color-focus-ring'), densestCell)).toBeLessThan(
       NON_TEXT_MIN,
     )
-    expect(
-      contrastRatio(resolveToken(tokens, 'color-focus-ring-contrast'), canvas),
-    ).toBeLessThan(NON_TEXT_MIN)
+    expect(contrastRatio(resolveToken(tokens, 'color-focus-ring-contrast'), canvas)).toBeLessThan(
+      NON_TEXT_MIN,
+    )
   })
 })
 

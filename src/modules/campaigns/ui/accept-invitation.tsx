@@ -14,7 +14,8 @@ import { acceptInvitation } from '../actions/invitations'
  * page — or reloading it — never consumes a use of a shared link.
  */
 const MESSAGES: Record<string, string> = {
-  'campaigns.errors.invitationEXPIRED': 'This invitation has expired. Ask the Keeper for a new one.',
+  'campaigns.errors.invitationEXPIRED':
+    'This invitation has expired. Ask the Keeper for a new one.',
   'campaigns.errors.invitationREVOKED': 'This invitation has been withdrawn.',
   'campaigns.errors.invitationEXHAUSTED': 'This invitation has already been used up.',
   'campaigns.errors.invitationNOT_FOR_YOU': 'This invitation was issued for somebody else.',

@@ -33,7 +33,11 @@ export async function setup(): Promise<void> {
   const url = `mysql://arkham:arkham@${container.getHost()}:${container.getPort()}/arkham_test?charset=utf8mb4`
   process.env['DATABASE_URL'] = url
 
-  const connection = await mysql.createConnection({ uri: url, timezone: 'Z', multipleStatements: true })
+  const connection = await mysql.createConnection({
+    uri: url,
+    timezone: 'Z',
+    multipleStatements: true,
+  })
   try {
     await migrate(drizzle(connection), { migrationsFolder: './src/db/migrations' })
   } finally {

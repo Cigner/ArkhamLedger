@@ -36,7 +36,10 @@ export default async function SignInPage({
       title="Sign in"
       description="Accounts are created by an administrator. If you do not have one, ask them for an activation link."
       footer={
-        <Link href="/forgot-password" className="text-accent-text underline-offset-4 hover:underline">
+        <Link
+          href="/forgot-password"
+          className="text-accent-text underline-offset-4 hover:underline"
+        >
           Forgot your password?
         </Link>
       }

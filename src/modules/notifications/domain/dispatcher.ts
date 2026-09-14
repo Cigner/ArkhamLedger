@@ -1,8 +1,4 @@
-import type {
-  DeliveryChannel,
-  NotificationRecord,
-  Recipient,
-} from './types'
+import type { DeliveryChannel, NotificationRecord, Recipient } from './types'
 import type { RenderedMessage } from './messages'
 
 /**

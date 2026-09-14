@@ -39,10 +39,11 @@ const DRAIN_TIMEOUT_MS = 15_000
 function start(): void {
   const drain = createDrain()
 
-  const crons = SCHEDULES.map(({ job, pattern }) =>
-    new Cron(pattern, { name: job.name, timezone: 'UTC', protect: true }, () =>
-      drain.track(runJob(job, new Date())),
-    ),
+  const crons = SCHEDULES.map(
+    ({ job, pattern }) =>
+      new Cron(pattern, { name: job.name, timezone: 'UTC', protect: true }, () =>
+        drain.track(runJob(job, new Date())),
+      ),
   )
 
   appLogger.info(

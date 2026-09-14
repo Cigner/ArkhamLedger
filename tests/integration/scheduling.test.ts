@@ -215,10 +215,7 @@ describe('storing a run', () => {
       )
     }
 
-    const runs = await db
-      .select()
-      .from(scheduleRun)
-      .where(eq(scheduleRun.gameSessionId, sessionId))
+    const runs = await db.select().from(scheduleRun).where(eq(scheduleRun.gameSessionId, sessionId))
 
     expect(runs).toHaveLength(2)
   })

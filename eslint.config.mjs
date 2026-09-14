@@ -20,8 +20,7 @@ import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescrip
 const DOMAIN_PURITY_MESSAGE =
   'domain/ must stay pure: no framework, no I/O, no database. Move this to data/ or actions/.'
 
-const LAYERING_MESSAGE =
-  'This import crosses a layer boundary. See docs/architecture/modules.md.'
+const LAYERING_MESSAGE = 'This import crosses a layer boundary. See docs/architecture/modules.md.'
 
 const AUTH_WRAPPER_MESSAGE = 'Import from @/lib/auth instead of the auth library directly.'
 
@@ -85,9 +84,7 @@ export default tseslint.config(
     },
     plugins: { 'import-x': importX },
     settings: {
-      'import-x/resolver-next': [
-        createTypeScriptImportResolver({ project: './tsconfig.json' }),
-      ],
+      'import-x/resolver-next': [createTypeScriptImportResolver({ project: './tsconfig.json' })],
     },
     rules: {
       '@typescript-eslint/no-unused-vars': [
@@ -108,11 +105,8 @@ export default tseslint.config(
       // XSS: there is no legitimate use of raw HTML injection in this app.
       'react/no-danger': 'error',
 
-      'eqeqeq': ['error', 'always', { null: 'ignore' }],
-      'no-warning-comments': [
-        'warn',
-        { terms: ['fixme', 'xxx'], location: 'anywhere' },
-      ],
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-warning-comments': ['warn', { terms: ['fixme', 'xxx'], location: 'anywhere' }],
     },
   },
 
@@ -131,13 +125,37 @@ export default tseslint.config(
         {
           basePath: import.meta.dirname,
           zones: [
-            { target: './src/modules/*/domain', from: './src/modules/*/data', message: DOMAIN_PURITY_MESSAGE },
-            { target: './src/modules/*/domain', from: './src/modules/*/actions', message: DOMAIN_PURITY_MESSAGE },
-            { target: './src/modules/*/domain', from: './src/modules/*/ui', message: DOMAIN_PURITY_MESSAGE },
+            {
+              target: './src/modules/*/domain',
+              from: './src/modules/*/data',
+              message: DOMAIN_PURITY_MESSAGE,
+            },
+            {
+              target: './src/modules/*/domain',
+              from: './src/modules/*/actions',
+              message: DOMAIN_PURITY_MESSAGE,
+            },
+            {
+              target: './src/modules/*/domain',
+              from: './src/modules/*/ui',
+              message: DOMAIN_PURITY_MESSAGE,
+            },
             { target: './src/modules/*/domain', from: './src/db', message: DOMAIN_PURITY_MESSAGE },
-            { target: './src/modules/*/domain', from: './src/lib/auth', message: DOMAIN_PURITY_MESSAGE },
-            { target: './src/modules/*/data', from: './src/modules/*/actions', message: LAYERING_MESSAGE },
-            { target: './src/modules/*/data', from: './src/modules/*/ui', message: LAYERING_MESSAGE },
+            {
+              target: './src/modules/*/domain',
+              from: './src/lib/auth',
+              message: DOMAIN_PURITY_MESSAGE,
+            },
+            {
+              target: './src/modules/*/data',
+              from: './src/modules/*/actions',
+              message: LAYERING_MESSAGE,
+            },
+            {
+              target: './src/modules/*/data',
+              from: './src/modules/*/ui',
+              message: LAYERING_MESSAGE,
+            },
             { target: './src/db', from: './src/modules', message: LAYERING_MESSAGE },
           ],
         },
@@ -169,11 +187,13 @@ export default tseslint.config(
            * banning those forced the opposite of the rule's intent.
            */
           selector: "NewExpression[callee.name='Date'][arguments.length=0]",
-          message: 'domain/ must not read the ambient clock. Accept the current time as a parameter.',
+          message:
+            'domain/ must not read the ambient clock. Accept the current time as a parameter.',
         },
         {
           selector: "CallExpression[callee.object.name='Date'][callee.property.name='now']",
-          message: 'domain/ must not read the ambient clock. Accept the current time as a parameter.',
+          message:
+            'domain/ must not read the ambient clock. Accept the current time as a parameter.',
         },
         {
           selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']",

@@ -2,12 +2,7 @@
  * Session data transfer objects.
  */
 export type SessionStatus =
-  | 'DRAFT'
-  | 'COLLECTING'
-  | 'PROPOSED'
-  | 'SCHEDULED'
-  | 'COMPLETED'
-  | 'CANCELLED'
+  'DRAFT' | 'COLLECTING' | 'PROPOSED' | 'SCHEDULED' | 'COMPLETED' | 'CANCELLED'
 
 export type ParticipantPriority = 'REQUIRED' | 'PREFERRED' | 'OPTIONAL'
 export type Attendance = 'UNKNOWN' | 'ATTENDED' | 'ABSENT'

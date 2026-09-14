@@ -68,6 +68,9 @@ export async function GET(
  * nobody minds what the file is called.
  */
 function filename(title: string): string {
-  const safe = title.replace(/[^a-zA-Z0-9 _-]/g, '').trim().slice(0, 60)
+  const safe = title
+    .replace(/[^a-zA-Z0-9 _-]/g, '')
+    .trim()
+    .slice(0, 60)
   return `${safe || 'session'}.ics`
 }

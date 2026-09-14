@@ -7,7 +7,13 @@ import { cn } from '@/lib/cn'
  * just pressed submit is already looking. Colour never carries the meaning on
  * its own.
  */
-export function FormError({ children, className }: { children: React.ReactNode; className?: string }) {
+export function FormError({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
   if (!children) return null
 
   return (

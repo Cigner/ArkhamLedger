@@ -41,7 +41,9 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
         <div className="overflow-x-auto">
           <div
             className="grid gap-1"
-            style={{ gridTemplateColumns: `auto repeat(${view.dates.length}, minmax(2.5rem, 1fr))` }}
+            style={{
+              gridTemplateColumns: `auto repeat(${view.dates.length}, minmax(2.5rem, 1fr))`,
+            }}
           >
             <div />
             {view.dates.map((date) => (
@@ -90,7 +92,9 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
         <div className="overflow-x-auto">
           <div
             className="grid gap-1"
-            style={{ gridTemplateColumns: `auto repeat(${view.dates.length}, minmax(2.5rem, 1fr))` }}
+            style={{
+              gridTemplateColumns: `auto repeat(${view.dates.length}, minmax(2.5rem, 1fr))`,
+            }}
           >
             <div />
             {view.dates.map((date) => (

@@ -1,9 +1,5 @@
 import { appLogger } from '@/lib/logger'
-import type {
-  DeliveryOutcome,
-  DispatchContext,
-  NotificationDispatcher,
-} from '../domain/dispatcher'
+import type { DeliveryOutcome, DispatchContext, NotificationDispatcher } from '../domain/dispatcher'
 
 /**
  * Discord delivery.
@@ -31,10 +27,11 @@ export const discordDispatcher: NotificationDispatcher = {
     const url = context.campaign?.discordWebhookUrl
     if (!url) return { kind: 'PERMANENT', error: 'no webhook configured' }
 
-    const content = `**${context.campaign?.name ?? 'Arkham Ledger'}** — ${context.message.channelText}`.slice(
-      0,
-      MAX_CONTENT_LENGTH,
-    )
+    const content =
+      `**${context.campaign?.name ?? 'Arkham Ledger'}** — ${context.message.channelText}`.slice(
+        0,
+        MAX_CONTENT_LENGTH,
+      )
 
     try {
       const response = await fetch(url, {
@@ -46,7 +43,8 @@ export const discordDispatcher: NotificationDispatcher = {
 
       if (response.ok) return { kind: 'SENT' }
 
-      const permanent = response.status === 401 || response.status === 403 || response.status === 404
+      const permanent =
+        response.status === 401 || response.status === 403 || response.status === 404
 
       appLogger.warn(
         { campaignId: context.campaign?.campaignId, status: response.status, permanent },

@@ -32,8 +32,8 @@ export function ForgotPasswordForm() {
   if (submitted) {
     return (
       <p role="status" className="font-ui text-sm leading-[--leading-ui] text-text-secondary">
-        If an account exists for that address, a reset link is on its way. It expires in an hour
-        and can be used once.
+        If an account exists for that address, a reset link is on its way. It expires in an hour and
+        can be used once.
       </p>
     )
   }

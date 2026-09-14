@@ -13,8 +13,7 @@ import { buttonVariants, type ButtonProps } from './button'
  *
  * Navigation is a link. This renders a real anchor and only borrows the styling.
  */
-export type ButtonLinkProps = ComponentProps<typeof Link> &
-  Pick<ButtonProps, 'variant' | 'size'>
+export type ButtonLinkProps = ComponentProps<typeof Link> & Pick<ButtonProps, 'variant' | 'size'>
 
 export function ButtonLink({ className, variant, size, ...props }: ButtonLinkProps) {
   return (

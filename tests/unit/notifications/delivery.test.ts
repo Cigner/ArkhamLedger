@@ -89,8 +89,8 @@ describe('which channels an event goes out on', () => {
    * so one person muting their own email must not silence the room.
    */
   it('posts to the channel even when the carrier has muted their email', () => {
-    expect(
-      channelsFor({ ...base, disabledChannels: new Set(['EMAIL'] as const) }),
-    ).toContain('DISCORD')
+    expect(channelsFor({ ...base, disabledChannels: new Set(['EMAIL'] as const) })).toContain(
+      'DISCORD',
+    )
   })
 })

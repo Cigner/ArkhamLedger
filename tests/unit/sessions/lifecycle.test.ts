@@ -29,9 +29,7 @@ const ALL_STATUSES: readonly SessionStatus[] = [
   'CANCELLED',
 ]
 
-const ALL_PAIRS = ALL_STATUSES.flatMap((from) =>
-  ALL_STATUSES.map((to) => [from, to] as const),
-)
+const ALL_PAIRS = ALL_STATUSES.flatMap((from) => ALL_STATUSES.map((to) => [from, to] as const))
 
 describe('transition table', () => {
   it('covers every status', () => {
@@ -128,7 +126,10 @@ describe('capability gates', () => {
    * a change of state. Routing it through the transition table would make
    * "change the date" fail on exactly the sessions that have one.
    */
-  it.each(ALL_STATUSES)('a date can be set or changed unless the session is over (%s)', (status) => {
-    expect(canSetDate(status).ok).toBe(!isTerminal(status))
-  })
+  it.each(ALL_STATUSES)(
+    'a date can be set or changed unless the session is over (%s)',
+    (status) => {
+      expect(canSetDate(status).ok).toBe(!isTerminal(status))
+    },
+  )
 })

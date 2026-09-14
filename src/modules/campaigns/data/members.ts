@@ -103,10 +103,7 @@ export async function setMembershipStatus(input: {
     .update(campaignMember)
     .set({ status: input.status, leftAt: input.now, updatedAt: input.now })
     .where(
-      and(
-        eq(campaignMember.campaignId, input.campaignId),
-        eq(campaignMember.userId, input.userId),
-      ),
+      and(eq(campaignMember.campaignId, input.campaignId), eq(campaignMember.userId, input.userId)),
     )
 }
 
@@ -121,10 +118,7 @@ export async function setMemberRole(input: {
     .update(campaignMember)
     .set({ role: input.role, updatedAt: input.now })
     .where(
-      and(
-        eq(campaignMember.campaignId, input.campaignId),
-        eq(campaignMember.userId, input.userId),
-      ),
+      and(eq(campaignMember.campaignId, input.campaignId), eq(campaignMember.userId, input.userId)),
     )
 }
 
@@ -136,9 +130,9 @@ export async function setMemberRole(input: {
  * activates and joins in one sitting. They still cannot accept until their
  * account is active, which the session guard enforces on its own.
  */
-export async function listInvitableUsers(campaignId: string): Promise<
-  { id: string; name: string; email: string; pending: boolean }[]
-> {
+export async function listInvitableUsers(
+  campaignId: string,
+): Promise<{ id: string; name: string; email: string; pending: boolean }[]> {
   await requireCampaignMember(campaignId, 'KEEPER')
 
   const members = await db
@@ -157,10 +151,7 @@ export async function listInvitableUsers(campaignId: string): Promise<
     })
     .from(authUser)
     .where(
-      and(
-        inArray(authUser.status, ['ACTIVE', 'PENDING_ACTIVATION']),
-        isNull(authUser.deletedAt),
-      ),
+      and(inArray(authUser.status, ['ACTIVE', 'PENDING_ACTIVATION']), isNull(authUser.deletedAt)),
     )
     .orderBy(asc(authUser.name))
 

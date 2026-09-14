@@ -48,14 +48,14 @@ export const saveAvailability = authActionClient
     }
 
     const allowedDates = new Set(
-      parsedInput.ranges.map((range) => range.date).filter((date) => date >= session.searchWindowStart && date <= session.searchWindowEnd),
+      parsedInput.ranges
+        .map((range) => range.date)
+        .filter((date) => date >= session.searchWindowStart && date <= session.searchWindowEnd),
     )
 
     const ranges: DayRange[] = parsedInput.ranges
       .filter((range) => allowedDates.has(range.date))
-      .map((range) =>
-        normalizeRange(range, session.gridStartHour, session.gridEndHour),
-      )
+      .map((range) => normalizeRange(range, session.gridStartHour, session.gridEndHour))
 
     const now = new Date()
 

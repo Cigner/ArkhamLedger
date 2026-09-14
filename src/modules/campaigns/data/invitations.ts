@@ -104,10 +104,7 @@ export async function revokeInvitation(
     .update(campaignInvitation)
     .set({ revokedAt: now, updatedAt: now })
     .where(
-      and(
-        eq(campaignInvitation.id, invitationId),
-        eq(campaignInvitation.campaignId, campaignId),
-      ),
+      and(eq(campaignInvitation.id, invitationId), eq(campaignInvitation.campaignId, campaignId)),
     )
 }
 
@@ -151,9 +148,7 @@ export async function previewInvitation(
     .select({ userId: campaignMember.userId, role: campaignMember.role, name: authUser.name })
     .from(campaignMember)
     .innerJoin(authUser, eq(authUser.id, campaignMember.userId))
-    .where(
-      and(eq(campaignMember.campaignId, row.campaignId), eq(campaignMember.status, 'ACTIVE')),
-    )
+    .where(and(eq(campaignMember.campaignId, row.campaignId), eq(campaignMember.status, 'ACTIVE')))
 
   return {
     ok: true,

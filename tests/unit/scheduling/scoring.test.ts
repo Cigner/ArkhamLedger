@@ -39,7 +39,10 @@ describe('the score', () => {
     expect(
       scoreOfBest([
         person(slots, 'keeper', { keeper: true, days: everyDay(DAYS) }),
-        person(slots, 'anna', { priority: 'REQUIRED', days: everyDay(DAYS, { state: 'IF_NEED_BE' }) }),
+        person(slots, 'anna', {
+          priority: 'REQUIRED',
+          days: everyDay(DAYS, { state: 'IF_NEED_BE' }),
+        }),
         person(slots, 'piotr', { days: everyDay(DAYS, { state: 'IF_NEED_BE' }) }),
       ]),
     ).toBe(60)
@@ -164,12 +167,8 @@ describe('the tie-breaker chain', () => {
   })
 
   it('falls back to the earlier instant, which orders day then hour', () => {
-    expect(
-      compareCandidates(base, { ...base, startUtc: '2026-10-08T17:00:00Z' }),
-    ).toBeLessThan(0)
-    expect(
-      compareCandidates(base, { ...base, startUtc: '2026-10-09T15:00:00Z' }),
-    ).toBeLessThan(0)
+    expect(compareCandidates(base, { ...base, startUtc: '2026-10-08T17:00:00Z' })).toBeLessThan(0)
+    expect(compareCandidates(base, { ...base, startUtc: '2026-10-09T15:00:00Z' })).toBeLessThan(0)
   })
 
   it('leaves no pair unordered', () => {
@@ -188,8 +187,8 @@ describe('scoreFor', () => {
   })
 
   it('scores a session with nobody but its Keeper as complete', () => {
-    expect(
-      scoreFor([{ userId: 'keeper', priority: 'REQUIRED', isKeeper: true, quality: 1 }]),
-    ).toBe(100)
+    expect(scoreFor([{ userId: 'keeper', priority: 'REQUIRED', isKeeper: true, quality: 1 }])).toBe(
+      100,
+    )
   })
 })

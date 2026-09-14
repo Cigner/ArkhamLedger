@@ -98,7 +98,12 @@ export function DayHoursDialog({
       editor.setState(day, 'NO')
     } else {
       // Keep the hours already chosen; only the firmness changes.
-      editor.setRangeWithState(day, state, range.fromHour || gridStartHour, range.toHour || gridEndHour)
+      editor.setRangeWithState(
+        day,
+        state,
+        range.fromHour || gridStartHour,
+        range.toHour || gridEndHour,
+      )
     }
     onAnnounce(`${label}: ${cellPresentation(state).label}.`)
   }
@@ -204,8 +209,8 @@ export function DayHoursDialog({
 
               {tooShort ? (
                 <p className="font-ui text-xs text-status-warning">
-                  That is shorter than the {minSessionHours} hours this session needs, so it
-                  cannot run on this evening.
+                  That is shorter than the {minSessionHours} hours this session needs, so it cannot
+                  run on this evening.
                 </p>
               ) : (
                 <p className="font-ui text-xs text-text-muted">

@@ -13,7 +13,11 @@ async function main(): Promise<void> {
   const url = process.env.DATABASE_URL
   if (!url) throw new Error('DATABASE_URL is required to run migrations')
 
-  const connection = await mysql.createConnection({ uri: url, timezone: 'Z', multipleStatements: true })
+  const connection = await mysql.createConnection({
+    uri: url,
+    timezone: 'Z',
+    multipleStatements: true,
+  })
 
   try {
     const db = drizzle(connection)

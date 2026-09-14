@@ -46,8 +46,8 @@ export function SchedulingDiagnostics({
     return (
       <Panel title="No window is long enough">
         <p>
-          Every day in the search offers fewer hours than the session needs, so there was nothing
-          to rank. Widen the hours the grid covers, or shorten the minimum length.
+          Every day in the search offers fewer hours than the session needs, so there was nothing to
+          rank. Widen the hours the grid covers, or shorten the minimum length.
         </p>
       </Panel>
     )
@@ -90,7 +90,9 @@ export function SchedulingDiagnostics({
         <ul className="list-disc pl-5 font-ui text-sm text-text-muted marker:text-text-muted">
           <li>Search a wider range of dates.</li>
           {summary.byReason.QUORUM_NOT_MET > 0 ? (
-            <li>Lower the quorum from {summary.quorum} to {Math.max(1, summary.bestAvailableCount)}.</li>
+            <li>
+              Lower the quorum from {summary.quorum} to {Math.max(1, summary.bestAvailableCount)}.
+            </li>
           ) : null}
           {blockers.length > 0 ? (
             <li>

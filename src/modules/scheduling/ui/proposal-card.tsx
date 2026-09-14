@@ -66,9 +66,7 @@ export function ProposalCard({
         </div>
       </div>
 
-      <p className="font-ui text-xs text-text-secondary">
-        {headline(proposal.explanation)}
-      </p>
+      <p className="font-ui text-xs text-text-secondary">{headline(proposal.explanation)}</p>
 
       <ul className="flex flex-col gap-1">
         {proposal.explanation.notes.map((note) => (

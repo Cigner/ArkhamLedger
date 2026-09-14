@@ -185,9 +185,7 @@ export async function getAvailabilityView(sessionId: string): Promise<Availabili
     editable: canSubmitAvailability(session.status as 'COLLECTING').ok,
     deadline: session.availabilityDeadline,
     own: cellsToRanges(byUser.get(context.user.id) ?? [], dates),
-    tallies: discloseTallies
-      ? tallySlots(answers, slots, participants.length)
-      : [],
+    tallies: discloseTallies ? tallySlots(answers, slots, participants.length) : [],
     windows,
     respondentCount,
     participantCount: participants.length,

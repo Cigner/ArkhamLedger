@@ -4,12 +4,7 @@ import { type DbOrTx, db } from '@/db/client'
 import { authUser, userActivationToken } from '@/db/schema'
 import { requireAdmin, requireUser } from '@/lib/auth'
 import { NotFoundError } from '@/lib/errors'
-import type {
-  AdminUserListItem,
-  GlobalRole,
-  ProfileDto,
-  UserStatus,
-} from '../domain/types'
+import type { AdminUserListItem, GlobalRole, ProfileDto, UserStatus } from '../domain/types'
 
 /**
  * User queries.

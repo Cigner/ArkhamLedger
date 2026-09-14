@@ -1,8 +1,4 @@
-import type {
-  DeliveryOutcome,
-  DispatchContext,
-  NotificationDispatcher,
-} from '../domain/dispatcher'
+import type { DeliveryOutcome, DispatchContext, NotificationDispatcher } from '../domain/dispatcher'
 
 /**
  * In-app delivery.

@@ -116,7 +116,11 @@ describe('cellsToRanges', () => {
   it('prefers a definite answer over a grudging one', () => {
     const mixed = [...cells([16, 17], 'IF_NEED_BE'), ...cells([18, 19], 'YES')]
 
-    expect(cellsToRanges(mixed, [DATE])[0]).toMatchObject({ state: 'YES', fromHour: 18, toHour: 20 })
+    expect(cellsToRanges(mixed, [DATE])[0]).toMatchObject({
+      state: 'YES',
+      fromHour: 18,
+      toHour: 20,
+    })
   })
 
   it('returns one entry per requested date, in order', () => {

@@ -56,9 +56,7 @@ export function NotificationList({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <p className="font-ui text-sm text-text-secondary">
-          {unread.length === 0
-            ? 'Nothing unread.'
-            : `${unread.length} unread of ${items.length}.`}
+          {unread.length === 0 ? 'Nothing unread.' : `${unread.length} unread of ${items.length}.`}
         </p>
 
         {unread.length > 0 ? (

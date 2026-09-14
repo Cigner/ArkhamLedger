@@ -15,12 +15,7 @@ import { isWeakPassword } from './weak-passwords'
  * where they are the actual trust boundary. The client-side use is convenience;
  * the server-side use is the security control, and neither is optional.
  */
-export const emailSchema = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .max(EMAIL_MAX_LENGTH)
-  .pipe(z.email())
+export const emailSchema = z.string().trim().toLowerCase().max(EMAIL_MAX_LENGTH).pipe(z.email())
 
 export const displayNameSchema = z
   .string()

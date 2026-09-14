@@ -23,10 +23,7 @@ export abstract class AppError extends Error {
   readonly messageKey: string
   readonly messageParams: Record<string, string | number> | undefined
 
-  protected constructor(
-    messageKey: string,
-    messageParams?: Record<string, string | number>,
-  ) {
+  protected constructor(messageKey: string, messageParams?: Record<string, string | number>) {
     super(messageKey)
     this.name = new.target.name
     this.messageKey = messageKey

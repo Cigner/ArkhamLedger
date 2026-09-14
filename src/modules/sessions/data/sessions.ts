@@ -202,9 +202,7 @@ export async function getCampaignDiary(campaignId: string): Promise<CampaignDiar
         row.confirmedStartUtc !== null &&
         row.confirmedStartUtc.getTime() >= now.getTime(),
     )
-    .sort(
-      (a, b) => (a.confirmedStartUtc?.getTime() ?? 0) - (b.confirmedStartUtc?.getTime() ?? 0),
-    )
+    .sort((a, b) => (a.confirmedStartUtc?.getTime() ?? 0) - (b.confirmedStartUtc?.getTime() ?? 0))
 
   const arranging = rows.filter(
     (row) => row.status === 'COLLECTING' || row.status === 'PROPOSED' || row.status === 'DRAFT',
@@ -212,9 +210,7 @@ export async function getCampaignDiary(campaignId: string): Promise<CampaignDiar
 
   const past = rows
     .filter((row) => row.status === 'COMPLETED')
-    .sort(
-      (a, b) => (b.confirmedStartUtc?.getTime() ?? 0) - (a.confirmedStartUtc?.getTime() ?? 0),
-    )
+    .sort((a, b) => (b.confirmedStartUtc?.getTime() ?? 0) - (a.confirmedStartUtc?.getTime() ?? 0))
     .slice(0, 3)
 
   return {

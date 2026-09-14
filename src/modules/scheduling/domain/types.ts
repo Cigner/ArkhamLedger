@@ -111,10 +111,7 @@ export type RankedCandidate = {
   readonly explanation: CandidateExplanation
 }
 
-export type RejectionReason =
-  | 'KEEPER_UNAVAILABLE'
-  | 'REQUIRED_UNAVAILABLE'
-  | 'QUORUM_NOT_MET'
+export type RejectionReason = 'KEEPER_UNAVAILABLE' | 'REQUIRED_UNAVAILABLE' | 'QUORUM_NOT_MET'
 
 /**
  * What stood in the way, aggregated.

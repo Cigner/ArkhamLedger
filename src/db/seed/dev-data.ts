@@ -121,7 +121,8 @@ export const SEED_CAMPAIGNS: readonly SeedCampaign[] = [
   {
     key: 'haunting',
     name: 'The Haunting',
-    description: 'A short piece of work at the Corbitt house on Boston Road. It should take one evening.',
+    description:
+      'A short piece of work at the Corbitt house on Boston Road. It should take one evening.',
     ownerKey: 'marcus',
     status: 'PLANNING',
     scenario: {

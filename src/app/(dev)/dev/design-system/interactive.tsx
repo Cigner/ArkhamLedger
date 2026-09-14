@@ -52,9 +52,7 @@ export function DesignSystemInteractive() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Schedule session</DialogTitle>
-                <DialogDescription>
-                  Availability closes on Thursday at midnight.
-                </DialogDescription>
+                <DialogDescription>Availability closes on Thursday at midnight.</DialogDescription>
               </DialogHeader>
               <DialogBody className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
                 <p>Focus is trapped, the page behind is locked, and Escape dismisses.</p>

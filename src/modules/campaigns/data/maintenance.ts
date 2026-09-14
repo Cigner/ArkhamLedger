@@ -11,8 +11,6 @@ import { campaignInvitation } from '@/db/schema'
  */
 /** Housekeeping for the worker. */
 export async function deleteExpiredInvitations(now: Date): Promise<number> {
-  const [result] = await db
-    .delete(campaignInvitation)
-    .where(lt(campaignInvitation.expiresAt, now))
+  const [result] = await db.delete(campaignInvitation).where(lt(campaignInvitation.expiresAt, now))
   return result.affectedRows
 }

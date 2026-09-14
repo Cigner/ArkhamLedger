@@ -10,10 +10,7 @@ export default async function NewCampaignPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        title="New campaign"
-        description="You will be its Keeper and its owner."
-      />
+      <PageHeader title="New campaign" description="You will be its Keeper and its owner." />
       <CreateCampaignForm />
     </div>
   )

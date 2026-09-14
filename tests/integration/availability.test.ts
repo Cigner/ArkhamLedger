@@ -34,9 +34,8 @@ vi.mock('@/modules/campaigns/data/guards', () => ({
     }),
 }))
 
-const { getAvailabilityView, saveOwnAvailability, findPreviousAnswer } = await import(
-  '@/modules/availability/data/availability'
-)
+const { getAvailabilityView, saveOwnAvailability, findPreviousAnswer } =
+  await import('@/modules/availability/data/availability')
 
 async function seedSession(participantCount = 4) {
   const keeper = await createUserRow({ status: 'ACTIVE', name: 'Keeper' })

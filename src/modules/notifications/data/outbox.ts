@@ -204,7 +204,10 @@ async function loadCampaignOutbound(
     )
     .where(inArray(campaign.id, [...campaignIds]))
 
-  const outbound = new Map<string, { campaignId: string; name: string; discordWebhookUrl: string | null }>()
+  const outbound = new Map<
+    string,
+    { campaignId: string; name: string; discordWebhookUrl: string | null }
+  >()
 
   for (const row of rows) {
     let url: string | null = null

@@ -38,7 +38,15 @@ import { DesignSystemInteractive } from './interactive'
 export const dynamic = 'force-dynamic'
 
 const BUTTON_VARIANTS = ['accent', 'outline', 'ghost', 'danger', 'link'] as const
-const BADGE_VARIANTS = ['neutral', 'accent', 'candle', 'positive', 'warning', 'danger', 'muted'] as const
+const BADGE_VARIANTS = [
+  'neutral',
+  'accent',
+  'candle',
+  'positive',
+  'warning',
+  'danger',
+  'muted',
+] as const
 const SURFACE_TOKENS = ['canvas', 'subtle', 'raised', 'overlay', 'hover', 'active'] as const
 const AVAIL_STEPS = [1, 2, 3, 4, 5] as const
 

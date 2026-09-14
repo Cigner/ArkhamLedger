@@ -72,12 +72,7 @@ export type InvitationListItem = {
 }
 
 /** Why an invitation cannot be accepted; drives the screen the visitor sees. */
-export type InvitationRejection =
-  | 'INVALID'
-  | 'EXPIRED'
-  | 'REVOKED'
-  | 'EXHAUSTED'
-  | 'NOT_FOR_YOU'
+export type InvitationRejection = 'INVALID' | 'EXPIRED' | 'REVOKED' | 'EXHAUSTED' | 'NOT_FOR_YOU'
 
 export type InvitationPreview =
   | {

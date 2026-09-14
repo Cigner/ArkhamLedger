@@ -21,7 +21,8 @@ const MESSAGES: Record<string, string> = {
   'identity.errors.passwordTooShort': 'That password is too short.',
   'identity.errors.passwordTooCommon': 'That password is too easy to guess. Try a longer phrase.',
   'identity.errors.passwordsDoNotMatch': 'The two passwords do not match.',
-  'identity.errors.tokenInvalid': 'This link is no longer valid. Ask an administrator for a new one.',
+  'identity.errors.tokenInvalid':
+    'This link is no longer valid. Ask an administrator for a new one.',
   'identity.errors.accountAlreadyActive': 'This account has already been activated.',
 }
 

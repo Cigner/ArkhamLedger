@@ -76,8 +76,8 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <p className="font-ui text-sm text-text-secondary">
-            {view.respondentCount} of {view.participantCount} have answered. Quorum is{' '}
-            {view.quorum}, and a session runs at least {view.minSessionHours} hours.
+            {view.respondentCount} of {view.participantCount} have answered. Quorum is {view.quorum}
+            , and a session runs at least {view.minSessionHours} hours.
           </p>
           {view.run ? (
             <p className="font-ui text-xs text-text-muted">

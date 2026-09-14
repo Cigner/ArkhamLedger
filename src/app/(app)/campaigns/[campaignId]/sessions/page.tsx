@@ -86,7 +86,8 @@ export default async function CampaignSessionsPage({
                     <Link href={`/sessions/${session.id}`} className="hover:underline">
                       {session.title}
                     </Link>
-                    {session.viewerIsParticipant && !session.viewerHasResponded &&
+                    {session.viewerIsParticipant &&
+                    !session.viewerHasResponded &&
                     session.status === 'COLLECTING' ? (
                       <span className="ml-2 font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-candle-11">
                         Needs your answer

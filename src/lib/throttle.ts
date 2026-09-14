@@ -21,8 +21,7 @@ import { securityLogger } from '@/lib/logger'
 export type ThrottleScope = 'signin' | 'reset' | 'schedule'
 
 export type ThrottleDecision =
-  | { readonly allowed: true }
-  | { readonly allowed: false; readonly retryAfterSeconds: number }
+  { readonly allowed: true } | { readonly allowed: false; readonly retryAfterSeconds: number }
 
 type ThrottlePolicy = {
   readonly attempts: number
@@ -100,10 +99,7 @@ export async function consumeAttempt(
 
   if (row.attempts > policy.attempts) {
     const blockedUntil = new Date(now.getTime() + policy.blockMs)
-    await db
-      .update(identityThrottle)
-      .set({ blockedUntil })
-      .where(eq(identityThrottle.id, key))
+    await db.update(identityThrottle).set({ blockedUntil }).where(eq(identityThrottle.id, key))
 
     securityLogger.warn({ scope, attempts: row.attempts }, 'per-address throttle engaged')
 
@@ -120,6 +116,8 @@ export async function clearAttempts(scope: ThrottleScope, identifier: string): P
 
 /** Housekeeping for the worker: drops counters whose window is long past. */
 export async function deleteStaleThrottles(before: Date): Promise<number> {
-  const [result] = await db.delete(identityThrottle).where(lt(identityThrottle.windowStartedAt, before))
+  const [result] = await db
+    .delete(identityThrottle)
+    .where(lt(identityThrottle.windowStartedAt, before))
   return result.affectedRows
 }

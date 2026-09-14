@@ -28,12 +28,10 @@ vi.mock('@/lib/auth', () => ({
 }))
 
 const { enqueueNotifications } = await import('@/modules/notifications/data/notifications')
-const { claimDueDeliveries, completeDelivery, loadDispatchContexts } = await import(
-  '@/modules/notifications/data/outbox'
-)
-const { findPendingReminders, findIdleCampaigns } = await import(
-  '@/modules/notifications/data/nudges'
-)
+const { claimDueDeliveries, completeDelivery, loadDispatchContexts } =
+  await import('@/modules/notifications/data/outbox')
+const { findPendingReminders, findIdleCampaigns } =
+  await import('@/modules/notifications/data/nudges')
 
 async function seedGroup() {
   const keeper = await createUserRow({ status: 'ACTIVE', name: 'Eleanor' })
@@ -44,7 +42,11 @@ async function seedGroup() {
   return { keeper, player, campaign }
 }
 
-async function seedSession(campaignId: string, users: readonly { id: string }[], deadline: Date | null) {
+async function seedSession(
+  campaignId: string,
+  users: readonly { id: string }[],
+  deadline: Date | null,
+) {
   const sessionId = newId()
 
   await db.insert(gameSession).values({
@@ -382,14 +384,22 @@ describe('reminders', () => {
 
   it('ignores a deadline that is still far off', async () => {
     const { keeper, player, campaign } = await seedGroup()
-    await seedSession(campaign.id, [keeper, player], new Date(NOW.getTime() + 10 * 24 * 60 * 60_000))
+    await seedSession(
+      campaign.id,
+      [keeper, player],
+      new Date(NOW.getTime() + 10 * 24 * 60 * 60_000),
+    )
 
     expect(await findPendingReminders({ now: NOW, horizonMs: 36 * 60 * 60_000 })).toEqual([])
   })
 
   it('ignores somebody who has already answered', async () => {
     const { keeper, player, campaign } = await seedGroup()
-    const sessionId = await seedSession(campaign.id, [keeper, player], new Date(NOW.getTime() + 60_000))
+    const sessionId = await seedSession(
+      campaign.id,
+      [keeper, player],
+      new Date(NOW.getTime() + 60_000),
+    )
 
     await db
       .update(sessionParticipant)
@@ -412,7 +422,11 @@ describe('reminders', () => {
    */
   it('never reminds the same person about the same session twice', async () => {
     const { keeper, player, campaign } = await seedGroup()
-    const sessionId = await seedSession(campaign.id, [keeper, player], new Date(NOW.getTime() + 60_000))
+    const sessionId = await seedSession(
+      campaign.id,
+      [keeper, player],
+      new Date(NOW.getTime() + 60_000),
+    )
 
     await db.transaction(async (tx) =>
       enqueueNotifications({

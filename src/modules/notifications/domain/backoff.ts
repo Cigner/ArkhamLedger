@@ -9,13 +9,7 @@
  */
 export const MAX_DELIVERY_ATTEMPTS = 5
 
-const SCHEDULE_MS = [
-  60_000,
-  5 * 60_000,
-  15 * 60_000,
-  60 * 60_000,
-  4 * 60 * 60_000,
-] as const
+const SCHEDULE_MS = [60_000, 5 * 60_000, 15 * 60_000, 60 * 60_000, 4 * 60 * 60_000] as const
 
 /**
  * When to try again after `attempts` failures.

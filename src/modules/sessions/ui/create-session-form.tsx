@@ -99,9 +99,12 @@ export function CreateSessionForm({ campaignId }: { campaignId: string }) {
     })
   }
 
-
   return (
-    <form onSubmit={(event) => void handleSubmit(event)} className="flex max-w-xl flex-col gap-5" noValidate>
+    <form
+      onSubmit={(event) => void handleSubmit(event)}
+      className="flex max-w-xl flex-col gap-5"
+      noValidate
+    >
       <Field>
         <FieldLabel htmlFor="title">Title</FieldLabel>
         <Input id="title" name="title" required autoFocus disabled={busy} />

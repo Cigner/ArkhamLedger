@@ -39,7 +39,8 @@ const ROLE_LABELS = { user: 'User', admin: 'Administrator' } as const
 
 const MESSAGES: Record<string, string> = {
   'identity.errors.emailAlreadyRegistered': 'An account with that address already exists.',
-  'identity.errors.nameControlCharacters': 'That name contains characters that cannot be displayed.',
+  'identity.errors.nameControlCharacters':
+    'That name contains characters that cannot be displayed.',
 }
 
 export function CreateUserDialog() {

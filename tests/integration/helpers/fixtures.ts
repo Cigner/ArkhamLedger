@@ -26,12 +26,14 @@ export async function truncateAll(): Promise<void> {
   await db.execute(sql`SET FOREIGN_KEY_CHECKS = 1`)
 }
 
-export async function createUserRow(overrides: {
-  email?: string
-  name?: string
-  role?: GlobalRole
-  status?: UserStatus
-} = {}): Promise<{ id: string; email: string; name: string }> {
+export async function createUserRow(
+  overrides: {
+    email?: string
+    name?: string
+    role?: GlobalRole
+    status?: UserStatus
+  } = {},
+): Promise<{ id: string; email: string; name: string }> {
   const id = newId()
   const now = new Date()
   const email = overrides.email ?? `user-${id.slice(-8).toLowerCase()}@example.test`

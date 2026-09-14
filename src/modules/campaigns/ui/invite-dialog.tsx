@@ -76,7 +76,10 @@ export function InviteDialog({
   })
 
   const userLabels = Object.fromEntries(
-    invitableUsers.map((user) => [user.id, user.pending ? `${user.name} (not yet activated)` : user.name]),
+    invitableUsers.map((user) => [
+      user.id,
+      user.pending ? `${user.name} (not yet activated)` : user.name,
+    ]),
   )
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -86,9 +89,7 @@ export function InviteDialog({
     execute({
       campaignId,
       roleOnJoin: role,
-      ...(mode === 'personal'
-        ? { targetUserId, maxUses: 1 }
-        : { maxUses: Number(maxUses) || 1 }),
+      ...(mode === 'personal' ? { targetUserId, maxUses: 1 } : { maxUses: Number(maxUses) || 1 }),
     })
   }
 

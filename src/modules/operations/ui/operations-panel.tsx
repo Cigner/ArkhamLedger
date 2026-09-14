@@ -58,7 +58,10 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
           {snapshot.campaigns.idle > 0 ? `, ${snapshot.campaigns.idle} with nothing planned` : ''}
         </Metric>
 
-        <Metric label="Sessions being arranged" value={snapshot.sessions.collecting + snapshot.sessions.proposed}>
+        <Metric
+          label="Sessions being arranged"
+          value={snapshot.sessions.collecting + snapshot.sessions.proposed}
+        >
           {snapshot.sessions.collecting} collecting · {snapshot.sessions.proposed} awaiting a
           decision
         </Metric>

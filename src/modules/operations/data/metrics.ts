@@ -103,10 +103,7 @@ export async function getOperationsSnapshot(now: Date): Promise<OperationsSnapsh
     .orderBy(desc(notificationDelivery.updatedAt))
     .limit(RECENT_FAILURES)
 
-  const [beat] = await db
-    .select({ beatAt: workerHeartbeat.beatAt })
-    .from(workerHeartbeat)
-    .limit(1)
+  const [beat] = await db.select({ beatAt: workerHeartbeat.beatAt }).from(workerHeartbeat).limit(1)
 
   return {
     accounts: {

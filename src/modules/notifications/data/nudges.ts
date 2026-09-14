@@ -77,9 +77,7 @@ export async function findPendingReminders(input: {
       ),
     )
 
-  return rows.flatMap((row) =>
-    row.deadline ? [{ ...row, deadline: row.deadline }] : [],
-  )
+  return rows.flatMap((row) => (row.deadline ? [{ ...row, deadline: row.deadline }] : []))
 }
 
 export type IdleCampaign = {

@@ -36,7 +36,12 @@ import {
   updateSessionSchema,
 } from '../domain/schemas'
 import { requireSessionKeeper } from '../data/guards'
-import { findSessionState, insertSession, transitionSession, updateSessionDefinition } from '../data/session-store'
+import {
+  findSessionState,
+  insertSession,
+  transitionSession,
+  updateSessionDefinition,
+} from '../data/session-store'
 import {
   clearResponses,
   listEligibleParticipants,
@@ -71,10 +76,7 @@ export const createSession = authActionClient
     // member must read the same grid, whichever clock they happen to be near.
     const campaignState = await findCampaignState(parsedInput.campaignId)
 
-    const window = validateSearchWindow(
-      parsedInput.searchWindowStart,
-      parsedInput.searchWindowEnd,
-    )
+    const window = validateSearchWindow(parsedInput.searchWindowStart, parsedInput.searchWindowEnd)
     if (!window.ok) throw new DomainRuleError(window.error.key, window.error.params)
 
     const grid = validateGridBounds(
@@ -149,10 +151,7 @@ export const updateSession = authActionClient
     const editable = canEditDefinition(context.sessionStatus)
     if (!editable.ok) throw new DomainRuleError(editable.error.key)
 
-    const window = validateSearchWindow(
-      parsedInput.searchWindowStart,
-      parsedInput.searchWindowEnd,
-    )
+    const window = validateSearchWindow(parsedInput.searchWindowStart, parsedInput.searchWindowEnd)
     if (!window.ok) throw new DomainRuleError(window.error.key, window.error.params)
 
     const grid = validateGridBounds(

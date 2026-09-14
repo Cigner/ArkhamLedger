@@ -76,9 +76,7 @@ export function ParticipantsForm({
     session.participants.map((participant) => [participant.userId, participant.priority]),
   )
 
-  const [selected, setSelected] = useState<Map<string, ParticipantPriority>>(
-    () => new Map(initial),
-  )
+  const [selected, setSelected] = useState<Map<string, ParticipantPriority>>(() => new Map(initial))
   const [quorum, setQuorum] = useState(String(session.quorum))
 
   const save = useAction(setSessionParticipants, {

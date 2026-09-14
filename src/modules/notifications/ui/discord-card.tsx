@@ -47,17 +47,24 @@ export function DiscordCard({
   const [tested, setTested] = useState(false)
   const [removing, setRemoving] = useState(false)
 
-  const handle = (fallback: string) => (failure: { error: { serverError?: { messageKey?: string | undefined } | undefined; validationErrors?: unknown } }) => {
-    setTested(false)
-    setError(
-      resolveActionError(
-        MESSAGES,
-        fallback,
-        failure.error.serverError?.messageKey,
-        failure.error.validationErrors,
-      ),
-    )
-  }
+  const handle =
+    (fallback: string) =>
+    (failure: {
+      error: {
+        serverError?: { messageKey?: string | undefined } | undefined
+        validationErrors?: unknown
+      }
+    }) => {
+      setTested(false)
+      setError(
+        resolveActionError(
+          MESSAGES,
+          fallback,
+          failure.error.serverError?.messageKey,
+          failure.error.validationErrors,
+        ),
+      )
+    }
 
   const save = useAction(setDiscordWebhook, {
     onSuccess: () => router.refresh(),

@@ -75,9 +75,7 @@ export function AppNav({
         */}
         <Link
           href="/notifications"
-          aria-label={
-            unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'
-          }
+          aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
           className={cn(
             'flex items-center gap-1.5 rounded-sm px-2 py-1 font-ui text-sm transition-interactive',
             pathname.startsWith('/notifications')

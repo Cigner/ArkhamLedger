@@ -45,9 +45,8 @@ export const actionClient = createSafeActionClient({
     if (isAppError(error)) {
       // Expected outcomes: a denied permission or a broken business rule. Logged
       // at warn so a burst of them is visible, but never with a stack trace.
-      const logger = error.code === 'FORBIDDEN' || error.code === 'UNAUTHORIZED'
-        ? securityLogger
-        : appLogger
+      const logger =
+        error.code === 'FORBIDDEN' || error.code === 'UNAUTHORIZED' ? securityLogger : appLogger
       logger.warn({ action: name, code: error.code, key: error.messageKey }, 'action rejected')
 
       return {
@@ -61,16 +60,15 @@ export const actionClient = createSafeActionClient({
 
     return { code: 'INTERNAL', messageKey: 'errors.unexpected' }
   },
+}).use(async ({ next, metadata }) => {
+  const started = Date.now()
+  const result = await next()
+  appLogger.debug(
+    { action: metadata?.name, durationMs: Date.now() - started, ok: result.success },
+    'action completed',
+  )
+  return result
 })
-  .use(async ({ next, metadata }) => {
-    const started = Date.now()
-    const result = await next()
-    appLogger.debug(
-      { action: metadata?.name, durationMs: Date.now() - started, ok: result.success },
-      'action completed',
-    )
-    return result
-  })
 
 /** Requires an active session. Injects the authenticated user. */
 export const authActionClient = actionClient.use(async ({ next }) => {

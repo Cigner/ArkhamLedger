@@ -51,9 +51,7 @@ describe('the same answers always give the same ranking', () => {
    */
   it('does not depend on the order participants arrive in', () => {
     const forwards = rankCandidates(mixedScenario())
-    const backwards = rankCandidates(
-      mixedScenario(['tomek', 'kasia', 'piotr', 'anna', 'keeper']),
-    )
+    const backwards = rankCandidates(mixedScenario(['tomek', 'kasia', 'piotr', 'anna', 'keeper']))
 
     expect(backwards.ranked.map((candidate) => [candidate.startUtc, candidate.score])).toEqual(
       forwards.ranked.map((candidate) => [candidate.startUtc, candidate.score]),

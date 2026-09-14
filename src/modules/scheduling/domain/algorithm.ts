@@ -147,10 +147,7 @@ function groupByDate(slots: readonly SchedulingSlot[]): DayGroup[] {
  * missing its Keeper is reported as missing its Keeper even when it also misses
  * quorum, because that is the one a Keeper can do something about.
  */
-function reject(
-  qualities: readonly ParticipantQuality[],
-  quorum: number,
-): Rejection | null {
+function reject(qualities: readonly ParticipantQuality[], quorum: number): Rejection | null {
   const keepersOut = qualities.filter((entry) => entry.isKeeper && entry.quality === 0)
   if (keepersOut.length > 0) {
     return {
@@ -265,9 +262,7 @@ function explain(
    * in their mouth, and the Keeper's next move is to chase them, not to work
    * around them.
    */
-  const unavailable = qualities.filter(
-    (entry) => entry.quality === 0 && !silent.has(entry.userId),
-  )
+  const unavailable = qualities.filter((entry) => entry.quality === 0 && !silent.has(entry.userId))
 
   const notes: ExplanationNote[] = []
   if (atAPush.length > 0) {

@@ -9,10 +9,7 @@ import { env } from '@/lib/env'
 import { ConflictError, DomainRuleError } from '@/lib/errors'
 import { adminActionClient } from '@/lib/safe-action'
 import { createUserSchema, setUserStatusSchema, userIdSchema } from '../domain/schemas'
-import {
-  canChangeOwnAccountState,
-  canIssueActivationLink,
-} from '../domain/rules'
+import { canChangeOwnAccountState, canIssueActivationLink } from '../domain/rules'
 import { issueActivationToken } from '../data/activation'
 import { findUserByEmail, findUserRecord, updateUserStatus } from '../data/users'
 

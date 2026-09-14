@@ -139,9 +139,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
                   if (!data?.found) return
                   editor.useSuggestion(data.byWeekday)
                   setSuggestion({ title: data.sessionTitle })
-                  setAnnouncement(
-                    `Filled in from ${data.sessionTitle}. Check it before saving.`,
-                  )
+                  setAnnouncement(`Filled in from ${data.sessionTitle}. Check it before saving.`)
                 }}
               >
                 Same as last time
@@ -173,8 +171,8 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
       <AvailabilityLegend />
 
       <p className="font-ui text-xs text-text-muted">
-        Pick an evening to answer it. Pick it again to change how firm that is. Open the clock on
-        an evening you start late or have to leave early.
+        Pick an evening to answer it. Pick it again to change how firm that is. Open the clock on an
+        evening you start late or have to leave early.
       </p>
 
       <DayOverview
@@ -252,9 +250,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
           </span>
         </div>
       ) : (
-        <p className="font-ui text-sm text-text-muted">
-          Answers are closed for this session.
-        </p>
+        <p className="font-ui text-sm text-text-muted">Answers are closed for this session.</p>
       )}
 
       <section className="flex flex-col gap-3 border-t border-border-subtle pt-6">

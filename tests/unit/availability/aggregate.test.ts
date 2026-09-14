@@ -67,10 +67,7 @@ const ANSWERS = [
   },
   {
     userId: 'jozef',
-    days: blank(DATES, [
-      day('2026-10-08', 'YES', 18, 24),
-      day('2026-10-11', 'YES', 16, 20),
-    ]),
+    days: blank(DATES, [day('2026-10-08', 'YES', 18, 24), day('2026-10-11', 'YES', 16, 20)]),
   },
   // Marcus never answers. Distinct from refusing, and the distinction the whole
   // quorum idea rests on.
@@ -185,9 +182,7 @@ describe('tallySlots', () => {
   }))
 
   it('counts each state and treats silence as unknown', () => {
-    const tally = tallySlots(ANSWERS, slots, ANSWERS.length).find(
-      (entry) => entry.localHour === 18,
-    )
+    const tally = tallySlots(ANSWERS, slots, ANSWERS.length).find((entry) => entry.localHour === 18)
 
     expect(tally).toMatchObject({ yes: 5, ifNeedBe: 0, no: 0, unknown: 1 })
   })

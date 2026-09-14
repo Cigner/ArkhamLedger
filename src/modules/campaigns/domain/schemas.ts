@@ -25,11 +25,7 @@ export const campaignStatusSchema = z.enum([
   'ARCHIVED',
 ])
 
-const nameSchema = z
-  .string()
-  .trim()
-  .min(CAMPAIGN_NAME_MIN_LENGTH)
-  .max(CAMPAIGN_NAME_MAX_LENGTH)
+const nameSchema = z.string().trim().min(CAMPAIGN_NAME_MIN_LENGTH).max(CAMPAIGN_NAME_MAX_LENGTH)
 
 const descriptionSchema = z
   .string()

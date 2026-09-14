@@ -71,7 +71,9 @@ export async function replaceParticipants(input: {
   executor: DbOrTx
 }): Promise<void> {
   const existing = await listParticipantRecords(input.sessionId, input.executor)
-  const desired = new Map(input.participants.map((participant) => [participant.userId, participant]))
+  const desired = new Map(
+    input.participants.map((participant) => [participant.userId, participant]),
+  )
 
   const removed = existing.filter((record) => !desired.has(record.userId))
   if (removed.length > 0) {

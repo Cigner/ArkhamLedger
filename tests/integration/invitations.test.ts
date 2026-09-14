@@ -109,16 +109,24 @@ describe('preview', () => {
   })
 
   it.each([
-    ['expired', async (campaignId: string, ownerId: string) => {
-      const { token } = await issue(campaignId, ownerId, { now: new Date('2026-08-01T00:00:00Z') })
-      return { token, at: new Date('2026-09-14T00:00:00Z'), reason: 'EXPIRED' as const }
-    }],
-    ['revoked', async (campaignId: string, ownerId: string) => {
-      const { token } = await issue(campaignId, ownerId)
-      const [row] = await db.select().from(campaignInvitation)
-      await revokeInvitation(row!.id, campaignId, new Date())
-      return { token, at: new Date(), reason: 'REVOKED' as const }
-    }],
+    [
+      'expired',
+      async (campaignId: string, ownerId: string) => {
+        const { token } = await issue(campaignId, ownerId, {
+          now: new Date('2026-08-01T00:00:00Z'),
+        })
+        return { token, at: new Date('2026-09-14T00:00:00Z'), reason: 'EXPIRED' as const }
+      },
+    ],
+    [
+      'revoked',
+      async (campaignId: string, ownerId: string) => {
+        const { token } = await issue(campaignId, ownerId)
+        const [row] = await db.select().from(campaignInvitation)
+        await revokeInvitation(row!.id, campaignId, new Date())
+        return { token, at: new Date(), reason: 'REVOKED' as const }
+      },
+    ],
   ])('rejects a %s invitation', async (_label, prepare) => {
     const { owner, campaignId } = await seedCampaign()
     const visitor = await createUserRow({ status: 'ACTIVE' })
@@ -164,7 +172,13 @@ describe('claiming', () => {
     await db.transaction(async (tx) => {
       const claimed = await claimInvitation(token, visitor.id, now, tx)
       expect(claimed).toMatchObject({ campaignId, roleOnJoin: 'INVESTIGATOR' })
-      await addOrReviveMember({ campaignId, userId: visitor.id, role: 'INVESTIGATOR', now, executor: tx })
+      await addOrReviveMember({
+        campaignId,
+        userId: visitor.id,
+        role: 'INVESTIGATOR',
+        now,
+        executor: tx,
+      })
     })
 
     const [invitation] = await db.select().from(campaignInvitation)
@@ -265,10 +279,7 @@ describe('rejoining', () => {
       }),
     )
 
-    const rows = await db
-      .select()
-      .from(campaignMember)
-      .where(eq(campaignMember.userId, player.id))
+    const rows = await db.select().from(campaignMember).where(eq(campaignMember.userId, player.id))
 
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({ status: 'ACTIVE', leftAt: null })

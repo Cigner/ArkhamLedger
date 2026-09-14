@@ -1,10 +1,6 @@
 import { mailer, type MailAttachment } from '@/lib/mail'
 import { buildCalendar } from '@/modules/sessions/domain/ics'
-import type {
-  DeliveryOutcome,
-  DispatchContext,
-  NotificationDispatcher,
-} from '../domain/dispatcher'
+import type { DeliveryOutcome, DispatchContext, NotificationDispatcher } from '../domain/dispatcher'
 
 /**
  * Email delivery.
@@ -75,5 +71,7 @@ function calendarFor(context: DispatchContext): MailAttachment[] | null {
     url: notification.payload.url ?? null,
   })
 
-  return [{ filename: 'session.ics', contentType: 'text/calendar; charset=utf-8', content: calendar }]
+  return [
+    { filename: 'session.ics', contentType: 'text/calendar; charset=utf-8', content: calendar },
+  ]
 }

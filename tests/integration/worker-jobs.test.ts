@@ -107,9 +107,7 @@ beforeEach(async () => {
 
 describe('closing a deadline', () => {
   it('closes the session, ranks the answers and tells the Keeper', async () => {
-    const { sessionId, keeper } = await seedCollectingSession(
-      new Date(NOW.getTime() - 60_000),
-    )
+    const { sessionId, keeper } = await seedCollectingSession(new Date(NOW.getTime() - 60_000))
 
     const result = await closeDeadlines.run(NOW)
 
