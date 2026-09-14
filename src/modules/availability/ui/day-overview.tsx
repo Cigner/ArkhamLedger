@@ -1,12 +1,13 @@
 'use client'
 
+import { Clock3 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { cellPresentation } from './grid-cell'
 import type { DayRange } from '../domain/types'
 import type { AvailabilityEditor } from './use-availability-editor'
 
 /**
- * The default way to answer: whole evenings, no hours.
+ * The way to answer: whole evenings, with the hours one press away.
  *
  * Laid out as a calendar on a wide screen and as a list on a narrow one. The
  * calendar is not decoration — it aligns every Monday in one column, so a month
@@ -15,6 +16,12 @@ import type { AvailabilityEditor } from './use-availability-editor'
  *
  * Below about 768px the seven columns would fall under the minimum touch target,
  * so the list returns there; vertical scrolling is natural on a phone anyway.
+ *
+ * Each date carries two controls rather than one: the date itself cycles the
+ * answer, and a second, always-visible button opens that evening's hours. The
+ * second control is a real button rather than a long-press or a hover reveal
+ * because both of those are invisible until already known — and a hover reveal
+ * is unreachable by touch entirely.
  */
 type Layout = 'calendar' | 'list'
 
@@ -34,6 +41,7 @@ export function DayOverview({
   layout,
   readOnly,
   timezone,
+  onOpenHours,
   onAnnounce,
 }: {
   editor: AvailabilityEditor
@@ -44,6 +52,7 @@ export function DayOverview({
   layout: Layout
   readOnly: boolean
   timezone: string
+  onOpenHours: (date: string) => void
   onAnnounce: (message: string) => void
 }) {
   const cell = (date: string) => (
@@ -57,6 +66,7 @@ export function DayOverview({
       layout={layout}
       readOnly={readOnly}
       timezone={timezone}
+      onOpenHours={onOpenHours}
       onAnnounce={onAnnounce}
     />
   )
@@ -100,6 +110,7 @@ function DayButton({
   layout,
   readOnly,
   timezone,
+  onOpenHours,
   onAnnounce,
 }: {
   date: string
@@ -110,6 +121,7 @@ function DayButton({
   layout: Layout
   readOnly: boolean
   timezone: string
+  onOpenHours: (date: string) => void
   onAnnounce: (message: string) => void
 }) {
   const range = editor.rangeFor(date)
@@ -132,6 +144,7 @@ function DayButton({
     range.toHour - range.fromHour < minSessionHours
 
   const label = `${weekday} ${fullDate}: ${presentation.label}${detail ? `, ${detail}` : ''}. Activate to change.`
+  const hoursLabel = `Exact hours for ${weekday} ${fullDate}`
 
   function handleClick() {
     editor.cycleDay(date)
@@ -148,15 +161,31 @@ function DayButton({
     tooShort && 'ring-1 ring-inset ring-status-warning',
   )
 
+  const hoursButton = (className: string) => (
+    <button
+      type="button"
+      onClick={() => onOpenHours(date)}
+      aria-label={hoursLabel}
+      title="Exact hours"
+      className={cn(
+        'flex items-center justify-center rounded-sm text-text-secondary',
+        'transition-interactive hover:bg-surface-hover hover:text-text-primary',
+        className,
+      )}
+    >
+      <Clock3 className="size-4" aria-hidden="true" />
+    </button>
+  )
+
   if (layout === 'list') {
     return (
-      <li>
+      <li className="flex items-stretch gap-1.5">
         <button
           type="button"
           disabled={readOnly}
           onClick={handleClick}
           aria-label={label}
-          className={cn(shared, 'flex min-h-12 items-center gap-3 px-3 py-2 text-left')}
+          className={cn(shared, 'flex min-h-12 flex-1 items-center gap-3 px-3 py-2 text-left')}
         >
           <span aria-hidden="true" className="w-5 shrink-0 text-center text-sm">
             {presentation.glyph || '·'}
@@ -169,12 +198,13 @@ function DayButton({
             {detail || presentation.label}
           </span>
         </button>
+        {hoursButton('w-11 shrink-0 border border-border-subtle bg-surface-subtle')}
       </li>
     )
   }
 
   return (
-    <li>
+    <li className="relative">
       <button
         type="button"
         disabled={readOnly}
@@ -195,16 +225,17 @@ function DayButton({
           </span>
         </span>
 
-        <span data-tabular className="font-ui text-2xs leading-tight opacity-85">
+        <span data-tabular className="pr-6 font-ui text-2xs leading-tight opacity-85">
           {detail || (range.state === null ? '' : presentation.label)}
         </span>
       </button>
+      {hoursButton('absolute bottom-1 right-1 size-6')}
     </li>
   )
 }
 
 /**
- * Whether an evening has been narrowed in the hours view.
+ * Whether an evening has been narrowed in the hours dialog.
  *
  * A whole evening needs no detail; printing the full span on every cell would
  * bury the few that differ.

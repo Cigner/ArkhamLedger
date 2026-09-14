@@ -10,10 +10,9 @@ import { FormError } from '@/modules/identity/ui/form-error'
 import { saveAvailability, suggestPreviousAnswer } from '../actions/availability'
 import { rangeIsLongEnough } from '../domain/ranges'
 import type { AvailabilityView } from '../domain/types'
-import { AvailabilityGrid } from './availability-grid'
 import { AvailabilityLegend } from './availability-legend'
+import { DayHoursDialog } from './day-hours-dialog'
 import { DayOverview } from './day-overview'
-import { HourRefinementList } from './hour-refinement'
 import { PRESETS } from './presets'
 import { useAvailabilityEditor } from './use-availability-editor'
 import { WindowSummaryList } from './window-summary'
@@ -54,10 +53,11 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
    *
    * Nearly every answer is "yes that evening" or "no that evening"; making
    * people aim at an hour to say so turns the common case into the fiddly one.
-   * Anybody who genuinely starts late or leaves early switches deliberately, and
-   * the day view then shows what they chose rather than hiding it.
+   * The few who start late or leave early open the one evening that differs,
+   * which is also why there is no hours mode spanning the whole window: at a
+   * month of dates such a grid has nothing aimable left to offer.
    */
-  const [showHours, setShowHours] = useState(false)
+  const [openDay, setOpenDay] = useState<string | null>(null)
 
   const save = useAction(saveAvailability, {
     onSuccess: ({ data }) => {
@@ -170,73 +170,41 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <AvailabilityLegend />
-        <Button
-          variant="ghost"
-          size="sm"
-          aria-pressed={showHours}
-          onClick={() => {
-            setShowHours((current) => !current)
-            setAnnouncement(
-              showHours ? 'Showing whole evenings.' : 'Showing exact hours.',
-            )
-          }}
-        >
-          {showHours ? 'Back to whole evenings' : 'Set exact hours'}
-        </Button>
-      </div>
+      <AvailabilityLegend />
 
       <p className="font-ui text-xs text-text-muted">
-        {showHours
-          ? narrow
-            ? 'Set when each evening starts and ends.'
-            : 'Click an hour to be free from then until the end. Drag to finish earlier.'
-          : 'Click an evening to answer it. Click again to change how firm that is. Only open the hours if you start late or have to leave early.'}
+        Pick an evening to answer it. Pick it again to change how firm that is. Open the clock on
+        an evening you start late or have to leave early.
       </p>
 
-      {showHours && narrow ? (
-        <HourRefinementList
-          editor={editor}
-          dates={view.dates}
-          gridStartHour={view.gridStartHour}
-          gridEndHour={view.gridEndHour}
-          minSessionHours={view.minSessionHours}
-          readOnly={!view.editable}
-          timezone={view.timezone}
-          onAnnounce={setAnnouncement}
-        />
-      ) : showHours ? (
-        <div className="overflow-x-auto">
-          <AvailabilityGrid
-            editor={editor}
-            dates={view.dates}
-            gridStartHour={view.gridStartHour}
-            gridEndHour={view.gridEndHour}
-            minSessionHours={view.minSessionHours}
-            orientation={narrow ? 'hours-across' : 'hours-down'}
-            readOnly={!view.editable}
-            timezone={view.timezone}
-            onAnnounce={setAnnouncement}
-          />
-        </div>
-      ) : (
-        <DayOverview
-          editor={editor}
-          dates={view.dates}
-          gridStartHour={view.gridStartHour}
-          gridEndHour={view.gridEndHour}
-          minSessionHours={view.minSessionHours}
-          layout={narrow ? 'list' : 'calendar'}
-          readOnly={!view.editable}
-          timezone={view.timezone}
-          onAnnounce={setAnnouncement}
-        />
-      )}
+      <DayOverview
+        editor={editor}
+        dates={view.dates}
+        gridStartHour={view.gridStartHour}
+        gridEndHour={view.gridEndHour}
+        minSessionHours={view.minSessionHours}
+        layout={narrow ? 'list' : 'calendar'}
+        readOnly={!view.editable}
+        timezone={view.timezone}
+        onOpenHours={setOpenDay}
+        onAnnounce={setAnnouncement}
+      />
+
+      <DayHoursDialog
+        date={openDay}
+        editor={editor}
+        gridStartHour={view.gridStartHour}
+        gridEndHour={view.gridEndHour}
+        minSessionHours={view.minSessionHours}
+        timezone={view.timezone}
+        readOnly={!view.editable}
+        onClose={() => setOpenDay(null)}
+        onAnnounce={setAnnouncement}
+      />
 
       {/*
-        Announces finished edits, never individual cells: a running commentary
-        during a drag is a stream nobody can follow.
+        Announces finished edits rather than every keystroke inside the dialog,
+        which would be a stream nobody can follow.
       */}
       <p aria-live="polite" className="sr-only">
         {announcement}
@@ -246,7 +214,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
         <p className="rounded-sm border border-status-warning/50 bg-candle-3 px-3 py-2 font-ui text-xs text-candle-11">
           {tooShort.length === 1 ? 'One evening is' : `${tooShort.length} evenings are`} marked for
           less than {view.minSessionHours} hours, so this session could not run then. They are
-          outlined in the grid.
+          outlined below.
         </p>
       ) : null}
 

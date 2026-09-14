@@ -1,47 +1,41 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { nextState, normalizeRange, rangeFromHour } from '../domain/ranges'
+import { nextState, normalizeRange } from '../domain/ranges'
 import type { DayRange, SlotState } from '../domain/types'
 import { applyPreset, applyPreviousAnswer, type PresetId } from './presets'
 
 /**
- * Interaction state for the availability grid.
+ * Interaction state for answering availability.
  *
- * Everything about how an answer is edited lives here, so the grid component is
- * left with rendering and the behaviour can be reasoned about — and tested —
- * without a DOM.
+ * Everything about how an answer is edited lives here, so the components are
+ * left with rendering and the behaviour can be tested without a DOM.
  *
- * A drag is confined to a single day. That falls out of the model rather than
- * being a restriction imposed on it: the answer is one range per date, so there
- * is no two-dimensional selection to make.
+ * The unit of an answer is one evening. Cells offer a fast cycle for the common
+ * case; the per-day dialog offers precision. Neither needs a range-painting
+ * gesture, which is why there is none: it did not survive the window growing to
+ * a month, where a grid wide enough to hold thirty dates squeezes its columns
+ * below the point of being aimable.
  */
-export type DragState = {
-  readonly date: string
-  readonly anchorHour: number
-  readonly currentHour: number
-} | null
-
 export type AvailabilityEditor = {
   readonly ranges: ReadonlyMap<string, DayRange>
   readonly isDirty: boolean
-  readonly drag: DragState
-  /** The range as it would be after the drag in progress; used to preview. */
   rangeFor(date: string): DayRange
-  stateAt(date: string, hour: number): SlotState | null
-  /** A single click: free from this hour to the end, or cycle if already set there. */
-  toggleHour(date: string, hour: number): void
+  /** One tap: moves the evening to the next state, keeping any hours already set. */
   cycleDay(date: string): void
-  /** Sets an exact range, used by the hour controls on narrow screens. */
+  /** Sets firmness without touching the hours. */
+  setState(date: string, state: SlotState): void
   setRange(date: string, fromHour: number, toHour: number): void
-  beginDrag(date: string, hour: number): void
-  extendDrag(hour: number): void
-  endDrag(): void
-  /** Abandons a drag without committing it; a click is handled separately. */
-  cancelDrag(): void
+  setRangeWithState(date: string, state: SlotState, fromHour: number, toHour: number): void
+  clearDay(date: string): void
   usePreset(preset: PresetId): void
   useSuggestion(
-    byWeekday: readonly { weekday: number; state: SlotState | null; fromHour: number; toHour: number }[],
+    byWeekday: readonly {
+      weekday: number
+      state: SlotState | null
+      fromHour: number
+      toHour: number
+    }[],
   ): void
   reset(): void
   /** Accepts the current answer as saved, so the form stops reporting changes. */
@@ -64,7 +58,6 @@ export function useAvailabilityEditor(input: {
     () => new Map(input.initial.map((range) => [range.date, range])),
   )
   const [ranges, setRanges] = useState<Map<string, DayRange>>(() => new Map(baseline))
-  const [drag, setDrag] = useState<DragState>(null)
 
   const blank = useCallback(
     (date: string): DayRange => ({ date, state: null, fromHour: 0, toHour: 0 }),
@@ -84,75 +77,17 @@ export function useAvailabilityEditor(input: {
   )
 
   const rangeFor = useCallback(
-    (date: string): DayRange => {
-      const stored = ranges.get(date) ?? blank(date)
-
-      if (drag?.date !== date) return stored
-
-      // While dragging, the range follows the pointer; the anchor may be either end.
-      const from = Math.min(drag.anchorHour, drag.currentHour)
-      const to = Math.max(drag.anchorHour, drag.currentHour) + 1
-
-      return {
-        date,
-        state: stored.state === 'NO' || stored.state === null ? 'YES' : stored.state,
-        fromHour: from,
-        toHour: to,
-      }
-    },
-    [ranges, drag, blank],
-  )
-
-  const stateAt = useCallback(
-    (date: string, hour: number): SlotState | null => {
-      const range = rangeFor(date)
-      if (range.state === null) return null
-      if (range.state === 'NO') return 'NO'
-      return hour >= range.fromHour && hour < range.toHour ? range.state : null
-    },
-    [rangeFor],
+    (date: string): DayRange => ranges.get(date) ?? blank(date),
+    [ranges, blank],
   )
 
   /**
-   * A click on an hour.
+   * One tap on an evening.
    *
-   * The first click on a fresh day means "free from here to the end", which is
-   * what people almost always mean; clicking the hour that already starts the
-   * range cycles its state instead, so one control expresses every answer.
+   * Cycles free, at a push, not free, blank. Hours already chosen survive the
+   * cycle: somebody who set "from eight" and then marks the evening grudging
+   * still means from eight.
    */
-  const toggleHour = useCallback(
-    (date: string, hour: number) => {
-      const current = ranges.get(date) ?? blank(date)
-
-      if (current.state === null) {
-        put(rangeFromHour(date, hour, input.gridEndHour))
-        return
-      }
-
-      if (current.state !== 'NO' && current.fromHour === hour) {
-        const next = nextState(current.state)
-        put(next === null ? blank(date) : { ...current, state: next })
-        return
-      }
-
-      /*
-       * A refusal covers the whole day, so it has no hour to anchor a cycle to
-       * and there is no way to tell "clicked the same hour" from "clicked
-       * another one". Any click therefore lifts the refusal and leaves the day
-       * blank; a second click then answers it. Two predictable steps beat one
-       * step whose meaning depends on history the grid cannot show.
-       */
-      if (current.state === 'NO') {
-        put(blank(date))
-        return
-      }
-
-      put(rangeFromHour(date, hour, input.gridEndHour, current.state))
-    },
-    [ranges, blank, put, input.gridEndHour],
-  )
-
-  /** The day header: cycles the whole day without aiming at an hour. */
   const cycleDay = useCallback(
     (date: string) => {
       const current = ranges.get(date) ?? blank(date)
@@ -173,6 +108,19 @@ export function useAvailabilityEditor(input: {
     [ranges, blank, put, input.gridStartHour, input.gridEndHour],
   )
 
+  const setState = useCallback(
+    (date: string, state: SlotState) => {
+      const current = ranges.get(date) ?? blank(date)
+      put({
+        date,
+        state,
+        fromHour: current.state === null ? input.gridStartHour : current.fromHour,
+        toHour: current.state === null ? input.gridEndHour : current.toHour,
+      })
+    },
+    [ranges, blank, put, input.gridStartHour, input.gridEndHour],
+  )
+
   const setRange = useCallback(
     (date: string, fromHour: number, toHour: number) => {
       const current = ranges.get(date)
@@ -186,29 +134,19 @@ export function useAvailabilityEditor(input: {
     [ranges, put],
   )
 
-  const beginDrag = useCallback((date: string, hour: number) => {
-    setDrag({ date, anchorHour: hour, currentHour: hour })
-  }, [])
+  const setRangeWithState = useCallback(
+    (date: string, state: SlotState, fromHour: number, toHour: number) => {
+      put({ date, state, fromHour, toHour })
+    },
+    [put],
+  )
 
-  const extendDrag = useCallback((hour: number) => {
-    setDrag((current) => (current ? { ...current, currentHour: hour } : null))
-  }, [])
-
-  /*
-   * Commits outside the state updater. Calling put() from inside setDrag's
-   * updater made the commit a side effect of a function React requires to be
-   * pure: it could run at an unexpected time or twice, and the range that
-   * landed was whichever write happened to be last.
-   */
-  const endDrag = useCallback(() => {
-    if (!drag) return
-    put(rangeFor(drag.date))
-    setDrag(null)
-  }, [drag, put, rangeFor])
-
-  const cancelDrag = useCallback(() => {
-    setDrag(null)
-  }, [])
+  const clearDay = useCallback(
+    (date: string) => {
+      put(blank(date))
+    },
+    [blank, put],
+  )
 
   const usePresetCallback = useCallback(
     (preset: PresetId) => {
@@ -287,16 +225,12 @@ export function useAvailabilityEditor(input: {
   return {
     ranges,
     isDirty,
-    drag,
     rangeFor,
-    stateAt,
-    setRange,
-    toggleHour,
     cycleDay,
-    beginDrag,
-    extendDrag,
-    endDrag,
-    cancelDrag,
+    setState,
+    setRange,
+    setRangeWithState,
+    clearDay,
     usePreset: usePresetCallback,
     useSuggestion,
     reset,
