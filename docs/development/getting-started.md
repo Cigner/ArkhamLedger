@@ -59,6 +59,16 @@ generated:
 Sign in as `eleanor@arkham.test` for the richest view — she owns two campaigns
 and keeps a third. `admin@arkham.test` reaches the operations screen.
 
+### Why the scripts load `.env` themselves
+
+Next.js reads `.env` for `next dev` and `next build`. Nothing else does — `tsx`
+and `node` have no opinion about it — so the migrator, the seeds, the worker and
+drizzle-kit pass `--env-file-if-exists=.env` explicitly. Without it they fail
+with "DATABASE_URL is required" against a perfectly good `.env`.
+
+`--env-file-if-exists` rather than `--env-file` because the file is absent in
+the container, where the environment comes from compose instead.
+
 ## Rhythm
 
 ```bash

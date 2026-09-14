@@ -53,6 +53,21 @@ many evenings. The two usual causes:
 - **The quorum is unreachable.** It counts players, not participants. A quorum
   equal to the number of people including the Keeper can never be met.
 
+## A script says `DATABASE_URL is required` and `.env` is filled in
+
+Next.js loads `.env`; `tsx` and `node` do not. Every script that runs outside
+Next — `db:migrate`, `db:seed`, `db:seed:dev`, `db:studio`, `db:generate`,
+`worker:dev` — passes `--env-file-if-exists=.env` for that reason. If you are
+invoking one of those files directly rather than through npm, either add the
+flag or export the file first:
+
+```bash
+set -a; . ./.env; set +a
+```
+
+Inside a container this never applies: compose supplies the environment and
+there is no `.env` in the image.
+
 ## The database container will not start
 
 Check the volume. `mysql_data` is a named volume; a compose file that binds a
