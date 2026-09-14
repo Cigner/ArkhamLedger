@@ -104,9 +104,10 @@ export function canPublish(input: {
   const keepers = input.participants.filter((participant) => participant.isKeeper)
   if (keepers.length === 0) return fail('sessions.errors.noKeeperAmongParticipants')
 
-  if (input.participants.length < input.quorum) {
+  const players = countPlayers(input.participants)
+  if (players < input.quorum) {
     return fail('sessions.errors.fewerParticipantsThanQuorum', {
-      participants: input.participants.length,
+      participants: players,
       quorum: input.quorum,
     })
   }
@@ -117,12 +118,28 @@ export function canPublish(input: {
   return validateDeadline(input.deadline, input.windowStart, input.now)
 }
 
-export function validateQuorum(quorum: number, participantCount: number): Result<void> {
+/**
+ * How many people quorum is counted against.
+ *
+ * The Keeper is not one of them. They have to be there for the session to happen
+ * at all, so counting them would let a threshold of three be reached by two
+ * players — quietly weakening the number a campaign deliberately chose.
+ */
+export function countPlayers(participants: readonly ParticipantDraft[]): number {
+  return participants.filter((participant) => !participant.isKeeper).length
+}
+
+/**
+ * A quorum above the number of players is unreachable by construction: no set of
+ * answers could ever satisfy it, and the session would search its whole window
+ * and find nothing, with no way for the Keeper to see why.
+ */
+export function validateQuorum(quorum: number, playerCount: number): Result<void> {
   if (quorum < 1) return fail('sessions.errors.quorumTooLow')
-  if (quorum > participantCount) {
+  if (quorum > playerCount) {
     return fail('sessions.errors.quorumAboveParticipantCount', {
       quorum,
-      participants: participantCount,
+      participants: playerCount,
     })
   }
   return ok()

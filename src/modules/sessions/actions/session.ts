@@ -13,10 +13,12 @@ import { defaultQuorum } from '../domain/constants'
 import {
   canEditDefinition,
   canRecordAttendance,
+  canSetDate,
   canTransition,
 } from '../domain/lifecycle'
 import {
   canPublish,
+  countPlayers,
   normalizeParticipants,
   validateDeadline,
   validateGridBounds,
@@ -165,7 +167,7 @@ export const updateSession = authActionClient
     if (!grid.ok) throw new DomainRuleError(grid.error.key, grid.error.params)
 
     const participants = await listParticipantRecords(parsedInput.sessionId)
-    const quorum = validateQuorum(parsedInput.quorum, participants.length)
+    const quorum = validateQuorum(parsedInput.quorum, countPlayers(participants))
     if (!quorum.ok) throw new DomainRuleError(quorum.error.key, quorum.error.params)
 
     const now = new Date()
@@ -274,8 +276,8 @@ export const setSessionDate = authActionClient
     const context = await requireSessionKeeper(parsedInput.sessionId)
     const session = await findSessionState(parsedInput.sessionId)
 
-    const transition = canTransition(session.status, 'SCHEDULED')
-    if (!transition.ok) throw new DomainRuleError(transition.error.key)
+    const allowed = canSetDate(session.status)
+    if (!allowed.ok) throw new DomainRuleError(allowed.error.key)
 
     if (parsedInput.endHour <= parsedInput.startHour) {
       throw new DomainRuleError('sessions.errors.endBeforeStart')
@@ -293,6 +295,8 @@ export const setSessionDate = authActionClient
         patch: {
           confirmedStartUtc: startUtc,
           confirmedEndUtc: endUtc,
+          // The date is the Keeper's own now, not one the search proposed.
+          acceptedProposalId: null,
           setManually: true,
           cancelledReason: null,
         },
@@ -350,6 +354,7 @@ export const reopenCollection = authActionClient
           availabilityDeadline: deadline,
           confirmedStartUtc: null,
           confirmedEndUtc: null,
+          acceptedProposalId: null,
           setManually: false,
         },
         now,
@@ -372,6 +377,52 @@ export const reopenCollection = authActionClient
     })
 
     revalidatePath(`/sessions/${parsedInput.sessionId}`)
+
+    return { ok: true }
+  })
+
+/**
+ * Stops asking for availability without choosing a date yet.
+ *
+ * The half-step between collecting and scheduled: answers are closed, the
+ * Keeper is deciding. Separate from running a search, because looking at the
+ * state of play should never be what locks everybody else out of answering.
+ */
+export const closeCollection = authActionClient
+  .metadata({ name: 'session.closeCollection' })
+  .inputSchema(sessionIdSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const context = await requireSessionKeeper(parsedInput.sessionId)
+    const session = await findSessionState(parsedInput.sessionId)
+
+    const transition = canTransition(session.status, 'PROPOSED')
+    if (!transition.ok) throw new DomainRuleError(transition.error.key)
+
+    const now = new Date()
+
+    await db.transaction(async (tx) => {
+      const moved = await transitionSession({
+        sessionId: parsedInput.sessionId,
+        from: session.status,
+        to: 'PROPOSED',
+        now,
+        executor: tx,
+      })
+      if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
+
+      await recordAudit(
+        {
+          actorId: ctx.user.id,
+          action: 'session.collectionClosed',
+          entityType: 'session',
+          entityId: parsedInput.sessionId,
+        },
+        tx,
+      )
+    })
+
+    revalidatePath(`/sessions/${parsedInput.sessionId}`)
+    revalidatePath(`/campaigns/${context.campaignId}/sessions`)
 
     return { ok: true }
   })

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
+import { ButtonLink } from '@/components/ui/button-link'
 import {
   Dialog,
   DialogBody,
@@ -22,6 +23,7 @@ import { resolveActionError } from '@/modules/identity/ui/action-errors'
 import { FormError } from '@/modules/identity/ui/form-error'
 import {
   cancelSession,
+  closeCollection,
   completeSession,
   publishSession,
   reopenCollection,
@@ -84,6 +86,7 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
   const { error, setError, handle } = useMessage()
 
   const [schedulingOpen, setSchedulingOpen] = useState(false)
+  const [closeOpen, setCloseOpen] = useState(false)
   const [reopenOpen, setReopenOpen] = useState(false)
   const [cancelOpen, setCancelOpen] = useState(false)
   const [completeOpen, setCompleteOpen] = useState(false)
@@ -107,6 +110,13 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
       refresh()
     },
     onError: handle('Could not reopen collection.'),
+  })
+  const closeAnswers = useAction(closeCollection, {
+    onSuccess: () => {
+      setCloseOpen(false)
+      refresh()
+    },
+    onError: handle('Could not close the answers.'),
   })
   const cancel = useAction(cancelSession, {
     onSuccess: () => {
@@ -139,6 +149,18 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             }}
           >
             {publish.isPending ? 'Opening…' : 'Ask for availability'}
+          </Button>
+        ) : null}
+
+        {status === 'COLLECTING' || status === 'PROPOSED' ? (
+          <ButtonLink href={`/sessions/${session.id}/scheduling`} variant="accent">
+            Find dates
+          </ButtonLink>
+        ) : null}
+
+        {status === 'COLLECTING' ? (
+          <Button variant="ghost" onClick={() => setCloseOpen(true)}>
+            Close answers
           </Button>
         ) : null}
 
@@ -333,6 +355,16 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={closeOpen}
+        onOpenChange={setCloseOpen}
+        title="Stop asking for availability?"
+        description="Nobody can change their answer afterwards, and the dates already suggested stay as they are. You can reopen it later if plans change."
+        confirmLabel="Close answers"
+        pending={closeAnswers.isPending}
+        onConfirm={() => closeAnswers.execute({ sessionId: session.id })}
+      />
 
       <ConfirmDialog
         open={completeOpen}

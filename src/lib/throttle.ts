@@ -5,17 +5,20 @@ import { identityThrottle } from '@/db/schema'
 import { securityLogger } from '@/lib/logger'
 
 /**
- * Per-address throttling for credential endpoints.
+ * Throttling by identifier rather than by address.
  *
- * The auth library's own limiter keys on IP address, which an attacker rotates
- * for free. Keying on the email address as well makes a distributed guessing run
- * against one account no faster than a single-source one.
+ * For credentials the identifier is an email address: the auth library's own
+ * limiter keys on IP, which an attacker rotates for free, so keying on the
+ * target address as well makes a distributed guessing run no faster than a
+ * single-source one. For expensive operations the identifier is the thing being
+ * operated on — a session id — which bounds the cost one Keeper can impose by
+ * holding down a button.
  *
  * Counters live in MySQL rather than in process memory so a limit survives a
- * restart — a deploy is precisely when a reset benefits an attacker, and this
+ * restart: a deploy is precisely when a reset benefits an attacker, and this
  * deployment has no Redis to lean on.
  */
-export type ThrottleScope = 'signin' | 'reset'
+export type ThrottleScope = 'signin' | 'reset' | 'schedule'
 
 export type ThrottleDecision =
   | { readonly allowed: true }
@@ -32,6 +35,13 @@ const POLICIES: Record<ThrottleScope, ThrottlePolicy> = {
   // Reset requests are cheap for an attacker and noisy for the victim's inbox,
   // so they are capped harder and over a longer window than sign-in attempts.
   reset: { attempts: 5, windowMs: 60 * 60_000, blockMs: 60 * 60_000 },
+  /*
+   * Searching for dates reads every answer in a session and scores a few hundred
+   * windows. Cheap once, wasteful in a loop, and there is no reason to run it
+   * ten times an hour on answers that have not changed. The block is short
+   * because the caller is a Keeper doing their job, not an attacker.
+   */
+  schedule: { attempts: 10, windowMs: 60 * 60_000, blockMs: 10 * 60_000 },
 }
 
 function throttleKey(scope: ThrottleScope, identifier: string): string {

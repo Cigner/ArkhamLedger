@@ -6,7 +6,7 @@ import { recordAudit } from '@/lib/audit'
 import { DomainRuleError } from '@/lib/errors'
 import { authActionClient } from '@/lib/safe-action'
 import { canEditParticipants } from '../domain/lifecycle'
-import { normalizeParticipants, validateQuorum } from '../domain/rules'
+import { countPlayers, normalizeParticipants, validateQuorum } from '../domain/rules'
 import { setParticipantsSchema } from '../domain/schemas'
 import { requireSessionKeeper } from '../data/guards'
 import { findSessionState, setSessionQuorum } from '../data/sessions'
@@ -49,7 +49,7 @@ export const setSessionParticipants = authActionClient
       throw new DomainRuleError('sessions.errors.noKeeperAmongParticipants')
     }
 
-    const quorum = validateQuorum(parsedInput.quorum, normalized.length)
+    const quorum = validateQuorum(parsedInput.quorum, countPlayers(normalized))
     if (!quorum.ok) throw new DomainRuleError(quorum.error.key, quorum.error.params)
 
     const now = new Date()

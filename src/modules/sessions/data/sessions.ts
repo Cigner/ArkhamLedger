@@ -291,6 +291,7 @@ export async function transitionSession(input: {
     availabilityDeadline: Date | null
     confirmedStartUtc: Date | null
     confirmedEndUtc: Date | null
+    acceptedProposalId: string | null
     setManually: boolean
     cancelledReason: string | null
   }>

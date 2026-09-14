@@ -66,6 +66,19 @@ export function canSubmitAvailability(status: SessionStatus): Result<void> {
   return fail('sessions.errors.notCollecting')
 }
 
+/**
+ * Whether a date may be set or changed.
+ *
+ * Moving a session that already has a date is a change of when it happens, not a
+ * change of what state it is in, so it is allowed from SCHEDULED even though
+ * SCHEDULED is not a transition to itself. Plans move; a Keeper should not have
+ * to cancel a session to shift it by an hour.
+ */
+export function canSetDate(status: SessionStatus): Result<void> {
+  if (status === 'SCHEDULED') return ok()
+  return canTransition(status, 'SCHEDULED')
+}
+
 /** Whether attendance may be recorded, which is what completing a session means. */
 export function canRecordAttendance(status: SessionStatus): Result<void> {
   if (status === 'SCHEDULED') return ok()

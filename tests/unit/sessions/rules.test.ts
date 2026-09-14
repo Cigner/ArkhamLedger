@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { defaultQuorum } from '@/modules/sessions/domain/constants'
 import {
   canPublish,
+  countPlayers,
   deadlineHasPassed,
   normalizeParticipants,
   presenceIsRequired,
@@ -139,6 +140,23 @@ describe('validateQuorum', () => {
   })
 })
 
+describe('countPlayers', () => {
+  /*
+   * Quorum is about who will be at the table to play. The Keeper has to be there
+   * for the session to exist at all, so counting them would let a threshold of
+   * three be satisfied by two players.
+   */
+  it('leaves the Keeper out of the count', () => {
+    expect(
+      countPlayers([
+        participant({ userId: 'k', isKeeper: true, priority: 'REQUIRED' as const }),
+        participant({ userId: 'a' }),
+        participant({ userId: 'b' }),
+      ]),
+    ).toBe(2)
+  })
+})
+
 describe('canPublish', () => {
   const base = {
     status: 'DRAFT' as const,
@@ -169,8 +187,8 @@ describe('canPublish', () => {
   })
 
   /*
-   * A quorum above the number of people invited can never be met, so the session
-   * would collect availability for a week and then report that no date works.
+   * A quorum above the number of players can never be met, so the session would
+   * collect availability for a week and then report that no date works.
    */
   it('refuses a quorum larger than the guest list', () => {
     const result = canPublish({ ...base, quorum: 4 })
@@ -178,8 +196,12 @@ describe('canPublish', () => {
     expect(result.ok).toBe(false)
     if (!result.ok) {
       expect(result.error.key).toBe('sessions.errors.fewerParticipantsThanQuorum')
-      expect(result.error.params).toEqual({ participants: 3, quorum: 4 })
+      expect(result.error.params).toEqual({ participants: 2, quorum: 4 })
     }
+  })
+
+  it('refuses a quorum that only counts up with the Keeper included', () => {
+    expect(canPublish({ ...base, quorum: 3 }).ok).toBe(false)
   })
 
   it('refuses publishing something that is not a draft', () => {

@@ -37,6 +37,10 @@ export default async function SessionOverviewPage({
     (participant) => participant.respondedAt !== null,
   ).length
 
+  // Quorum counts players. The Keeper has to be there regardless, so including
+  // them would describe a lower bar than the campaign actually set.
+  const playerCount = session.participants.filter((participant) => !participant.isKeeper).length
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="flex flex-col gap-6 lg:col-span-2">
@@ -150,7 +154,7 @@ export default async function SessionOverviewPage({
             ))}
           </ul>
           <p className="mt-4 font-ui text-xs text-text-muted">
-            {session.quorum} of {session.participants.length} have to be free for this to happen.
+            {session.quorum} of the {playerCount} players have to be free for this to happen.
           </p>
         </CardContent>
       </Card>

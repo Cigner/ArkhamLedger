@@ -254,16 +254,21 @@ export type SeedSession = {
  * deliberately determinable answer, so the scheduling algorithm can be checked
  * against a result a human worked out first:
  *
- *   Thu 8 Oct 18:00–24:00  every required player available, five of six say yes
- *   Sun 11 Oct 18:00–24:00 runner-up: Anna only "if need be", Józef unavailable
- *   Mon 5 Oct              rejected: two required players said no
+ *   Thu 8 Oct 18:00–24:00  everyone required is free; Marcus never answered
+ *   Sun 11 Oct 18:00–24:00 runner-up: Anna only "if need be", Józef leaves at 20
+ *   Mon 5 Oct              rejected: a Keeper and a required player said no
+ *   Thu 15 Oct             rejected: everybody is free, but only for four hours
  *
  * Marcus never answers, which is what exercises the "has not responded" state —
  * distinct from answering no, and the distinction the whole quorum idea rests on.
  *
- * No schedule runs or proposals are seeded. Inventing algorithm output would
- * fix a contract the scheduling module has not written yet; the availability is
- * real, so the first genuine run produces genuine proposals.
+ * No schedule runs or proposals are seeded. The seed is a database fixture and
+ * must not reach into a domain module to produce them, and inventing the output
+ * by hand would pin a contract the algorithm owns. The availability is real, so
+ * one press of "Find dates" produces genuine proposals.
+ *
+ * Quorums count players, not participants: both Keepers of the Masks campaign
+ * are outside the count, which is why a five-person session asks for three.
  */
 export const SEED_SESSIONS: readonly SeedSession[] = [
   {
@@ -291,7 +296,9 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
     windowStart: '2026-10-05',
     windowEnd: '2026-11-03',
     deadlineInDays: 9,
-    quorum: 4,
+    // Two of the four players are enough for this group, which is what lets the
+    // compromised Sunday appear below the clean Thursday instead of vanishing.
+    quorum: 2,
     participants: [
       { userKey: 'eleanor', priority: 'REQUIRED', responded: true },
       { userKey: 'harriet', priority: 'REQUIRED', responded: true },
@@ -301,7 +308,8 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
       { userKey: 'marcus', priority: 'OPTIONAL', responded: false },
     ],
     availability: [
-      // Monday the 5th is ruled out by two required players saying no.
+      // Monday the 5th is out: Harriet runs the game and cannot make it, and
+      // Anna, who is required, cannot either.
       { userKey: 'eleanor', date: '2026-10-05', fromHour: 18, toHour: 24, state: 'YES' },
       { userKey: 'harriet', date: '2026-10-05', fromHour: 16, toHour: 24, state: 'NO' },
       { userKey: 'anna', date: '2026-10-05', fromHour: 16, toHour: 24, state: 'NO' },
@@ -314,7 +322,8 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
       { userKey: 'tomas', date: '2026-10-08', fromHour: 16, toHour: 24, state: 'YES' },
       { userKey: 'jozef', date: '2026-10-08', fromHour: 18, toHour: 24, state: 'YES' },
 
-      // Sunday the 11th is second: Anna is grudging and Józef leaves at eight.
+      // Sunday the 11th comes second: Anna is grudging, and Józef leaving at
+      // eight takes him out of a six-hour evening entirely.
       { userKey: 'eleanor', date: '2026-10-11', fromHour: 16, toHour: 24, state: 'YES' },
       { userKey: 'harriet', date: '2026-10-11', fromHour: 17, toHour: 24, state: 'YES' },
       { userKey: 'anna', date: '2026-10-11', fromHour: 17, toHour: 24, state: 'IF_NEED_BE' },
@@ -357,7 +366,7 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
     status: 'SCHEDULED',
     windowStart: '2026-09-14',
     windowEnd: '2026-09-27',
-    quorum: 4,
+    quorum: 3,
     participants: [
       { userKey: 'eleanor', priority: 'REQUIRED', responded: true },
       { userKey: 'harriet', priority: 'PREFERRED', responded: true },
@@ -375,7 +384,7 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
     status: 'COMPLETED',
     windowStart: '2026-08-24',
     windowEnd: '2026-09-06',
-    quorum: 4,
+    quorum: 3,
     participants: [
       { userKey: 'eleanor', priority: 'REQUIRED', responded: true, attendance: 'ATTENDED' },
       { userKey: 'harriet', priority: 'PREFERRED', responded: true, attendance: 'ATTENDED' },
@@ -393,7 +402,7 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
     status: 'CANCELLED',
     windowStart: '2026-08-17',
     windowEnd: '2026-08-30',
-    quorum: 4,
+    quorum: 2,
     cancelledReason: 'Two of the four required players fell ill the same week.',
     participants: [
       { userKey: 'eleanor', priority: 'REQUIRED', responded: true },

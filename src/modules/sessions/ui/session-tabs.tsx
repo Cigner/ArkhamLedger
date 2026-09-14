@@ -7,8 +7,9 @@ import { cn } from '@/lib/cn'
 /**
  * Section navigation inside a session.
  *
- * The participants tab is Keeper-only because it shows priorities, which are the
- * Keeper's private working notes. The route enforces that itself.
+ * The dates and participants tabs are Keeper-only: one ranks windows against
+ * named availability, the other shows priorities, and both are the Keeper's
+ * private working notes. The routes enforce that themselves.
  */
 export function SessionTabs({
   sessionId,
@@ -26,6 +27,7 @@ export function SessionTabs({
     { href: base, label: 'Overview' },
     // Only somebody who was invited has an answer to give or a grid to read.
     ...(isParticipant ? [{ href: `${base}/availability`, label: 'Availability' }] : []),
+    ...(isKeeper ? [{ href: `${base}/scheduling`, label: 'Dates' }] : []),
     ...(isKeeper ? [{ href: `${base}/participants`, label: 'Participants' }] : []),
   ]
 

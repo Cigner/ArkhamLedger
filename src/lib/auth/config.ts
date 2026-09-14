@@ -10,7 +10,7 @@ import { newId } from '@/lib/ids'
 import { securityLogger } from '@/lib/logger'
 import { mailer } from '@/lib/mail'
 import { passwordChangedEmail, passwordResetEmail } from '@/modules/identity/domain/emails'
-import { clearAttempts, consumeAttempt, type ThrottleScope } from './email-throttle'
+import { clearAttempts, consumeAttempt, type ThrottleScope } from '@/lib/throttle'
 
 /**
  * Authentication instance.

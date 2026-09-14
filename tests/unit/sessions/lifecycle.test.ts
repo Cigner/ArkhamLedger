@@ -4,6 +4,7 @@ import {
   canEditDefinition,
   canEditParticipants,
   canRecordAttendance,
+  canSetDate,
   canSubmitAvailability,
   canTransition,
   isTerminal,
@@ -120,5 +121,14 @@ describe('capability gates', () => {
 
   it.each(ALL_STATUSES)('attendance is recorded only from SCHEDULED (%s)', (status) => {
     expect(canRecordAttendance(status).ok).toBe(status === 'SCHEDULED')
+  })
+
+  /*
+   * Moving a session that already has a date is a change of when it happens, not
+   * a change of state. Routing it through the transition table would make
+   * "change the date" fail on exactly the sessions that have one.
+   */
+  it.each(ALL_STATUSES)('a date can be set or changed unless the session is over (%s)', (status) => {
+    expect(canSetDate(status).ok).toBe(!isTerminal(status))
   })
 })

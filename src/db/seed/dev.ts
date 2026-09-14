@@ -215,7 +215,7 @@ export async function seedDevelopmentData(baseUrl: string): Promise<SeedReport> 
     if (!campaignId) throw new Error(`Unknown campaign key: ${seed.campaignKey}`)
 
     const sessionId = newId()
-    await insertSession(sessionId, campaignId, seed, userIds, now)
+    await insertSession(sessionId, campaignId, seed, userIds, keepersOf(seed.campaignKey), now)
 
     sessions.push({
       campaign: SEED_CAMPAIGNS.find((c) => c.key === seed.campaignKey)!.name,
@@ -235,6 +235,24 @@ export async function seedDevelopmentData(baseUrl: string): Promise<SeedReport> 
 }
 
 /**
+ * Who runs the game in a given campaign.
+ *
+ * Read from the campaign's own membership rather than from a list of names: the
+ * same person is a Keeper in one campaign and a player in another, and flagging
+ * them as a Keeper everywhere makes them a hard constraint on sessions they are
+ * merely invited to — which silently rules out every date in those sessions.
+ */
+function keepersOf(campaignKey: string): ReadonlySet<string> {
+  const campaignSeed = SEED_CAMPAIGNS.find((entry) => entry.key === campaignKey)
+
+  return new Set(
+    (campaignSeed?.members ?? [])
+      .filter((member) => member.role === 'KEEPER')
+      .map((member) => member.userKey),
+  )
+}
+
+/**
  * Writes one session with its participants and availability.
  *
  * Availability is expanded from local hour ranges into the exact grid slots the
@@ -247,6 +265,7 @@ async function insertSession(
   campaignId: string,
   seed: SeedSession,
   userIds: ReadonlyMap<string, string>,
+  keeperKeys: ReadonlySet<string>,
   now: Date,
 ): Promise<void> {
   const gridStartHour = seed.gridStartHour ?? DEFAULT_GRID_START
@@ -294,8 +313,10 @@ async function insertSession(
       gameSessionId: sessionId,
       userId,
       priority: participant.priority,
-      isKeeper: ['eleanor', 'harriet', 'marcus'].includes(participant.userKey),
-      respondedAt: participant.responded ? now : null,
+      isKeeper: keeperKeys.has(participant.userKey),
+      // A day before the anchor: people answered before now, and a response
+      // stamped at exactly "now" reads to the app as one that just arrived.
+      respondedAt: participant.responded ? new Date(now.getTime() - MS_PER_DAY) : null,
       attendance: participant.attendance ?? 'UNKNOWN',
       createdAt: now,
       updatedAt: now,
