@@ -63,6 +63,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
+# The committed migrations and their journal. src/db/migrate.ts resolves
+# './src/db/migrations' against the working directory, so the path has to be
+# reproduced here; the standalone output traces only what the web tier imports,
+# which is the compiled schema and never the SQL files.
+COPY --from=builder --chown=nextjs:nodejs /app/src/db/migrations ./src/db/migrations
+
 # The worker and the migrator, each a single file plain node can run. Their few
 # external dependencies — mysql2, pino, nodemailer — resolve from the standalone
 # node_modules copied above, which carries them because the web tier uses them too.
