@@ -149,7 +149,10 @@ export function NextSessionCard({
             ))}
           </div>
         ) : (
-          <Badge variant="muted">Nothing played yet</Badge>
+          <div>
+            {/* Wrapped: a badge in a column stretches to the column's width. */}
+            <Badge variant="muted">Nothing played yet</Badge>
+          </div>
         )}
       </CardContent>
     </Card>
