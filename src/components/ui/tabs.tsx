@@ -29,7 +29,9 @@ export function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
         'relative -mb-px border-b-2 border-transparent px-3 py-2',
         'font-ui text-sm text-text-secondary transition-interactive',
         'hover:text-text-primary active:text-text-primary',
-        'data-[selected]:border-candle-9 data-[selected]:font-medium data-[selected]:text-text-primary',
+        // Base UI marks the active tab with data-active, not data-selected;
+        // the latter silently matches nothing and leaves every tab looking idle.
+        'data-[active]:border-candle-9 data-[active]:font-medium data-[active]:text-text-primary',
         className,
       )}
       {...props}
