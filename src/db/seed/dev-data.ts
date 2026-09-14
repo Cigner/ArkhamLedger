@@ -289,7 +289,7 @@ export const SEED_SESSIONS: readonly SeedSession[] = [
     description: 'Picking up at the Ju-Ju House. Bring the ledger from last time.',
     status: 'COLLECTING',
     windowStart: '2026-10-05',
-    windowEnd: '2026-10-18',
+    windowEnd: '2026-11-03',
     deadlineInDays: 9,
     quorum: 4,
     participants: [

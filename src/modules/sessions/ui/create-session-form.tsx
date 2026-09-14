@@ -34,22 +34,29 @@ const MESSAGES: Record<string, string> = {
 }
 
 /**
- * Default window: today through a fortnight out.
+ * Default window: today through a month out.
  *
- * Computed once in a lazy initializer rather than in the render body, which
- * reads the clock and would make the component impure.
+ * A fortnight regularly contains no evening the whole group can make, and a
+ * Keeper who has to widen the window discovers that only after everybody has
+ * already answered. Starting at a month costs nothing — the grid is a calendar,
+ * so thirty dates are five rows rather than thirty.
+ *
+ * Computed in a lazy initializer rather than in the render body, which reads the
+ * clock and would make the component impure.
  */
-function defaultWindow(): { today: string; inTwoWeeks: string } {
+const DEFAULT_WINDOW_DAYS = 30
+
+function defaultWindow(): { today: string; windowEnd: string } {
   const now = Date.now()
   return {
     today: new Date(now).toISOString().slice(0, 10),
-    inTwoWeeks: new Date(now + 14 * 86_400_000).toISOString().slice(0, 10),
+    windowEnd: new Date(now + DEFAULT_WINDOW_DAYS * 86_400_000).toISOString().slice(0, 10),
   }
 }
 
 export function CreateSessionForm({ campaignId }: { campaignId: string }) {
   const router = useRouter()
-  const [{ today, inTwoWeeks }] = useState(defaultWindow)
+  const [{ today, windowEnd }] = useState(defaultWindow)
   const [navigating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -129,7 +136,7 @@ export function CreateSessionForm({ campaignId }: { campaignId: string }) {
               id="searchWindowEnd"
               name="searchWindowEnd"
               type="date"
-              defaultValue={inTwoWeeks}
+              defaultValue={windowEnd}
               required
               disabled={busy}
             />

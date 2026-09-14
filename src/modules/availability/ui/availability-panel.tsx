@@ -192,7 +192,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
           ? narrow
             ? 'Set when each evening starts and ends.'
             : 'Click an hour to be free from then until the end. Drag to finish earlier.'
-          : 'Tap an evening to answer it. Tap again to change how firm that is. Only open the hours if you start late or have to leave early.'}
+          : 'Click an evening to answer it. Click again to change how firm that is. Only open the hours if you start late or have to leave early.'}
       </p>
 
       {showHours && narrow ? (
@@ -227,6 +227,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
           gridStartHour={view.gridStartHour}
           gridEndHour={view.gridEndHour}
           minSessionHours={view.minSessionHours}
+          layout={narrow ? 'list' : 'calendar'}
           readOnly={!view.editable}
           timezone={view.timezone}
           onAnnounce={setAnnouncement}
