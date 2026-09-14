@@ -16,8 +16,16 @@ const serverEnvSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.url(),
 
-  /** AES-256-GCM key (base64, 32 bytes) for integration secrets at rest. */
-  ENCRYPTION_KEY: z.string().min(44),
+  /**
+   * AES-256-GCM key for secrets at rest: base64 that decodes to exactly 32 bytes.
+   *
+   * Checked by decoding rather than by length. A 44-character string that is not
+   * a 32-byte key passes a length check and then fails at the first encryption —
+   * which happens in production, the first time somebody saves a webhook.
+   */
+  ENCRYPTION_KEY: z.string().refine((value) => decodedLength(value) === 32, {
+    error: 'must be base64 that decodes to exactly 32 bytes',
+  }),
 
   ALLOWED_ORIGINS: z.string().default(''),
 
@@ -39,6 +47,14 @@ const serverEnvSchema = z.object({
   /** Default IANA zone for new campaigns and users. */
   DEFAULT_TIMEZONE: z.string().default('Europe/Warsaw'),
 })
+
+function decodedLength(value: string): number {
+  try {
+    return Buffer.from(value, 'base64').length
+  } catch {
+    return 0
+  }
+}
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>
 

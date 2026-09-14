@@ -6,8 +6,9 @@ import { recordAudit } from '@/lib/audit'
 import { ConflictError, DomainRuleError, RateLimitError } from '@/lib/errors'
 import { authActionClient } from '@/lib/safe-action'
 import { consumeAttempt } from '@/lib/throttle'
+import { announceToSession } from '@/modules/notifications/data/announce'
 import { requireSessionKeeper } from '@/modules/sessions/data/guards'
-import { findSessionState, transitionSession } from '@/modules/sessions/data/sessions'
+import { findSessionState, transitionSession } from '@/modules/sessions/data/session-store'
 import { canSetDate } from '@/modules/sessions/domain/lifecycle'
 import { rankCandidates } from '../domain/algorithm'
 import { acceptProposalSchema, runSchedulingSchema } from '../domain/schemas'
@@ -128,6 +129,17 @@ export const acceptProposal = authActionClient
         executor: tx,
       })
       if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
+
+      await announceToSession({
+        sessionId: parsedInput.sessionId,
+        type: session.status === 'SCHEDULED' ? 'SESSION_RESCHEDULED' : 'SESSION_SCHEDULED',
+        payload: {
+          startUtc: proposal.startUtc.toISOString(),
+          endUtc: proposal.endUtc.toISOString(),
+        },
+        now,
+        executor: tx,
+      })
 
       await recordAudit(
         {

@@ -9,7 +9,7 @@ import { canEditParticipants } from '../domain/lifecycle'
 import { countPlayers, normalizeParticipants, validateQuorum } from '../domain/rules'
 import { setParticipantsSchema } from '../domain/schemas'
 import { requireSessionKeeper } from '../data/guards'
-import { findSessionState, setSessionQuorum } from '../data/sessions'
+import { findSessionState, setSessionQuorum } from '../data/session-store'
 import { listEligibleParticipants, replaceParticipants } from '../data/participants'
 
 /**

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db/client'
 import { recordAudit } from '@/lib/audit'
+import { announceToKeepers, announceToUser } from '@/modules/notifications/data/announce'
 import { env } from '@/lib/env'
 import { ConflictError, DomainRuleError } from '@/lib/errors'
 import { securityLogger } from '@/lib/logger'
@@ -59,6 +60,21 @@ export const createInvitation = authActionClient
         now,
         executor: tx,
       })
+
+      /*
+       * Only a personal invitation is announced. A shared link has no recipient
+       * to tell, and the Keeper hands it over themselves.
+       */
+      if (parsedInput.targetUserId) {
+        await announceToUser({
+          userId: parsedInput.targetUserId,
+          type: 'CAMPAIGN_INVITED',
+          campaignId: parsedInput.campaignId,
+          payload: { actorName: ctx.user.name },
+          now,
+          executor: tx,
+        })
+      }
 
       await recordAudit(
         {
@@ -142,6 +158,17 @@ export const acceptInvitation = authActionClient
       })
 
       await touchCampaign(claimed.campaignId, now, tx)
+
+      await announceToKeepers({
+        campaignId: claimed.campaignId,
+        type: 'CAMPAIGN_MEMBER_JOINED',
+        payload: { actorName: ctx.user.name },
+        now,
+        executor: tx,
+        // The joiner already knows; a Keeper joining their own campaign does not
+        // need to be told about it.
+        exceptUserId: ctx.user.id,
+      })
 
       await recordAudit(
         {

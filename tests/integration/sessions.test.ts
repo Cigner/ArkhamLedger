@@ -3,10 +3,8 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/db/client'
 import { gameSession, sessionParticipant } from '@/db/schema'
 import { newId } from '@/lib/ids'
-import {
-  findSessionsPastDeadline,
-  transitionSession,
-} from '@/modules/sessions/data/sessions'
+import { findExpiredCollections } from '@/modules/notifications/data/nudges'
+import { transitionSession } from '@/modules/sessions/data/session-store'
 import {
   clearResponses,
   listParticipantRecords,
@@ -199,8 +197,8 @@ describe('deadline sweep', () => {
     await seedSession({ status: 'COLLECTING', deadline: new Date('2026-09-20T12:00:00Z') })
     await seedSession({ status: 'DRAFT', deadline: new Date('2026-09-13T12:00:00Z') })
 
-    const due = await findSessionsPastDeadline(NOW)
+    const due = await findExpiredCollections(NOW)
 
-    expect(due.map((row) => row.id)).toEqual([past.sessionId])
+    expect(due.map((row) => row.sessionId)).toEqual([past.sessionId])
   })
 })

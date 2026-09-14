@@ -235,11 +235,3 @@ export async function claimInvitation(
 
   return { campaignId: row.campaignId, roleOnJoin: row.roleOnJoin, invitationId: row.id }
 }
-
-/** Housekeeping for the worker. */
-export async function deleteExpiredInvitations(now: Date): Promise<number> {
-  const [result] = await db
-    .delete(campaignInvitation)
-    .where(lt(campaignInvitation.expiresAt, now))
-  return result.affectedRows
-}

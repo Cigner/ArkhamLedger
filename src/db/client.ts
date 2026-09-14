@@ -46,4 +46,15 @@ export type Database = typeof db
 export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0]
 export type DbOrTx = Database | Transaction
 
+/**
+ * Closes the pool so a process can exit.
+ *
+ * Only the worker needs this: the web tier lives as long as the container, while
+ * the worker drains its jobs and exits on SIGTERM, and an open pool would hold
+ * the process up until Docker loses patience and kills it.
+ */
+export async function closePool(): Promise<void> {
+  await pool.end()
+}
+
 export { schema }

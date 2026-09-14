@@ -24,7 +24,10 @@ COPY . .
 # Server-side env vars are read at runtime, but NEXT_PUBLIC_* values are inlined
 # here, so any build-time public value must be passed as a build arg.
 RUN npm run build
-RUN npx tsx --version >/dev/null 2>&1 || true
+# The worker and the migrator are bundled to single files. They cannot run from
+# source in the runtime image: `output: standalone` ships a traced subset of
+# node_modules, so neither tsx nor the application's own sources are there.
+RUN npm run build:worker
 
 # --- runner: minimal runtime -------------------------------------------------
 FROM node:22-alpine AS runner
@@ -46,10 +49,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-# Migrations and the worker run from source through tsx.
-COPY --from=builder --chown=nextjs:nodejs /app/src/db ./src/db
-COPY --from=builder --chown=nextjs:nodejs /app/src/worker ./src/worker
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin/tsx ./node_modules/.bin/tsx
+# The worker and the migrator, each a single file plain node can run. Their few
+# external dependencies — mysql2, pino, nodemailer — resolve from the standalone
+# node_modules copied above, which carries them because the web tier uses them too.
+COPY --from=builder --chown=nextjs:nodejs /app/dist-worker ./dist-worker
 
 USER nextjs
 EXPOSE 3000

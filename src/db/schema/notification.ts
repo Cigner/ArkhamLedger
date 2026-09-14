@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm'
 import {
+  boolean,
   datetime,
   index,
   json,
@@ -29,6 +30,8 @@ export const notificationTypes = [
   'SESSION_CREATED',
   'AVAILABILITY_REQUESTED',
   'AVAILABILITY_REMINDER',
+  /** Raised by the worker when a deadline passes and dates have been ranked. */
+  'COLLECTION_CLOSED',
   'SESSION_SCHEDULED',
   'SESSION_RESCHEDULED',
   'SESSION_CANCELLED',
@@ -80,9 +83,39 @@ export const notificationDelivery = mysqlTable(
   ],
 )
 
+/**
+ * Which channels a person wants to hear from.
+ *
+ * A missing row means the channel's default applies. Storing only the
+ * exceptions means a channel added later reaches everybody without a backfill,
+ * and somebody who has never opened the settings page is not silently opted out
+ * of a channel that did not exist when they last looked.
+ *
+ * In-app delivery has no row and no switch: it is the record of the event
+ * itself, and turning it off would leave a person unable to find out what
+ * happened at all.
+ */
+export const notificationPreference = mysqlTable(
+  'notification_preference',
+  {
+    id: idColumn().primaryKey(),
+    userId: idColumn('user_id')
+      .notNull()
+      .references(() => authUser.id, { onDelete: 'cascade' }),
+    channel: mysqlEnum('channel', deliveryChannels).notNull(),
+    enabled: boolean('enabled').notNull().default(true),
+    ...timestamps,
+  },
+  (t) => [uniqueIndex('uq_preference_user_channel').on(t.userId, t.channel)],
+)
+
 export const notificationRelations = relations(notification, ({ one, many }) => ({
   user: one(authUser, { fields: [notification.userId], references: [authUser.id] }),
   deliveries: many(notificationDelivery),
+}))
+
+export const notificationPreferenceRelations = relations(notificationPreference, ({ one }) => ({
+  user: one(authUser, { fields: [notificationPreference.userId], references: [authUser.id] }),
 }))
 
 export const notificationDeliveryRelations = relations(notificationDelivery, ({ one }) => ({

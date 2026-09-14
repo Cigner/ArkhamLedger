@@ -9,6 +9,7 @@ import { authActionClient } from '@/lib/safe-action'
 import { requireKeeper } from '@/modules/campaigns/data/guards'
 import { findCampaignState } from '@/modules/campaigns/data/campaigns'
 import { canModifyContent } from '@/modules/campaigns/domain/rules'
+import { announceToSession } from '@/modules/notifications/data/announce'
 import { defaultQuorum } from '../domain/constants'
 import {
   canEditDefinition,
@@ -35,12 +36,7 @@ import {
   updateSessionSchema,
 } from '../domain/schemas'
 import { requireSessionKeeper } from '../data/guards'
-import {
-  findSessionState,
-  insertSession,
-  transitionSession,
-  updateSessionDefinition,
-} from '../data/sessions'
+import { findSessionState, insertSession, transitionSession, updateSessionDefinition } from '../data/session-store'
 import {
   clearResponses,
   listEligibleParticipants,
@@ -245,6 +241,16 @@ export const publishSession = authActionClient
       })
       if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
 
+      await announceToSession({
+        sessionId: parsedInput.sessionId,
+        type: 'AVAILABILITY_REQUESTED',
+        payload: session.availabilityDeadline
+          ? { deadlineUtc: session.availabilityDeadline.toISOString() }
+          : {},
+        now,
+        executor: tx,
+      })
+
       await recordAudit(
         {
           actorId: ctx.user.id,
@@ -305,6 +311,18 @@ export const setSessionDate = authActionClient
       })
       if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
 
+      await announceToSession({
+        sessionId: parsedInput.sessionId,
+        // A session that already had a date has moved; one that did not is new.
+        type: session.status === 'SCHEDULED' ? 'SESSION_RESCHEDULED' : 'SESSION_SCHEDULED',
+        payload: {
+          startUtc: startUtc.toISOString(),
+          endUtc: endUtc.toISOString(),
+        },
+        now,
+        executor: tx,
+      })
+
       await recordAudit(
         {
           actorId: ctx.user.id,
@@ -363,6 +381,14 @@ export const reopenCollection = authActionClient
       if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
 
       await clearResponses(parsedInput.sessionId, now, tx)
+
+      await announceToSession({
+        sessionId: parsedInput.sessionId,
+        type: 'AVAILABILITY_REQUESTED',
+        payload: deadline ? { deadlineUtc: deadline.toISOString() } : {},
+        now,
+        executor: tx,
+      })
 
       await recordAudit(
         {
@@ -449,6 +475,14 @@ export const cancelSession = authActionClient
         executor: tx,
       })
       if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
+
+      await announceToSession({
+        sessionId: parsedInput.sessionId,
+        type: 'SESSION_CANCELLED',
+        payload: { reason: parsedInput.reason },
+        now,
+        executor: tx,
+      })
 
       await recordAudit(
         {

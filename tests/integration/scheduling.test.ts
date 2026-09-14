@@ -38,9 +38,8 @@ vi.mock('@/modules/campaigns/data/guards', async () => {
 })
 
 const { saveOwnAvailability } = await import('@/modules/availability/data/availability')
-const { getSchedulingView, insertRun, loadSchedulingInput } = await import(
-  '@/modules/scheduling/data/runs'
-)
+const { insertRun, loadSchedulingInput } = await import('@/modules/scheduling/data/runs')
+const { getSchedulingView } = await import('@/modules/scheduling/data/view')
 
 async function seedSession(options: { quorum?: number; minSessionHours?: number } = {}) {
   const keeper = await createUserRow({ status: 'ACTIVE', name: 'Marek' })

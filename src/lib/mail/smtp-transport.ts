@@ -40,6 +40,15 @@ export function createSmtpTransport(config: SmtpConfig): MailPort {
           subject: message.subject,
           text: message.text,
           ...(message.html ? { html: message.html } : {}),
+          ...(message.attachments?.length
+            ? {
+                attachments: message.attachments.map((attachment) => ({
+                  filename: attachment.filename,
+                  contentType: attachment.contentType,
+                  content: attachment.content,
+                })),
+              }
+            : {}),
         })
         return { ok: true, messageId: info.messageId }
       } catch (error) {

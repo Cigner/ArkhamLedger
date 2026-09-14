@@ -10,7 +10,7 @@ services:
       context: .
       target: runner
     restart: 'no'
-    command: ['./node_modules/.bin/tsx', '--conditions=react-server', 'src/db/migrate.ts']
+    command: ['node', 'dist-worker/migrate.js']
     environment:
       DATABASE_URL: ${DATABASE_URL}
       TZ: UTC
@@ -50,7 +50,7 @@ services:
     # outbox claim query assumes a small number of competing consumers.
     deploy:
       replicas: 1
-    command: ['./node_modules/.bin/tsx', '--conditions=react-server', 'src/worker/index.ts']
+    command: ['node', 'dist-worker/worker.js']
     env_file: .env
     environment:
       NODE_ENV: production

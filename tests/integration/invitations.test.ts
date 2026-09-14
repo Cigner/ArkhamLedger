@@ -6,10 +6,10 @@ import { hashToken } from '@/lib/crypto'
 import {
   claimInvitation,
   createInvitation,
-  deleteExpiredInvitations,
   previewInvitation,
   revokeInvitation,
 } from '@/modules/campaigns/data/invitations'
+import { deleteExpiredInvitations } from '@/modules/campaigns/data/maintenance'
 import { addOrReviveMember, findMembership } from '@/modules/campaigns/data/members'
 import { addMemberRow, createCampaignRow, createUserRow, truncateAll } from './helpers/fixtures'
 

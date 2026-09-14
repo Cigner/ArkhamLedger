@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { guardPage } from '@/lib/page-guards'
-import { getSchedulingView } from '@/modules/scheduling/data/runs'
+import { getSchedulingView } from '@/modules/scheduling/data/view'
 import { SchedulingPanel } from '@/modules/scheduling/ui/scheduling-panel'
 
 /**

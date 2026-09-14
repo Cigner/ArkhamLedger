@@ -42,4 +42,4 @@ export function mailer(): MailPort {
   return cached
 }
 
-export type { MailMessage, MailPort, MailResult } from './port'
+export type { MailAttachment, MailMessage, MailPort, MailResult } from './port'

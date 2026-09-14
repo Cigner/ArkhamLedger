@@ -14,7 +14,12 @@ export function createLogTransport(): MailPort {
     name: 'log',
     send(message: MailMessage): Promise<MailResult> {
       appLogger.info(
-        { to: message.to, subject: message.subject, body: message.text },
+        {
+          to: message.to,
+          subject: message.subject,
+          body: message.text,
+          attachments: message.attachments?.map((attachment) => attachment.filename),
+        },
         'email not sent: no transport configured',
       )
       return Promise.resolve({ ok: true, messageId: `log-${Date.now()}` })

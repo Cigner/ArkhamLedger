@@ -12,6 +12,21 @@ export type MailMessage = {
   /** Plain text body. Always sent — many clients and all screen readers prefer it. */
   readonly text: string
   readonly html?: string
+  readonly attachments?: readonly MailAttachment[]
+}
+
+/**
+ * A file sent with the message.
+ *
+ * Exists for the calendar invitation: an email saying a session is confirmed is
+ * useful, and one that puts the session in the reader's calendar is the reason
+ * they turn up. Content is a string because the only attachment this application
+ * sends is text.
+ */
+export type MailAttachment = {
+  readonly filename: string
+  readonly contentType: string
+  readonly content: string
 }
 
 export type MailResult =

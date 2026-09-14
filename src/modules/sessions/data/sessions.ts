@@ -1,26 +1,25 @@
 import 'server-only'
-import { and, asc, count, desc, eq, isNotNull, sql } from 'drizzle-orm'
-import { type DbOrTx, db } from '@/db/client'
+import { asc, desc, eq, sql } from 'drizzle-orm'
+import { db } from '@/db/client'
 import { authUser, campaign, gameSession, sessionParticipant } from '@/db/schema'
 import { NotFoundError } from '@/lib/errors'
-import { newId } from '@/lib/ids'
 import { requireCampaignMember } from '@/modules/campaigns/data/guards'
 import { presenceIsRequired } from '../domain/rules'
-import type {
-  SessionDetail,
-  SessionListItem,
-  SessionParticipantDto,
-  SessionStatus,
-} from '../domain/types'
+import type { SessionDetail, SessionListItem, SessionParticipantDto } from '../domain/types'
 import { requireSessionMember } from './guards'
 
 /**
- * Session queries and mutations.
+ * Session reads for a viewer.
  *
  * The detail DTO is assembled per viewer: a Keeper receives every participant's
  * priority, an Investigator receives none of them. That asymmetry is applied
  * here rather than in a component, so there is no version of the data in which
  * the priorities are present and merely unrendered.
+ *
+ * Everything in this file authorizes first and therefore depends on the
+ * authentication stack. Writes that the background worker also performs live in
+ * session-store.ts, which does not — a process with no session cannot be asked
+ * to prove it has one.
  */
 export async function listCampaignSessions(campaignId: string): Promise<SessionListItem[]> {
   const { user } = await requireCampaignMember(campaignId)
@@ -160,180 +159,4 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
       ownResponse: own?.respondedAt ?? null,
     },
   }
-}
-
-/** Internal read for rules that need the raw session without a viewer. */
-export async function findSessionState(
-  sessionId: string,
-  executor: DbOrTx = db,
-): Promise<{
-  id: string
-  campaignId: string
-  status: SessionStatus
-  quorum: number
-  searchWindowStart: string
-  searchWindowEnd: string
-  gridStartHour: number
-  gridEndHour: number
-  minSessionHours: number
-  availabilityDeadline: Date | null
-  timezone: string
-}> {
-  const row = await executor.query.gameSession.findFirst({
-    where: eq(gameSession.id, sessionId),
-    columns: {
-      id: true,
-      campaignId: true,
-      status: true,
-      quorum: true,
-      searchWindowStart: true,
-      searchWindowEnd: true,
-      gridStartHour: true,
-      gridEndHour: true,
-      minSessionHours: true,
-      availabilityDeadline: true,
-      timezone: true,
-    },
-  })
-
-  if (!row) throw new NotFoundError()
-  return row
-}
-
-export async function insertSession(input: {
-  campaignId: string
-  title: string
-  description: string | null
-  searchWindowStart: string
-  searchWindowEnd: string
-  gridStartHour: number
-  gridEndHour: number
-  minSessionHours: number
-  quorum: number
-  availabilityDeadline: Date | null
-  timezone: string
-  createdBy: string
-  now: Date
-  executor: DbOrTx
-}): Promise<{ sessionId: string }> {
-  const sessionId = newId()
-
-  await input.executor.insert(gameSession).values({
-    id: sessionId,
-    campaignId: input.campaignId,
-    title: input.title,
-    description: input.description,
-    scenarioId: null,
-    status: 'DRAFT',
-    searchWindowStart: input.searchWindowStart,
-    searchWindowEnd: input.searchWindowEnd,
-    gridStartHour: input.gridStartHour,
-    gridEndHour: input.gridEndHour,
-    minSessionHours: input.minSessionHours,
-    quorum: input.quorum,
-    availabilityDeadline: input.availabilityDeadline,
-    timezone: input.timezone,
-    createdBy: input.createdBy,
-    createdAt: input.now,
-    updatedAt: input.now,
-  })
-
-  return { sessionId }
-}
-
-export async function updateSessionDefinition(input: {
-  sessionId: string
-  title: string
-  description: string | null
-  searchWindowStart: string
-  searchWindowEnd: string
-  gridStartHour: number
-  gridEndHour: number
-  minSessionHours: number
-  quorum: number
-  availabilityDeadline: Date | null
-  now: Date
-  executor: DbOrTx
-}): Promise<void> {
-  const { sessionId, executor, now, ...patch } = input
-
-  await executor
-    .update(gameSession)
-    .set({ ...patch, updatedAt: now })
-    .where(eq(gameSession.id, sessionId))
-}
-
-/** Quorum moves with the roster, so it has its own narrow update. */
-export async function setSessionQuorum(
-  sessionId: string,
-  quorum: number,
-  now: Date,
-  executor: DbOrTx,
-): Promise<void> {
-  await executor
-    .update(gameSession)
-    .set({ quorum, updatedAt: now })
-    .where(eq(gameSession.id, sessionId))
-}
-
-/**
- * Moves a session to a new status.
- *
- * The current status is part of the WHERE clause, so two Keepers acting at once
- * cannot both apply a transition from the same starting point. The caller checks
- * the affected row count.
- */
-export async function transitionSession(input: {
-  sessionId: string
-  from: SessionStatus
-  to: SessionStatus
-  patch?: Partial<{
-    availabilityDeadline: Date | null
-    confirmedStartUtc: Date | null
-    confirmedEndUtc: Date | null
-    acceptedProposalId: string | null
-    setManually: boolean
-    cancelledReason: string | null
-  }>
-  now: Date
-  executor: DbOrTx
-}): Promise<boolean> {
-  const [result] = await input.executor
-    .update(gameSession)
-    .set({ status: input.to, ...input.patch, updatedAt: input.now })
-    .where(and(eq(gameSession.id, input.sessionId), eq(gameSession.status, input.from)))
-
-  return result.affectedRows === 1
-}
-
-/** Sessions whose collection deadline has elapsed; the worker closes these. */
-export async function findSessionsPastDeadline(
-  now: Date,
-): Promise<{ id: string; campaignId: string }[]> {
-  return db
-    .select({ id: gameSession.id, campaignId: gameSession.campaignId })
-    .from(gameSession)
-    .where(
-      and(
-        eq(gameSession.status, 'COLLECTING'),
-        isNotNull(gameSession.availabilityDeadline),
-        sql`${gameSession.availabilityDeadline} <= ${now}`,
-      ),
-    )
-}
-
-/** Campaigns with no session ahead of them; the dashboard nudge reads this. */
-export async function countUpcomingSessions(campaignId: string, now: Date): Promise<number> {
-  const [row] = await db
-    .select({ total: count() })
-    .from(gameSession)
-    .where(
-      and(
-        eq(gameSession.campaignId, campaignId),
-        sql`${gameSession.status} in ('DRAFT','COLLECTING','PROPOSED','SCHEDULED')`,
-        sql`(${gameSession.confirmedStartUtc} is null or ${gameSession.confirmedStartUtc} >= ${now})`,
-      ),
-    )
-
-  return Number(row?.total ?? 0)
 }

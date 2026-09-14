@@ -28,6 +28,17 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
+  /*
+   * Left to node rather than bundled into the server output.
+   *
+   * Both resolve files at run time — mysql2 builds the path to an authentication
+   * plugin from the server's reply, nodemailer loads transports the same way —
+   * which a bundler cannot follow. Listing them also puts them in the standalone
+   * node_modules, which is where the background worker's bundle expects to find
+   * them: the two tiers share one image and therefore one copy of each.
+   */
+  serverExternalPackages: ['mysql2', 'nodemailer'],
+
   // Self-hosted behind a reverse proxy: Server Action CSRF checks compare Origin
   // against this list, so it must name every public origin of the deployment.
   experimental: {

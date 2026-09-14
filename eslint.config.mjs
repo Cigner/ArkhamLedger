@@ -162,7 +162,13 @@ export default tseslint.config(
       'no-restricted-syntax': [
         'error',
         {
-          selector: "NewExpression[callee.name='Date']",
+          /*
+           * Only the zero-argument form reads the clock. `new Date(instant)` and
+           * `new Date(millis)` are parsing and arithmetic over a value the caller
+           * supplied, which is exactly what a pure module is supposed to do —
+           * banning those forced the opposite of the rule's intent.
+           */
+          selector: "NewExpression[callee.name='Date'][arguments.length=0]",
           message: 'domain/ must not read the ambient clock. Accept the current time as a parameter.',
         },
         {

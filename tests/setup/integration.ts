@@ -10,6 +10,7 @@ environment['NODE_ENV'] = 'test'
 environment['TZ'] = 'UTC'
 environment['BETTER_AUTH_SECRET'] ??= 'test-secret-that-is-at-least-32-chars-long'
 environment['BETTER_AUTH_URL'] ??= 'http://localhost:3000'
-environment['ENCRYPTION_KEY'] ??= 'dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcy1sb25nISE='
+// Decodes to exactly 32 bytes, which is what AES-256 needs.
+environment['ENCRYPTION_KEY'] ??= 'YXJraGFtLXRlc3QtZW5jcnlwdGlvbi1rZXktMzJieXQ='
 environment['DATABASE_URL'] ??= 'mysql://root:test@127.0.0.1:3306/test'
 environment['LOG_LEVEL'] ??= 'silent'
