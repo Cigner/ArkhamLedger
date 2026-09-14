@@ -87,7 +87,7 @@ export default async function SessionOverviewPage({
             {session.viewer.isParticipant && session.status === 'COLLECTING' ? (
               <p className="font-ui text-sm text-text-secondary">
                 {session.viewer.ownResponse
-                  ? 'You have given your availability. The grid arrives in the next phase.'
+                  ? 'You have said when you are free.'
                   : 'You have not said when you are free yet.'}
                 {session.viewer.ownPresenceRequired ? (
                   <span className="ml-1 text-candle-11">This session needs you.</span>

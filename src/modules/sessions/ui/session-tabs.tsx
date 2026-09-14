@@ -10,12 +10,22 @@ import { cn } from '@/lib/cn'
  * The participants tab is Keeper-only because it shows priorities, which are the
  * Keeper's private working notes. The route enforces that itself.
  */
-export function SessionTabs({ sessionId, isKeeper }: { sessionId: string; isKeeper: boolean }) {
+export function SessionTabs({
+  sessionId,
+  isKeeper,
+  isParticipant,
+}: {
+  sessionId: string
+  isKeeper: boolean
+  isParticipant: boolean
+}) {
   const pathname = usePathname()
   const base = `/sessions/${sessionId}`
 
   const tabs = [
     { href: base, label: 'Overview' },
+    // Only somebody who was invited has an answer to give or a grid to read.
+    ...(isParticipant ? [{ href: `${base}/availability`, label: 'Availability' }] : []),
     ...(isKeeper ? [{ href: `${base}/participants`, label: 'Participants' }] : []),
   ]
 

@@ -2,8 +2,14 @@
  * Session policy constants.
  */
 
-/** Hours the availability grid covers by default: an evening game. */
-export const DEFAULT_GRID_START_HOUR = 16
+/**
+ * Hours the availability grid covers by default.
+ *
+ * From midday, not from the evening: weekend sessions routinely start in the
+ * afternoon, and a grid that cannot express "free from one o'clock on Saturday"
+ * quietly loses those dates.
+ */
+export const DEFAULT_GRID_START_HOUR = 12
 export const DEFAULT_GRID_END_HOUR = 24
 
 /**

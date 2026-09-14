@@ -36,7 +36,7 @@ import {
  * in as, and the one-time links that exist nowhere else once generated.
  */
 const DEFAULT_TIMEZONE = 'Europe/Warsaw'
-const DEFAULT_GRID_START = 16
+const DEFAULT_GRID_START = 12
 const DEFAULT_GRID_END = 24
 const DEFAULT_MIN_HOURS = 6
 const MS_PER_DAY = 24 * 60 * 60 * 1000

@@ -35,7 +35,11 @@ export default async function SessionLayout({
         }
         actions={<SessionStatusBadge status={session.status} />}
       />
-      <SessionTabs sessionId={sessionId} isKeeper={session.viewer.isKeeper} />
+      <SessionTabs
+        sessionId={sessionId}
+        isKeeper={session.viewer.isKeeper}
+        isParticipant={session.viewer.isParticipant}
+      />
       {children}
     </div>
   )
