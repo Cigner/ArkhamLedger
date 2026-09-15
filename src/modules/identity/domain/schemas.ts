@@ -57,6 +57,16 @@ export const setUserStatusSchema = z.object({
   status: z.enum(['ACTIVE', 'DISABLED']),
 })
 
+export const deleteUserSchema = z.object({
+  userId: z.string().length(26),
+  /**
+   * Whether to erase the row rather than close the account. Offered by the
+   * interface only when nothing blocks it, and checked again on the server —
+   * the form is a suggestion, not an authorisation.
+   */
+  hard: z.boolean().default(false),
+})
+
 export const activateAccountSchema = z
   .object({
     token: tokenSchema,

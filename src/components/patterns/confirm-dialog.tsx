@@ -18,6 +18,10 @@ import {
  * The confirm label is a verb naming what will happen ("Delete campaign"), not
  * a bare "OK": a user who skims the body still reads the button, and that is
  * where the last chance to understand the consequence lies.
+ *
+ * Children are for a choice the confirmation itself depends on — how far a
+ * deletion goes, say. Anything that is merely information belongs in the
+ * description.
  */
 export function ConfirmDialog({
   open,
@@ -29,6 +33,7 @@ export function ConfirmDialog({
   destructive = false,
   pending = false,
   onConfirm,
+  children,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -39,6 +44,8 @@ export function ConfirmDialog({
   destructive?: boolean
   pending?: boolean
   onConfirm: () => void
+  /** An extra choice the confirmation depends on, rendered below the description. */
+  children?: React.ReactNode
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,9 +53,10 @@ export function ConfirmDialog({
         <DialogHeader className="pr-6">
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {description ? (
-          <DialogBody>
-            <DialogDescription>{description}</DialogDescription>
+        {description || children ? (
+          <DialogBody className="flex flex-col gap-4">
+            {description ? <DialogDescription>{description}</DialogDescription> : null}
+            {children}
           </DialogBody>
         ) : null}
         <DialogFooter>

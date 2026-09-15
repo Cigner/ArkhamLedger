@@ -43,6 +43,17 @@ The activation URL is returned **once** and is not recoverable: only its digest
 is stored. Password reset is handled by Better Auth's own endpoints, not by an
 action.
 
+`admin.deleteUser` is two operations behind one name. Without `hard` it closes
+the account: signed out, cannot sign in, every membership ended, and everything
+the person did — availability, attendance, sessions played — kept. With `hard`
+it erases the row and everything addressed to them, and is refused whenever they
+authored something somebody else depends on: a campaign they own, a session or
+invitation or scenario they created, an activation link they issued. The counts
+are recomputed on the server at the moment of deletion, never trusted from the
+form, and the foreign keys behind them restrict rather than cascade — so an
+erase the rule wrongly permitted would fail loudly rather than take somebody
+else's history with it.
+
 ## Campaigns
 
 | Action                       | Input                                            | Returns                     | Requires              |

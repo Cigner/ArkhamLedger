@@ -8,10 +8,23 @@ import { recordAudit } from '@/lib/audit'
 import { env } from '@/lib/env'
 import { ConflictError, DomainRuleError } from '@/lib/errors'
 import { adminActionClient } from '@/lib/safe-action'
-import { createUserSchema, setUserStatusSchema, userIdSchema } from '../domain/schemas'
+import {
+  createUserSchema,
+  deleteUserSchema,
+  setUserStatusSchema,
+  userIdSchema,
+} from '../domain/schemas'
+import { canDeleteUser, canHardDeleteUser } from '../domain/deletion'
 import { canChangeOwnAccountState, canIssueActivationLink } from '../domain/rules'
 import { issueActivationToken } from '../data/activation'
-import { findUserByEmail, findUserRecord, updateUserStatus } from '../data/users'
+import {
+  countDeletionBlockers,
+  findUserByEmail,
+  findUserRecord,
+  hardDeleteUser,
+  softDeleteUser,
+  updateUserStatus,
+} from '../data/users'
 
 /**
  * Administrative account management.
@@ -131,4 +144,80 @@ export const setUserStatus = adminActionClient
     revalidatePath('/admin/users')
 
     return { ok: true }
+  })
+
+/**
+ * Removes an account, in one of two ways.
+ *
+ * Closing it is always possible and keeps everything the person left behind:
+ * who played which session, who said they were free. That is the group's record
+ * as much as theirs.
+ *
+ * Erasing the row is offered only when nothing they authored would be destroyed
+ * or orphaned with it, and the check is repeated here against fresh counts. The
+ * checkbox that asked for it is a request from a browser; the database
+ * constraints behind it would refuse anyway, but failing at the rule gives a
+ * sentence somebody can act on instead of a driver error.
+ */
+export const deleteUser = adminActionClient
+  .metadata({ name: 'admin.deleteUser' })
+  .inputSchema(deleteUserSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const allowed = canDeleteUser({
+      targetUserId: parsedInput.userId,
+      actingUserId: ctx.user.id,
+    })
+    if (!allowed.ok) throw new DomainRuleError(allowed.error.key)
+
+    const user = await findUserRecord(parsedInput.userId)
+    const now = new Date()
+
+    if (parsedInput.hard) {
+      const blockers = await countDeletionBlockers(user.id)
+      const erasable = canHardDeleteUser(blockers)
+      if (!erasable.ok) {
+        throw new DomainRuleError(erasable.error.key, erasable.error.params)
+      }
+    }
+
+    await db.transaction(async (tx) => {
+      if (parsedInput.hard) {
+        /*
+         * Written before the row disappears: the audit entry keeps the actor but
+         * only a name and an address for the subject, because the subject is
+         * about to stop existing and a dangling id is not a record of anything.
+         */
+        await recordAudit(
+          {
+            actorId: ctx.user.id,
+            action: 'user.erased',
+            entityType: 'user',
+            entityId: user.id,
+            metadata: { name: user.name, email: user.email },
+          },
+          tx,
+        )
+
+        await hardDeleteUser({ userId: user.id, executor: tx })
+        return
+      }
+
+      await softDeleteUser({ userId: user.id, now, executor: tx })
+      await recordAudit(
+        {
+          actorId: ctx.user.id,
+          action: 'user.deleted',
+          entityType: 'user',
+          entityId: user.id,
+        },
+        tx,
+      )
+    })
+
+    // Either way the person must stop being signed in immediately.
+    await authPort.revokeAllSessions(user.id)
+
+    revalidatePath('/admin/users')
+
+    return { ok: true, erased: parsedInput.hard }
   })

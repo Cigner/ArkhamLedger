@@ -27,10 +27,10 @@ Verified by probe rather than by assertion: a request carrying
 
 Two global roles on `auth_user.role`:
 
-| Role    | Can                                                                                                                                                                  |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ADMIN` | Everything a `USER` can, plus create and disable accounts, regenerate activation links, and read the operations screen. **No automatic access to campaign content.** |
-| `USER`  | Create campaigns, accept invitations, play                                                                                                                           |
+| Role    | Can                                                                                                                                                                          |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ADMIN` | Everything a `USER` can, plus create, disable and remove accounts, regenerate activation links, and read the operations screen. **No automatic access to campaign content.** |
+| `USER`  | Create campaigns, accept invitations, play                                                                                                                                   |
 
 Two campaign roles on `campaign_member.role`:
 

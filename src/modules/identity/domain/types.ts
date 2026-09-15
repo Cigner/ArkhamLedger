@@ -1,3 +1,5 @@
+import type { DeletionBlockers } from './deletion'
+
 /**
  * Identity data transfer objects.
  *
@@ -18,6 +20,8 @@ export type AdminUserListItem = {
   readonly createdAt: Date
   readonly hasPendingActivation: boolean
   readonly activationExpiresAt: Date | null
+  /** What they authored, and therefore what would block erasing the row. */
+  readonly deletionBlockers: DeletionBlockers
 }
 
 /** The signed-in user's own profile. */
