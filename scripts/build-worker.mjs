@@ -48,3 +48,14 @@ await build({
   entryPoints: ['src/db/migrate.ts'],
   outfile: 'dist-worker/migrate.js',
 })
+
+// The production seed creates the first administrator, and it is the only way
+// to do so: every other account is made in-app by somebody already signed in.
+// It has to be bundled for the same reason the migrator is — the runtime image
+// ships neither tsx nor the application sources, so `npm run db:seed` cannot
+// run there. Without this the deployed stack has no route to its first login.
+await build({
+  ...shared,
+  entryPoints: ['src/db/seed/index.ts'],
+  outfile: 'dist-worker/seed.js',
+})
