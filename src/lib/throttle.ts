@@ -11,7 +11,7 @@ import { securityLogger } from '@/lib/logger'
  * limiter keys on IP, which an attacker rotates for free, so keying on the
  * target address as well makes a distributed guessing run no faster than a
  * single-source one. For expensive operations the identifier is the thing being
- * operated on — a session id — which bounds the cost one Keeper can impose by
+ * operated on - a session id - which bounds the cost one Keeper can impose by
  * holding down a button.
  *
  * Counters live in MySQL rather than in process memory so a limit survives a

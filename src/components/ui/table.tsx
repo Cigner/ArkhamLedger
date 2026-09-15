@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn'
 /**
  * Data table.
  *
- * Horizontal rules only, no zebra striping — rows separate by rule the way a
+ * Horizontal rules only, no zebra striping - rows separate by rule the way a
  * ledger does. The wrapper scrolls independently so a wide table never forces
  * the page body to scroll sideways.
  */

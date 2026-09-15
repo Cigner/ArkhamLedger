@@ -23,7 +23,7 @@ import { requireSessionMember } from './guards'
  *
  * Everything in this file authorizes first and therefore depends on the
  * authentication stack. Writes that the background worker also performs live in
- * session-store.ts, which does not — a process with no session cannot be asked
+ * session-store.ts, which does not - a process with no session cannot be asked
  * to prove it has one.
  */
 export async function listCampaignSessions(campaignId: string): Promise<SessionListItem[]> {
@@ -170,8 +170,8 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
  * What a campaign has coming, and what it just did.
  *
  * Behind the dashboard's one real job: answering "when are we next playing"
- * without making anybody read a list. The answer has three shapes — a date is
- * set, a date is being worked out, or nothing is happening at all — and the last
+ * without making anybody read a list. The answer has three shapes - a date is
+ * set, a date is being worked out, or nothing is happening at all - and the last
  * one is the one worth acting on, because that is how campaigns end.
  */
 export async function getCampaignDiary(campaignId: string): Promise<CampaignDiary> {

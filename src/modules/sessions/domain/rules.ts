@@ -123,7 +123,7 @@ export function canPublish(input: {
  *
  * The Keeper is not one of them. They have to be there for the session to happen
  * at all, so counting them would let a threshold of three be reached by two
- * players — quietly weakening the number a campaign deliberately chose.
+ * players - quietly weakening the number a campaign deliberately chose.
  */
 export function countPlayers(participants: readonly ParticipantDraft[]): number {
   return participants.filter((participant) => !participant.isKeeper).length

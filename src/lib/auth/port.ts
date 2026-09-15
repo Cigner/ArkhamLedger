@@ -12,7 +12,7 @@ import { auth } from './config'
  *
  * Every method reads the session from the incoming request headers rather than
  * from a cached value, because authorization decisions must reflect the session
- * as it is now — an account disabled a second ago must not pass.
+ * as it is now - an account disabled a second ago must not pass.
  */
 export type GlobalRole = 'admin' | 'user'
 export type UserStatus = 'PENDING_ACTIVATION' | 'ACTIVE' | 'DISABLED'

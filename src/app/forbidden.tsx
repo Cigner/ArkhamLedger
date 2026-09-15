@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
  * 403.
  *
  * Reached when somebody is signed in and the thing exists, but is not theirs to
- * open — a Keeper-only screen viewed by an Investigator, most often, and the
+ * open - a Keeper-only screen viewed by an Investigator, most often, and the
  * administration area otherwise. Says so plainly rather than pretending the page
  * is missing, because they can already see that it is not.
  *

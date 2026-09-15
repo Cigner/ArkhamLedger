@@ -59,7 +59,7 @@
   /*
    * Two-tone focus ring. The bright inner outline carries most backgrounds; the
    * dark outer halo carries the dense heatmap cells where the bright one fades
-   * to about 1.5:1. Both halves are required — see tokens.css.
+   * to about 1.5:1. Both halves are required - see tokens.css.
    *
    * The ring is declared up front as transparent rather than absent so that only
    * its COLOUR changes on focus. A ring that appears by switching outline-style

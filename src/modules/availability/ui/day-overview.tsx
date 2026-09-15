@@ -10,7 +10,7 @@ import type { AvailabilityEditor } from './use-availability-editor'
  * The way to answer: whole evenings, with the hours one press away.
  *
  * Laid out as a calendar on a wide screen and as a list on a narrow one. The
- * calendar is not decoration — it aligns every Monday in one column, so a month
+ * calendar is not decoration - it aligns every Monday in one column, so a month
  * of dates reads at a glance instead of as thirty near-identical rows, and it
  * turns a screenful of scrolling into five rows.
  *
@@ -20,7 +20,7 @@ import type { AvailabilityEditor } from './use-availability-editor'
  * Each date carries two controls rather than one: the date itself cycles the
  * answer, and a second, always-visible button opens that evening's hours. The
  * second control is a real button rather than a long-press or a hover reveal
- * because both of those are invisible until already known — and a hover reveal
+ * because both of those are invisible until already known - and a hover reveal
  * is unreachable by touch entirely.
  */
 type Layout = 'calendar' | 'list'

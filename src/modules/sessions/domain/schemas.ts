@@ -47,7 +47,7 @@ export const createSessionSchema = z.object({
   minSessionHours: z.coerce.number().int().min(1).max(24).default(DEFAULT_MIN_SESSION_HOURS),
   /**
    * The last day answers are accepted, as a local date. Answering closes when
-   * that day ends in the campaign's zone — a deadline with a time of day is a
+   * that day ends in the campaign's zone - a deadline with a time of day is a
    * precision nobody wanted and everybody had to fill in.
    */
   availabilityDeadline: localDateSchema.optional(),

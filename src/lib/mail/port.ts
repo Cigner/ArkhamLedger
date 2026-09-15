@@ -9,7 +9,7 @@
 export type MailMessage = {
   readonly to: string
   readonly subject: string
-  /** Plain text body. Always sent — many clients and all screen readers prefer it. */
+  /** Plain text body. Always sent - many clients and all screen readers prefer it. */
   readonly text: string
   readonly html?: string
   readonly attachments?: readonly MailAttachment[]

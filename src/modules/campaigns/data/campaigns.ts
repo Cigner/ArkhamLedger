@@ -208,7 +208,7 @@ export async function updateCampaign(
  *
  * Sets the status only. `deletedAt` is deliberately left alone: the two mean
  * different things, and setting both would make an archived campaign
- * indistinguishable from a deleted one — which in turn makes the ARCHIVED status
+ * indistinguishable from a deleted one - which in turn makes the ARCHIVED status
  * unobservable and its read-only rule impossible to verify.
  *
  * Archived campaigns stay listed, below the rest, and refuse modification

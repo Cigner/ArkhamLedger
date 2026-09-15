@@ -20,7 +20,7 @@ import type { AdminUserListItem, GlobalRole, ProfileDto, UserStatus } from '../d
  * User queries.
  *
  * Every exported function authorizes before it reads and returns a DTO rather
- * than a row. The row carries no password digest — that lives on auth_account —
+ * than a row. The row carries no password digest - that lives on auth_account -
  * but it does carry ban metadata and timestamps that have no reason to reach a
  * component, and narrowing here is what makes accidental disclosure impossible
  * rather than merely unlikely.
@@ -79,7 +79,7 @@ export async function listUsersForAdmin(): Promise<AdminUserListItem[]> {
  * How much each account authored, for the whole table at once.
  *
  * Five grouped queries merged in memory rather than five correlated subqueries.
- * Not a performance choice at this size — Drizzle renders a correlated column
+ * Not a performance choice at this size - Drizzle renders a correlated column
  * reference without its table's prefix, and more than one of these tables also
  * has an `id`, so the counts would come back silently zero. A grouped query
  * cannot be ambiguous that way.
@@ -255,7 +255,7 @@ export async function softDeleteUser(input: {
 /**
  * Erases the row.
  *
- * Everything addressed to the person goes with it through the cascades —
+ * Everything addressed to the person goes with it through the cascades -
  * sessions, availability, notifications, memberships, preferences. Everything
  * they authored blocks it instead, enforced by the database as well as by the
  * rule that runs first; if that rule is ever wrong, the delete fails loudly

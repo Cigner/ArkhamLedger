@@ -117,7 +117,7 @@ export function UserRowActions({ user, isSelf }: { user: AdminUserListItem; isSe
 
   /*
    * What this account authored. Anything here has to survive it, so erasing the
-   * row is refused — the server counts again before acting, and the database
+   * row is refused - the server counts again before acting, and the database
    * would refuse regardless.
    */
   const authored = blockerCount(user.deletionBlockers)
@@ -201,7 +201,7 @@ export function UserRowActions({ user, isSelf }: { user: AdminUserListItem; isSe
         description={
           erase
             ? 'Their row and everything addressed to them is destroyed: memberships, availability, notifications. This cannot be undone.'
-            : 'They are signed out, cannot sign in again, and leave every campaign. What they did — availability, attendance, sessions played — is kept.'
+            : 'They are signed out, cannot sign in again, and leave every campaign. What they did - availability, attendance, sessions played - is kept.'
         }
         confirmLabel={erase ? 'Erase permanently' : 'Close the account'}
         destructive

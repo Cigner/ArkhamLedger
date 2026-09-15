@@ -10,7 +10,7 @@ import { cn } from '@/lib/cn'
 /**
  * Primary navigation.
  *
- * Renders only the destinations the signed-in user can actually reach — the
+ * Renders only the destinations the signed-in user can actually reach - the
  * administration link is omitted for everyone else rather than shown and
  * refused, since an offer the application will deny is worse than no offer.
  * Hiding it is presentation only; the route enforces the role itself.

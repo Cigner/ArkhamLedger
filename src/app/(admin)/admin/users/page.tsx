@@ -21,7 +21,7 @@ import { UserStatusBadge } from '@/modules/identity/ui/admin/user-status-badge'
  * Account administration.
  *
  * The only screen that creates accounts. Both the layout and the query call
- * requireAdmin independently — the duplication is deliberate, since a query must
+ * requireAdmin independently - the duplication is deliberate, since a query must
  * not rely on having been reached through a particular layout.
  */
 export const metadata: Metadata = { title: 'Users' }

@@ -42,7 +42,7 @@ export function CardHeader({ className, ...props }: React.ComponentProps<'div'>)
  * A card's heading.
  *
  * Rendered as an h2, one level below the page's h1. It was an h3, which made
- * every page skip a level — a screen reader user navigating by heading hears a
+ * every page skip a level - a screen reader user navigating by heading hears a
  * gap and has to wonder what they missed.
  */
 export function CardTitle({ className, ...props }: React.ComponentProps<'h2'>) {

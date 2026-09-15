@@ -25,7 +25,7 @@ import type { SessionDetail } from '../domain/types'
  * What a session is asking, on one form.
  *
  * The same fields create a draft and edit one afterwards, because they are the
- * same decisions and keeping two forms in step is a losing game — the first
+ * same decisions and keeping two forms in step is a losing game - the first
  * version of this had no edit form at all, which meant a mistyped date could
  * only be fixed by cancelling the session.
  *
@@ -275,7 +275,7 @@ export function SessionDefinitionForm({
               disabled={busy}
             />
             <FieldDescription>
-              How many players have to be free. The Keeper is not counted — they have to be there
+              How many players have to be free. The Keeper is not counted - they have to be there
               regardless.
             </FieldDescription>
           </Field>

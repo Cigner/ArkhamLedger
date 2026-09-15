@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
  * Displays a one-time activation link.
  *
  * The link is selectable text as well as a copy button, because clipboard access
- * fails silently in some browsers and over plain HTTP — which is exactly the
+ * fails silently in some browsers and over plain HTTP - which is exactly the
  * setup a self-hosted deployment behind a self-signed certificate may have.
  */
 export function ActivationLinkPanel({ url, expiresAt }: { url: string; expiresAt: Date }) {

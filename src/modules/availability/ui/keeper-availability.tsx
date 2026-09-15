@@ -42,8 +42,8 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
           <div
             /*
              * Both columns are fixed rather than fractional. `auto` on the first
-             * one collapsed to twelve pixels as soon as the dates overflowed —
-             * the names were still there, truncated to nothing — and a date
+             * one collapsed to twelve pixels as soon as the dates overflowed -
+             * the names were still there, truncated to nothing - and a date
              * column narrower than this clips "Wed 21".
              */
             className="grid gap-1"

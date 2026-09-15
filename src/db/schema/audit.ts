@@ -30,7 +30,7 @@ export const auditLog = mysqlTable(
 /**
  * Liveness marker written by the background worker.
  *
- * A worker that dies silently means no notifications and no deadline closures —
+ * A worker that dies silently means no notifications and no deadline closures -
  * an outage invisible from the web tier. The health endpoint reads this row.
  */
 export const workerHeartbeat = mysqlTable('worker_heartbeat', {

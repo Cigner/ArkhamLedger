@@ -11,7 +11,7 @@ import { acceptInvitation } from '../actions/invitations'
  * Accepts an invitation.
  *
  * The link is only claimed when the visitor presses the button, so opening the
- * page — or reloading it — never consumes a use of a shared link.
+ * page - or reloading it - never consumes a use of a shared link.
  */
 const MESSAGES: Record<string, string> = {
   'campaigns.errors.invitationEXPIRED':

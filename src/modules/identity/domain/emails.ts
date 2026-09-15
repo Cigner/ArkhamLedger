@@ -30,7 +30,7 @@ export function passwordResetEmail(name: string, url: string): MailBody {
       '',
       `The link stops working in ${PASSWORD_RESET_TTL_MINUTES} minutes and can be used once.`,
       '',
-      'If this was not you, no action is needed — your password has not changed.',
+      'If this was not you, no action is needed - your password has not changed.',
       'It is worth telling whoever administers your group, though.',
     ].join('\n'),
   }

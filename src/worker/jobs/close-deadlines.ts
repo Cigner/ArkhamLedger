@@ -15,7 +15,7 @@ import type { Job, JobResult } from '../runtime'
  * were sitting there unread.
  *
  * Closing and ranking happen in one transaction with the notification, so a
- * crash halfway cannot leave a session closed with nobody told — the Keeper
+ * crash halfway cannot leave a session closed with nobody told - the Keeper
  * would be waiting for a message that was never going to arrive.
  */
 export const closeDeadlines: Job = {
@@ -40,7 +40,7 @@ export const closeDeadlines: Job = {
         })
 
         /*
-         * Somebody got there first — a Keeper who closed it by hand between the
+         * Somebody got there first - a Keeper who closed it by hand between the
          * query and this write. Their action stands; this one does nothing.
          */
         if (!moved) return false

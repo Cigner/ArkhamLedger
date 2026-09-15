@@ -6,8 +6,8 @@
  * thing a person can come back and read, and delivery is a best effort on top of
  * it that may fail, retry, or be switched off entirely.
  *
- * Payloads carry facts, never sentences. Rendering happens at the edge — see
- * messages.ts — so the same stored event can be read in the application, in an
+ * Payloads carry facts, never sentences. Rendering happens at the edge - see
+ * messages.ts - so the same stored event can be read in the application, in an
  * email, and in a Discord channel without three copies of the wording.
  */
 export type NotificationType =
@@ -31,7 +31,7 @@ export type DeliveryStatus = 'PENDING' | 'SENDING' | 'SENT' | 'FAILED'
  * One shape for every type rather than a union per type: the fields are all
  * optional facts about the same three nouns, and a union here would force every
  * caller and every renderer through a discriminated switch for no gain in
- * safety — the renderer already switches on the type.
+ * safety - the renderer already switches on the type.
  */
 export type NotificationPayload = {
   readonly campaignName?: string

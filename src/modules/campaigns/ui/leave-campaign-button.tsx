@@ -11,7 +11,7 @@ import type { Membership } from '../domain/types'
 /**
  * Leaving a campaign.
  *
- * Hidden for the owner, who must hand the campaign over first — offering the
+ * Hidden for the owner, who must hand the campaign over first - offering the
  * control and then refusing it would read as a bug rather than as a rule.
  */
 export function LeaveCampaignButton({

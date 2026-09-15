@@ -22,7 +22,7 @@ export default async function AdminOverviewPage() {
       <PageHeader
         title="Operations"
         icon={<Activity className="size-6" strokeWidth={1.5} />}
-        description="Counts only — no campaign is named here."
+        description="Counts only - no campaign is named here."
       />
       <OperationsPanel snapshot={snapshot} />
     </div>

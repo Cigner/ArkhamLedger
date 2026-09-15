@@ -3,7 +3,7 @@
  *
  * Deliberately not "a few happy rows". Every list, badge, empty state and
  * rejection screen in the application should be reachable by signing in as
- * somebody here, so the set covers each status a record can hold — including the
+ * somebody here, so the set covers each status a record can hold - including the
  * awkward ones: an account awaiting activation, a disabled account, an archived
  * campaign, a member who left, an invitation that was revoked.
  *
@@ -30,7 +30,7 @@ export const SEED_USERS: readonly SeedUser[] = [
     email: 'admin@arkham.test',
     name: 'Warden Hollis',
     role: 'admin',
-    note: 'Administrator — use this to reach the admin panel',
+    note: 'Administrator - use this to reach the admin panel',
   },
   {
     key: 'eleanor',
@@ -42,13 +42,13 @@ export const SEED_USERS: readonly SeedUser[] = [
     key: 'marcus',
     email: 'marcus@arkham.test',
     name: 'Marcus Vane',
-    note: 'Owns two campaigns, plays in a third — mixed roles across campaigns',
+    note: 'Owns two campaigns, plays in a third - mixed roles across campaigns',
   },
   {
     key: 'harriet',
     email: 'harriet@arkham.test',
     name: 'Harriet Blackwood',
-    note: 'Co-Keeper without ownership — sees Settings but not the owner controls',
+    note: 'Co-Keeper without ownership - sees Settings but not the owner controls',
   },
   { key: 'anna', email: 'anna@arkham.test', name: 'Anna Kowalska', note: 'Investigator' },
   { key: 'tomas', email: 'tomas@arkham.test', name: 'Tomás Reyes', note: 'Investigator' },
@@ -56,27 +56,27 @@ export const SEED_USERS: readonly SeedUser[] = [
     key: 'jozef',
     email: 'jozef@arkham.test',
     name: 'Józef Malinowski',
-    note: 'Investigator — non-ASCII name, checks collation and rendering',
+    note: 'Investigator - non-ASCII name, checks collation and rendering',
   },
   {
     key: 'nadia',
     email: 'nadia@arkham.test',
     name: 'Nadia Farouk',
-    note: 'Left one campaign — her membership row is LEFT, not deleted',
+    note: 'Left one campaign - her membership row is LEFT, not deleted',
   },
   {
     key: 'silas',
     email: 'silas@arkham.test',
     name: 'Silas Crane',
     status: 'PENDING_ACTIVATION',
-    note: 'Awaiting activation — an activation link is printed below',
+    note: 'Awaiting activation - an activation link is printed below',
   },
   {
     key: 'mordecai',
     email: 'mordecai@arkham.test',
     name: 'Mordecai Finch',
     status: 'DISABLED',
-    note: 'Disabled — signing in as them must fail with the generic message',
+    note: 'Disabled - signing in as them must fail with the generic message',
   },
 ] as const
 
@@ -260,7 +260,7 @@ export type SeedSession = {
  *   Mon 5 Oct              rejected: a Keeper and a required player said no
  *   Thu 15 Oct             rejected: everybody is free, but only for four hours
  *
- * Marcus never answers, which is what exercises the "has not responded" state —
+ * Marcus never answers, which is what exercises the "has not responded" state -
  * distinct from answering no, and the distinction the whole quorum idea rests on.
  *
  * No schedule runs or proposals are seeded. The seed is a database fixture and

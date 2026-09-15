@@ -25,7 +25,7 @@ export function SchedulingDiagnostics({
 }) {
   /*
    * Nobody answering looks identical to everybody refusing, and the algorithm
-   * reports it as the Keeper being unavailable — technically true and useless.
+   * reports it as the Keeper being unavailable - technically true and useless.
    * Said plainly instead, because the remedy is completely different.
    */
   if (respondentCount === 0) {

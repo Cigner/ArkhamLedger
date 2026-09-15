@@ -13,8 +13,8 @@ import { FormError } from './form-error'
 /**
  * Credential sign-in.
  *
- * Every failure renders the same message regardless of cause — unknown address,
- * wrong password, disabled account — so the form cannot be used to discover
+ * Every failure renders the same message regardless of cause - unknown address,
+ * wrong password, disabled account - so the form cannot be used to discover
  * which addresses have accounts. The one exception is throttling, which has to
  * say what it is or the user will simply keep retrying.
  */

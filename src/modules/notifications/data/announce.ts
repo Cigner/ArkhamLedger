@@ -13,7 +13,7 @@ import type { NotificationPayload, NotificationType } from '../domain/types'
  * is worse than one that failed to be confirmed at all, since nobody is waiting
  * for the second.
  *
- * The context each announcement needs — the campaign's name, who was invited —
+ * The context each announcement needs - the campaign's name, who was invited -
  * is loaded here rather than passed in, so a caller cannot accidentally announce
  * to a stale list of participants it happened to be holding.
  */

@@ -18,7 +18,7 @@ import type { DayRange } from '../domain/types'
  *
  * Always the caller's own. The user id comes from the session rather than the
  * payload, so the shape of this action offers no way to answer on somebody
- * else's behalf — which matters more than any check, because there is nothing
+ * else's behalf - which matters more than any check, because there is nothing
  * to check.
  */
 export const saveAvailability = authActionClient

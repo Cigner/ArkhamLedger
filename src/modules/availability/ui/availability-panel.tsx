@@ -23,7 +23,7 @@ import { WindowSummaryList } from './window-summary'
  * The whole answering experience.
  *
  * Deliberately not autosaving. Availability is a considered answer rather than a
- * stream of edits, and a save the user pressed is a save they know happened —
+ * stream of edits, and a save the user pressed is a save they know happened -
  * which matters when the alternative is discovering on the night that their
  * answer never arrived.
  */
@@ -38,7 +38,7 @@ const MESSAGES: Record<string, string> = {
  * Why the calendar is read-only.
  *
  * A session nobody has been asked about yet and one whose answers have closed
- * are opposite situations, and both used to say "answers are closed" — which
+ * are opposite situations, and both used to say "answers are closed" - which
  * reads as a fault to the Keeper who has just created the thing.
  */
 function closedReason(status: AvailabilityView['status']): string {
@@ -109,7 +109,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
 
   /*
    * Looked up once on mount so the offer can name the session it came from.
-   * Nothing is applied until the player asks for it — "the same as last time" is
+   * Nothing is applied until the player asks for it - "the same as last time" is
    * an assumption, not an answer.
    */
   useEffect(() => {

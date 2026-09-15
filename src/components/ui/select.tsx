@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn'
  * primitive. The trigger matches Input so a form reads as one system.
  *
  * Pass `items` to the root as a value-to-label record. Without it the trigger
- * displays the raw value — "user" rather than "User" — because the primitive has
+ * displays the raw value - "user" rather than "User" - because the primitive has
  * no other way to know what an item's text was.
  */
 export const Select = SelectPrimitive.Root

@@ -22,7 +22,7 @@ import type { IntegrationStatus } from '../data/integrations'
 /**
  * Connecting a campaign to its Discord channel.
  *
- * The URL is entered once and never shown again — it is a credential, and this
+ * The URL is entered once and never shown again - it is a credential, and this
  * screen only ever reports whether one is stored. The test button exists because
  * the alternative way to discover a mistyped webhook is three days later, when
  * the channel stays silent about a session everybody was waiting on.

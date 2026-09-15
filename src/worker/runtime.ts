@@ -6,7 +6,7 @@ import { appLogger } from '@/lib/logger'
 /**
  * The worker's scaffolding: a pulse, and error isolation between jobs.
  *
- * One rule governs everything here — a job that throws must not take the process
+ * One rule governs everything here - a job that throws must not take the process
  * with it. A worker that dies has no visible symptom from the web tier: no
  * notifications arrive, no deadline closes, and the first person to notice is
  * somebody who missed a session. So every job runs inside a boundary that logs
@@ -58,7 +58,7 @@ export async function runJob(job: Job, now: Date): Promise<void> {
  * Records that the worker is alive.
  *
  * Written after every job rather than on a timer of its own, so the pulse means
- * "work is being done" rather than "the process exists" — a worker stuck on a
+ * "work is being done" rather than "the process exists" - a worker stuck on a
  * hung connection would keep a plain timer ticking while doing nothing.
  */
 export async function beat(lastJob: string, now: Date): Promise<void> {
@@ -83,7 +83,7 @@ export async function lastHeartbeat(): Promise<Date | null> {
 /**
  * Waits for in-flight work before the process exits.
  *
- * A delivery interrupted mid-send is not lost — the queue reclaims it — but it
+ * A delivery interrupted mid-send is not lost - the queue reclaims it - but it
  * is delivered late and may be delivered twice by a relay that already accepted
  * it. Draining costs a few seconds of a deploy and avoids both.
  */

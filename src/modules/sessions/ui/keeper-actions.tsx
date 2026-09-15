@@ -46,7 +46,7 @@ import type { SessionDetail } from '../domain/types'
  * Everything a Keeper can do to a session, offered according to its status.
  *
  * Only the transitions the lifecycle actually permits are rendered. The server
- * checks them again regardless — this is about not offering a button that will
+ * checks them again regardless - this is about not offering a button that will
  * be refused, which reads as a bug rather than as a rule.
  */
 const MESSAGES: Record<string, string> = {
@@ -66,7 +66,7 @@ const MESSAGES: Record<string, string> = {
  *
  * The shape is deliberately loose: each action has its own validation-error
  * type, and naming them all here would couple the panel to every schema it
- * touches for no gain — the flattening reads them structurally.
+ * touches for no gain - the flattening reads them structurally.
  */
 type ActionFailure = {
   error: {

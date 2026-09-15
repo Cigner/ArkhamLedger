@@ -54,7 +54,7 @@ type Rejection = {
  * summary of what blocked the rest. The summary is not diagnostics for its own
  * sake: when nothing qualifies, it is the only thing the Keeper can act on.
  *
- * @throws never — malformed input is rejected by the caller's schema validation.
+ * @throws never - malformed input is rejected by the caller's schema validation.
  */
 export function rankCandidates(input: SchedulingInput): SchedulingOutput {
   const days = groupByDate(input.slots)
@@ -190,7 +190,7 @@ function countAvailable(qualities: readonly ParticipantQuality[]): number {
 /**
  * How far past the core the session can run.
  *
- * Only the people who have to be there hold the end open — a session does not
+ * Only the people who have to be there hold the end open - a session does not
  * stop because an optional player has to leave. The walk stops at the end of the
  * grid, so an evening never spills into the next day's slots.
  */
@@ -258,7 +258,7 @@ function explain(
 
   /*
    * Somebody who never answered is not somebody who said no. They score the same
-   * — silence cannot be counted on — but naming them as unable to come puts words
+   * - silence cannot be counted on - but naming them as unable to come puts words
    * in their mouth, and the Keeper's next move is to chase them, not to work
    * around them.
    */

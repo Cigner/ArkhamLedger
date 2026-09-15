@@ -32,7 +32,7 @@ import type { SchedulingInput, SchedulingOutput } from '../domain/types'
  *
  * Instants are canonicalised through Temporal on both sides of the match.
  * MySQL returns a Date that stringifies with milliseconds and the grid generator
- * produces one without, so comparing the two raw would miss every single hour —
+ * produces one without, so comparing the two raw would miss every single hour -
  * silently, as an empty availability map rather than as an error.
  */
 export async function loadSchedulingInput(
@@ -158,7 +158,7 @@ export async function insertRun(input: {
  * One proposal, confirmed to belong to this session's most recent search.
  *
  * Accepting a proposal from an older run would confirm a date computed from
- * answers that have since changed — the Keeper would be agreeing to something
+ * answers that have since changed - the Keeper would be agreeing to something
  * the screen no longer says.
  */
 export async function findAcceptableProposal(input: {

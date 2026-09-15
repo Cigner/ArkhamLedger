@@ -7,7 +7,7 @@ import type { SlotState } from '../domain/types'
  * Every state carries a glyph as well as a fill. That is not decoration: the
  * three state colours sit within about 1.1:1 of each other, which the palette's
  * own contrast tests assert, so colour alone cannot distinguish them for anyone
- * with reduced colour vision — or on a dim screen in a dark room, which is where
+ * with reduced colour vision - or on a dim screen in a dark room, which is where
  * this application will mostly be read.
  */
 const PRESENTATION: Record<

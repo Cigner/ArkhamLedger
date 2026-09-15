@@ -13,7 +13,7 @@ import { CampaignRoleBadge, CampaignStatusBadge } from './campaign-status-badge'
  *
  * The whole card is the link. It used to be the title alone, which meant
  * pointing at a card the size of a postcard and finding that only three words
- * of it responded — there is nothing else to click here, so the target is the
+ * of it responded - there is nothing else to click here, so the target is the
  * card.
  */
 export function CampaignCard({ campaign }: { campaign: CampaignListItem }) {

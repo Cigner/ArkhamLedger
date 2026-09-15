@@ -30,7 +30,7 @@ export const STATE_VALUE = {
   YES: 1,
   IF_NEED_BE: 0.6,
   NO: 0,
-  /** Never answered. Deliberately identical to a refusal — see scoring.ts. */
+  /** Never answered. Deliberately identical to a refusal - see scoring.ts. */
   UNKNOWN: 0,
 } as const
 

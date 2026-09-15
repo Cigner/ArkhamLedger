@@ -19,7 +19,7 @@ import {
  * a bare "OK": a user who skims the body still reads the button, and that is
  * where the last chance to understand the consequence lies.
  *
- * Children are for a choice the confirmation itself depends on — how far a
+ * Children are for a choice the confirmation itself depends on - how far a
  * deletion goes, say. Anything that is merely information belongs in the
  * description.
  */

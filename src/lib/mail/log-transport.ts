@@ -6,7 +6,7 @@ import type { MailMessage, MailPort, MailResult } from './port'
  *
  * Writes the message to the log instead of sending it, so the activation and
  * reset flows are exercisable without a mail server. It logs the full body on
- * purpose — that body contains the link a developer needs — which is exactly why
+ * purpose - that body contains the link a developer needs - which is exactly why
  * selecting it in production is refused at startup.
  */
 export function createLogTransport(): MailPort {

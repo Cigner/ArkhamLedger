@@ -46,7 +46,7 @@ export async function provisionAccount(
    * These functions write the account row directly and therefore skip the
    * action layer, which is where every other password is checked. Applying the
    * policy here too means a seed or a bootstrap cannot create an account whose
-   * password the application would refuse — a gap that is invisible until
+   * password the application would refuse - a gap that is invisible until
    * somebody tries to sign in.
    */
   const password = passwordSchema.safeParse(input.password)

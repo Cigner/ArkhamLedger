@@ -16,8 +16,8 @@ import type { DayRange, SlotState, SlotTally, WindowSummary } from './types'
  * Below this many answers, per-hour counts stop being an aggregate.
  *
  * With two respondents, "one free at 18:00" plus your own answer identifies the
- * other person exactly. The ranked windows are still shown — they are the useful
- * part — but the hour-by-hour breakdown waits until there is cover to hide in.
+ * other person exactly. The ranked windows are still shown - they are the useful
+ * part - but the hour-by-hour breakdown waits until there is cover to hide in.
  */
 export const MIN_RESPONDENTS_FOR_HEATMAP = 3
 
@@ -64,7 +64,7 @@ export function tallySlots(
  * Windows that could host the session, best first.
  *
  * A participant counts towards a window only if they are free for the whole of
- * its minimum length — availability for five hours of a six-hour session is not
+ * its minimum length - availability for five hours of a six-hour session is not
  * partial credit, it is a no. Taking the weakest hour rather than an average is
  * what makes that true.
  *

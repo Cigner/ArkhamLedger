@@ -10,7 +10,7 @@ import type { SessionStatus } from '../domain/types'
  * Session persistence, without a viewer.
  *
  * The same writes serve a Keeper pressing a button and the worker closing a
- * deadline at three in the morning, so nothing here asks who is calling —
+ * deadline at three in the morning, so nothing here asks who is calling -
  * callers authorize before they arrive. Keeping that separate from the read
  * side is what lets the worker be built without the authentication library in
  * it at all.

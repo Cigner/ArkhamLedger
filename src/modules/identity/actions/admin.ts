@@ -31,7 +31,7 @@ import {
  *
  * There is no public sign-up: an administrator creates the account and hands
  * over an activation link out of band. The link is returned to the caller and
- * shown once — it is never emailed by the application, because the out-of-band
+ * shown once - it is never emailed by the application, because the out-of-band
  * channel the group already uses is more reliable than a home mail relay and
  * removes email from the trust path for the initial credential.
  */

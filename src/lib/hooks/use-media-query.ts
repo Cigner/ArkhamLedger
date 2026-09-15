@@ -11,7 +11,7 @@ import { useCallback, useSyncExternalStore } from 'react'
  * renders once with the wrong answer before correcting.
  *
  * The server snapshot is false, so the wide layout is rendered first and
- * narrowed after hydration — the safe direction, since a grid that is too wide
+ * narrowed after hydration - the safe direction, since a grid that is too wide
  * scrolls whereas one that is too narrow is unusable.
  */
 export function useMediaQuery(query: string): boolean {

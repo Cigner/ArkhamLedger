@@ -14,7 +14,7 @@ import type { SessionStatus } from './types'
  *
  * Two edges are less obvious and both exist because plans change: PROPOSED and
  * SCHEDULED can return to COLLECTING, which is how a Keeper reopens a date that
- * stopped working. COMPLETED and CANCELLED are terminal — a session that already
+ * stopped working. COMPLETED and CANCELLED are terminal - a session that already
  * happened is a historical record, and reviving a cancelled one would silently
  * resurrect notifications people already acted on.
  */
@@ -45,9 +45,9 @@ export function canTransition(from: SessionStatus, to: SessionStatus): Result<vo
 /**
  * Statuses in which the Keeper may still change what the session is about.
  *
- * Both DRAFT and COLLECTING. Editing while people are answering has a cost —
+ * Both DRAFT and COLLECTING. Editing while people are answering has a cost -
  * answers given against a window that has moved describe a question nobody
- * asked — so the action clears them when the dates or hours change, and the form
+ * asked - so the action clears them when the dates or hours change, and the form
  * says so before it is submitted. Refusing the edit outright was worse: the only
  * way to fix a mistyped date was to cancel the session and start again.
  */

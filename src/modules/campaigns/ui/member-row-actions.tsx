@@ -11,7 +11,7 @@ import type { CampaignMemberListItem, Membership } from '../domain/types'
 /**
  * Owner-only controls on a member row.
  *
- * Rendered only for the owner, and only for other people — the owner cannot
+ * Rendered only for the owner, and only for other people - the owner cannot
  * remove or demote themselves, and offering a control the server will refuse is
  * worse than not offering it. The rules are still enforced server-side.
  */

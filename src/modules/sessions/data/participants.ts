@@ -61,7 +61,7 @@ export async function listEligibleParticipants(
  * Applies a complete roster.
  *
  * Removals delete their rows, which takes the person's availability with them by
- * cascade — correct, because availability for a session you are not in has no
+ * cascade - correct, because availability for a session you are not in has no
  * meaning and would otherwise skew the aggregate counts.
  */
 export async function replaceParticipants(input: {

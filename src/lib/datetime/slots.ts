@@ -43,7 +43,7 @@ const HOURS_PER_DAY = 24
  * Produces every slot of the grid in chronological order.
  *
  * Iterates instants rather than local hours so that transition days yield the
- * number of slots that actually exist — 23 or 25 — instead of an assumed 24.
+ * number of slots that actually exist - 23 or 25 - instead of an assumed 24.
  */
 export function generateGridSlots(bounds: GridBounds): GridSlot[] {
   validateBounds(bounds)
@@ -162,8 +162,8 @@ export function localHourToInstant(date: string, hour: number, timeZone: string)
  * Parses a `datetime-local` form value in a given zone.
  *
  * Browsers submit these with no offset because the control has no concept of
- * one; interpreting them as UTC — which `new Date()` does for some formats and
- * not others — silently shifts every deadline.
+ * one; interpreting them as UTC - which `new Date()` does for some formats and
+ * not others - silently shifts every deadline.
  */
 export function localDateTimeToInstant(value: string, timeZone: string): Date | null {
   const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/.exec(value)

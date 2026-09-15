@@ -4,7 +4,7 @@ import type { RenderedMessage } from './messages'
 /**
  * The delivery port.
  *
- * Adding a channel — Telegram, Signal, a push service — is a new file
+ * Adding a channel - Telegram, Signal, a push service - is a new file
  * implementing this interface plus one line in the registry. Nothing in the
  * worker, the outbox or the code that raises notifications changes, which is the
  * whole reason the seam is here rather than in a switch statement.

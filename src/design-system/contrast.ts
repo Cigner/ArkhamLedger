@@ -8,7 +8,7 @@
  *
  * Implements WCAG 2.x relative luminance and contrast ratio. Alpha colours are
  * composited over an explicit backdrop first, because a translucent border has
- * no contrast of its own — only against what lies beneath it.
+ * no contrast of its own - only against what lies beneath it.
  */
 export type Rgb = { readonly r: number; readonly g: number; readonly b: number }
 export type Rgba = Rgb & { readonly a: number }

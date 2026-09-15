@@ -10,7 +10,7 @@ import { cn } from '@/lib/cn'
  * The native date input was the obvious choice and had to go: its *display*
  * format follows the browser's locale rather than the page's, so the same field
  * read 05/10/2026 to one person and 10/05/2026 to another, and no attribute on
- * the page can change that — Chrome ignores `lang` for this entirely.
+ * the page can change that - Chrome ignores `lang` for this entirely.
  *
  * Three segments remove the ambiguity by construction: the order is the order,
  * on every browser and every operating system. The cost is the native picker,
@@ -69,7 +69,7 @@ export function DateField({
       <div
         /*
          * The segments occupy a fraction of the box they sit in, so a click that
-         * lands anywhere else used to do nothing at all — the control looked
+         * lands anywhere else used to do nothing at all - the control looked
          * inert unless you hit three characters exactly. Clicking the box starts
          * at the day, which is where entry starts anyway.
          */

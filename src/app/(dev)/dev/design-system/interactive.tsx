@@ -86,7 +86,7 @@ export function DesignSystemInteractive() {
 
           <Tooltip>
             <TooltipTrigger render={<Button variant="ghost" />}>Hover me</TooltipTrigger>
-            <TooltipContent>Supplementary only — never load-bearing.</TooltipContent>
+            <TooltipContent>Supplementary only - never load-bearing.</TooltipContent>
           </Tooltip>
 
           <Button variant="danger" onClick={() => setConfirmOpen(true)}>
@@ -117,7 +117,7 @@ export function DesignSystemInteractive() {
             The Keeper&rsquo;s aggregate view.
           </TabsContent>
           <TabsContent value="people" className="pt-4 font-ui text-sm text-text-secondary">
-            Named availability — Keeper only.
+            Named availability - Keeper only.
           </TabsContent>
           <TabsContent value="responses" className="pt-4 font-ui text-sm text-text-secondary">
             Who has answered and who has not.

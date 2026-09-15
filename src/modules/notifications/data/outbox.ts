@@ -34,7 +34,7 @@ import type { DeliveryChannel, NotificationPayload } from '../domain/types'
 /**
  * How long a claimed row may stay SENDING before it is considered abandoned.
  *
- * Longer than any plausible send — SMTP timeouts included — and short enough
+ * Longer than any plausible send - SMTP timeouts included - and short enough
  * that a worker killed mid-flush does not strand its notifications for the rest
  * of the evening.
  */
@@ -238,7 +238,7 @@ async function loadCampaignOutbound(
  * Records what happened to a delivery.
  *
  * A retryable failure goes back into the queue with its backoff; a permanent one
- * or an exhausted attempt count stops. Nothing is deleted — a failed delivery is
+ * or an exhausted attempt count stops. Nothing is deleted - a failed delivery is
  * the only evidence that somebody was not told, and the admin view reads it.
  */
 export async function completeDelivery(input: {

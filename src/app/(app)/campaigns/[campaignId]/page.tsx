@@ -10,7 +10,7 @@ import { NextSessionCard } from '@/modules/sessions/ui/next-session-card'
 /**
  * Campaign overview.
  *
- * Built around one question — when are we next playing — because the answer
+ * Built around one question - when are we next playing - because the answer
  * "nobody has arranged anything" is the one that decides whether a campaign
  * survives. Everything else on this page is context for it.
  */

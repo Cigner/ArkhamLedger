@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
 /**
  * Separator.
  *
- * Purely decorative, which is why it uses the subtle border token — the one
+ * Purely decorative, which is why it uses the subtle border token - the one
  * token intentionally exempt from the 3:1 non-text contrast rule, since it never
  * identifies a control or a state.
  */

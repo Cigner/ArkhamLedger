@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
  * Button.
  *
  * Deliberately flat: no gradients, minimal radius, weight carried by colour and
- * border rather than by depth. The focus ring is not declared here — the global
+ * border rather than by depth. The focus ring is not declared here - the global
  * :focus-visible rule renders a two-tone ring that stays visible over the
  * availability heatmap, where a single-tone ring would disappear.
  *

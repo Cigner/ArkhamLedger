@@ -86,7 +86,7 @@ export const adminActionClient = actionClient.use(async ({ next }) => {
  * Unauthenticated actions: activation, password reset request, password reset.
  *
  * Separate from `actionClient` only to make the absence of an auth check
- * explicit at the call site — an action built on this client is public by
+ * explicit at the call site - an action built on this client is public by
  * design, not by omission.
  */
 export const publicActionClient = actionClient.use(async ({ next }) => {

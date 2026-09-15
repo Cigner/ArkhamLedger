@@ -58,7 +58,7 @@ function printReport(report: SeedReport): void {
 
   heading('Campaigns')
   for (const campaign of report.campaigns) {
-    console.log(`  ${campaign.status.padEnd(10)} ${campaign.name} — ${campaign.members} members`)
+    console.log(`  ${campaign.status.padEnd(10)} ${campaign.name} - ${campaign.members} members`)
   }
 
   heading('Sessions')

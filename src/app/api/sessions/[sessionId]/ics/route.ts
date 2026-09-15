@@ -12,7 +12,7 @@ import { buildCalendar } from '@/modules/sessions/domain/ics'
  * guard as the session page, and it carries no side effect that a prefetch could
  * trigger.
  *
- * Only a member gets it, and only once a date exists — an .ics with no time in
+ * Only a member gets it, and only once a date exists - an .ics with no time in
  * it is a file that fails to import for reasons the reader cannot see.
  */
 export const dynamic = 'force-dynamic'

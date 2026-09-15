@@ -13,7 +13,7 @@ import { AcceptInvitation } from '@/modules/campaigns/ui/accept-invitation'
  * without an account cannot create one. The proxy sends an anonymous visitor to
  * sign in and back here afterwards.
  *
- * The preview is read-only — arriving, looking, and reloading never consume a
+ * The preview is read-only - arriving, looking, and reloading never consume a
  * use of a shared link.
  */
 export const metadata: Metadata = { title: 'Invitation' }
@@ -72,7 +72,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
           <CardTitle>You are already in {preview.campaignName}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
-          <p>Nothing to accept — the campaign is already on your list.</p>
+          <p>Nothing to accept - the campaign is already on your list.</p>
           <ButtonLink variant="accent" href={`/campaigns/${preview.campaignId}`}>
             Open campaign
           </ButtonLink>
@@ -90,7 +90,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
         <dl className="flex flex-col gap-2 font-ui text-sm">
           <div className="flex justify-between gap-4">
             <dt className="text-text-muted">Kept by</dt>
-            <dd className="text-text-primary">{preview.keeperNames.join(', ') || '—'}</dd>
+            <dd className="text-text-primary">{preview.keeperNames.join(', ') || '-'}</dd>
           </div>
           <div className="flex justify-between gap-4">
             <dt className="text-text-muted">Members</dt>

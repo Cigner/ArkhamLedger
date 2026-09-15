@@ -11,7 +11,7 @@ import type { InboxItem, NotificationPayload } from '../domain/types'
  * Somebody's own notifications.
  *
  * Every query here is narrowed by the session's identity rather than by an
- * argument — an inbox is the most personal thing in the application, and there
+ * argument - an inbox is the most personal thing in the application, and there
  * is no shape of input that could point one of these at another person's rows.
  */
 /**

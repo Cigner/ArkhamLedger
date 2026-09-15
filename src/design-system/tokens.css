@@ -18,7 +18,7 @@
  * `static` is required, not stylistic.
  *
  * By default Tailwind removes theme variables it cannot see referenced in the
- * source, which silently deletes any token consumed dynamically — the
+ * source, which silently deletes any token consumed dynamically - the
  * availability grid maps a participant count to a ramp step at runtime, so the
  * literal `--color-avail-3` never appears anywhere for the scanner to find.
  * Without `static`, those tokens resolve to nothing and cells render blank.
@@ -41,7 +41,7 @@
   /*
    * Alpha neutrals. The step numbering follows the Radix convention, but the
    * opacities are chosen to clear contrast thresholds over BOTH the page canvas
-   * and the most elevated surface — a border tuned only against the canvas
+   * and the most elevated surface - a border tuned only against the canvas
    * silently fails inside a dialog.
    */
   --color-ink-a6: rgb(226 240 190 / 0.13); /* decorative separators only */
@@ -50,7 +50,7 @@
   --color-ink-a11: rgb(239 252 214 / 0.71);
 
   /*
-   * Dark alpha. The alpha neutrals above are LIGHT — they exist to lift borders
+   * Dark alpha. The alpha neutrals above are LIGHT - they exist to lift borders
    * and muted text off a dark ground. A modal scrim needs the opposite, and
    * reaching for a light alpha there washes the page out instead of dimming it.
    */
@@ -127,7 +127,7 @@
 
   /* --- availability: density ramp in the Keeper heatmap ------------------- */
   /*
-   * A five-step ramp cannot place 3:1 between every adjacent pair — that would
+   * A five-step ramp cannot place 3:1 between every adjacent pair - that would
    * need an 81:1 range and the maximum available is 21:1. The ramp is therefore
    * supplementary: the participant count is printed in every cell, and the top
    * step clears 3:1 against the canvas so a dense cell is unmistakably filled.

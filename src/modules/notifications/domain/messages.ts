@@ -10,8 +10,8 @@ import type { NotificationPayload, NotificationType } from './types'
  * string, because a stored sentence cannot be re-read in another language or
  * another time zone.
  *
- * Two forms, because the audience differs. A person is addressed directly — "you
- * are invited" — while a channel is a room full of people, and a post there
+ * Two forms, because the audience differs. A person is addressed directly - "you
+ * are invited" - while a channel is a room full of people, and a post there
  * saying "you" means nothing. The difference is one line per type and saves
  * every reader a moment of working out who is being spoken to.
  *
@@ -114,7 +114,7 @@ export function renderNotification(input: RenderInput): RenderedMessage {
 
     case 'SESSION_SCHEDULED':
       return message({
-        subject: `${session} is confirmed${when ? ` — ${when}` : ''}`,
+        subject: `${session} is confirmed${when ? ` - ${when}` : ''}`,
         body: `${session} will run ${when ?? 'at the agreed time'}.`,
         channelText: `${session} is confirmed: ${when ?? 'time to be announced'}.`,
         href,
@@ -123,7 +123,7 @@ export function renderNotification(input: RenderInput): RenderedMessage {
 
     case 'SESSION_RESCHEDULED':
       return message({
-        subject: `${session} has moved${when ? ` — ${when}` : ''}`,
+        subject: `${session} has moved${when ? ` - ${when}` : ''}`,
         body: `${session} has been moved. It will now run ${when ?? 'at a new time'}.`,
         channelText: `${session} has moved: ${when ?? 'new time to be announced'}.`,
         href,

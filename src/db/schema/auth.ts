@@ -21,7 +21,7 @@ import { ID_LENGTH, TOKEN_HASH_LENGTH, idColumn, softDelete, timestamps } from '
  * prefix: the domain has its own notion of a "session" (a game session), and an
  * unprefixed `session` table would collide with it in every query and migration.
  *
- * Columns beyond the library's own schema — status, timezone, locale — are
+ * Columns beyond the library's own schema - status, timezone, locale - are
  * application data attached to the same row to avoid a join on every request.
  */
 /**
@@ -125,7 +125,7 @@ export const authVerification = mysqlTable(
  * Rate-limit counters.
  *
  * Owned by the auth library, which keeps one row per throttled key. Stored in
- * the database rather than in process memory so that limits survive a restart —
+ * the database rather than in process memory so that limits survive a restart -
  * an in-memory counter resets on every deploy, which is precisely when an
  * attacker benefits.
  */

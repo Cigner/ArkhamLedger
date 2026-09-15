@@ -27,7 +27,7 @@ export function canArchiveCampaign(viewer: Membership): Result<void> {
 /**
  * The owner cannot walk away from a campaign.
  *
- * Leaving would orphan it — nobody could archive it or manage membership — so
+ * Leaving would orphan it - nobody could archive it or manage membership - so
  * ownership has to be handed over first. Surfacing that as a rule rather than a
  * silent failure lets the UI point at the fix.
  */
@@ -82,7 +82,7 @@ export function canModifyContent(status: CampaignStatus): Result<void> {
  *
  * Archiving must not be a one-way door. Refusing every change while archived
  * would also refuse the change that lifts the archive, leaving no way back
- * except direct database access — so a submission that moves the status out of
+ * except direct database access - so a submission that moves the status out of
  * ARCHIVED is always allowed, and only edits that leave it archived are refused.
  */
 export function canUpdateCampaign(

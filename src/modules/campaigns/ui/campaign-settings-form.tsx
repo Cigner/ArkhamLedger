@@ -254,7 +254,7 @@ export function CampaignSettingsForm({
         open={confirmingTransfer}
         onOpenChange={setConfirmingTransfer}
         title="Hand over this campaign?"
-        description="They become the owner and can archive it, manage membership and change roles — including yours. You cannot take it back yourself."
+        description="They become the owner and can archive it, manage membership and change roles - including yours. You cannot take it back yourself."
         confirmLabel="Transfer ownership"
         pending={transfer.isPending}
         onConfirm={() => transfer.execute({ campaignId: settings.id, newOwnerId })}

@@ -65,7 +65,7 @@ export const setNotificationChannel = authActionClient
  * Points a campaign at a Discord channel.
  *
  * Owner only. A webhook posts to a room the whole group reads, so the decision
- * belongs to whoever owns the campaign rather than to any Keeper — and the URL
+ * belongs to whoever owns the campaign rather than to any Keeper - and the URL
  * itself is a credential, so it is written and never read back.
  */
 export const setDiscordWebhook = authActionClient

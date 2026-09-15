@@ -18,7 +18,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 const SESSION_COOKIE = 'arkham.session_token'
 /**
  * Better Auth prefixes the session cookie with `__Secure-` whenever it issues it
- * over HTTPS — which is every deployment, but not local development. Checking
+ * over HTTPS - which is every deployment, but not local development. Checking
  * only the bare name makes every production request look anonymous: this file
  * redirects to sign-in, the sign-in page validates the session properly, sees a
  * user and redirects back, and the browser gives up with a redirect loop.
@@ -51,7 +51,7 @@ function isPublicPath(pathname: string): boolean {
  * nonce from the request header and stamps it onto its own script tags.
  *
  * `style-src` allows inline styles, which is not ideal but is unavoidable while
- * Next injects critical CSS inline. `connect-src` is limited to same-origin —
+ * Next injects critical CSS inline. `connect-src` is limited to same-origin -
  * there is no third-party telemetry in this application and no reason for the
  * page to reach anywhere else.
  */

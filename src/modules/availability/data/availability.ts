@@ -27,7 +27,7 @@ import type {
  *
  * The view is assembled per viewer and the narrowing happens here. A Keeper's
  * copy carries names against answers; an Investigator's carries counts and their
- * own answer, and nothing else — there is no payload in which the names are
+ * own answer, and nothing else - there is no payload in which the names are
  * present and merely unrendered.
  */
 type SessionShape = {
@@ -162,7 +162,7 @@ export async function getAvailabilityView(sessionId: string): Promise<Availabili
   /*
    * The hour-by-hour breakdown is withheld until enough people have answered to
    * hide in. With two answers, one count plus the viewer's own names the other
-   * person exactly. Keepers see it regardless — it is their data to read.
+   * person exactly. Keepers see it regardless - it is their data to read.
    */
   const discloseTallies = isKeeper || respondentCount >= MIN_RESPONDENTS_FOR_HEATMAP
 
@@ -345,7 +345,7 @@ export async function findPreviousAnswer(input: {
 /**
  * Discards every answer to a session.
  *
- * Used when the question changes — the window moves, or the Keeper reopens
+ * Used when the question changes - the window moves, or the Keeper reopens
  * collection. Marking people as not having answered while leaving their answers
  * in place was the old behaviour, and it produced a session where everybody
  * showed as silent while their stale answers still drove the heatmap and the

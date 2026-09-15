@@ -8,7 +8,7 @@ import { namesOf } from './format'
  * One proposed window.
  *
  * The date and the caveats come first and the score second. A Keeper decides on
- * "everyone is free except Kasia, who can manage it at a push", not on 90 — the
+ * "everyone is free except Kasia, who can manage it at a push", not on 90 - the
  * number is there to order the list and to make two close options comparable.
  *
  * Presentational on purpose: it renders what it is given and reports a choice
@@ -120,8 +120,8 @@ function headline(explanation: CandidateExplanation): string {
     parts.push('Everyone required is free')
   } else {
     /*
-     * The shortfall can only be somebody free at a push — an absence would have
-     * taken the window out of the list entirely — so they can come, and the note
+     * The shortfall can only be somebody free at a push - an absence would have
+     * taken the window out of the list entirely - so they can come, and the note
      * below names them rather than reducing them to a fraction.
      */
     parts.push('Everyone required can come')

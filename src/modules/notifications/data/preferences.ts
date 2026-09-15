@@ -11,7 +11,7 @@ import type { DeliveryChannel } from '../domain/types'
  * A person's own delivery settings.
  *
  * Only exceptions are stored, so the read fills in defaults rather than
- * returning holes — a channel added after somebody last opened this page is on
+ * returning holes - a channel added after somebody last opened this page is on
  * for them, which is the behaviour that does not require a backfill or leave
  * anybody silently unreachable.
  */

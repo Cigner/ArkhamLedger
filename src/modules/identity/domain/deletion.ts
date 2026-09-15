@@ -12,7 +12,7 @@ import { type Result, fail, ok } from '@/lib/result'
  *
  * Hard removal erases the row itself and everything that cascades from it. It is
  * refused whenever anything the person *authored* would have to be destroyed or
- * orphaned with it — a campaign they own, a session they created, an invitation
+ * orphaned with it - a campaign they own, a session they created, an invitation
  * they issued. Those belong to other people's history, and the database says so
  * too: each of those foreign keys restricts, so an attempted delete would fail
  * mid-transaction rather than quietly cascade.
@@ -50,8 +50,8 @@ export function blockerCount(blockers: DeletionBlockers): number {
 /**
  * Whether the row itself may be erased.
  *
- * Returns the first blocker rather than a list: the remedy differs per kind —
- * transfer a campaign, cancel a session — and naming one thing to do is more
+ * Returns the first blocker rather than a list: the remedy differs per kind -
+ * transfer a campaign, cancel a session - and naming one thing to do is more
  * use than naming four.
  */
 export function canHardDeleteUser(blockers: DeletionBlockers): Result<void> {

@@ -10,7 +10,7 @@ import type { ParticipantQuality, SchedulingParticipant, SchedulingSlot } from '
  * candidates does not change when any of those do.
  *
  * Everything here is a pure function of its arguments. No clock, no order
- * dependence, no accumulated state — the same window scored twice scores the
+ * dependence, no accumulated state - the same window scored twice scores the
  * same, which is the property the whole feature's credibility rests on.
  */
 
@@ -30,7 +30,7 @@ export function valueAt(participant: SchedulingParticipant, slot: SchedulingSlot
  *
  * An unanswered hour scores the same as a refusal. Treating silence as a
  * maybe would let a date be chosen on the strength of people who never replied,
- * which is exactly the failure the tool exists to prevent — the Keeper is told
+ * which is exactly the failure the tool exists to prevent - the Keeper is told
  * separately how many have not answered.
  */
 export function qualityOver(
@@ -68,7 +68,7 @@ export function qualitiesFor(
  * compressing the range of scores for no information.
  *
  * A session with no participants but its Keeper scores 100 rather than dividing
- * by nothing — every person whose availability mattered is free.
+ * by nothing - every person whose availability mattered is free.
  */
 export function scoreFor(qualities: readonly ParticipantQuality[]): number {
   let earned = 0

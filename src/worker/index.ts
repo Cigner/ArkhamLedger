@@ -14,12 +14,12 @@ import { beat, createDrain, runJob, type Job } from './runtime'
  *
  * A separate process from the web tier, deliberately. Cron inside the web
  * process would run once per replica, so every notification would be sent as
- * many times as the application is scaled — and the first person to notice would
+ * many times as the application is scaled - and the first person to notice would
  * be whoever received four copies of the same email.
  *
  * Croner rather than node-cron: it understands daylight saving, and a throwing
  * handler does not silently stop being scheduled. The second property is why the
- * jobs are wrapped anyway — trust, but verify.
+ * jobs are wrapped anyway - trust, but verify.
  *
  * Schedules are expressed in UTC. The only job whose local hour matters is the
  * daily one, and telling a Keeper about a quiet campaign at nine in the morning

@@ -11,7 +11,7 @@ import type { Job, JobResult } from '../runtime'
  *
  * Deliveries go out one at a time rather than in parallel. The volume is a
  * handful of messages after somebody presses a button, and a home SMTP relay
- * reacts badly to a burst of simultaneous connections — patience costs seconds
+ * reacts badly to a burst of simultaneous connections - patience costs seconds
  * here and avoids being throttled by the thing we are trying to use.
  *
  * A channel with no dispatcher, or one that declines the notification, is

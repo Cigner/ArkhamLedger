@@ -22,7 +22,7 @@ import { findAcceptableProposal, insertRun, loadSchedulingInput } from '../data/
  * collection by looking at it, and everybody who had not answered yet would find
  * the grid locked with no explanation.
  *
- * Confirming is the moment that matters, so it is the moment that transitions —
+ * Confirming is the moment that matters, so it is the moment that transitions -
  * and it does so from whichever status the session is in, because a Keeper who
  * has seen enough should not have to close collection first as a ceremony.
  */
@@ -91,7 +91,7 @@ export const runScheduling = authActionClient
  *
  * Only a proposal from the most recent search may be accepted. Answers change,
  * and a Keeper clicking a card from a list generated an hour ago would otherwise
- * confirm a date the current answers no longer support — without anything on
+ * confirm a date the current answers no longer support - without anything on
  * screen having said so.
  */
 export const acceptProposal = authActionClient

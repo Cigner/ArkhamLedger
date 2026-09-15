@@ -14,7 +14,7 @@ import type { CampaignRole, CampaignStatus, Membership } from '../domain/types'
  *
  * This is the boundary. Every read and every mutation that touches a campaign
  * passes through one of these, inside the data layer, rather than relying on a
- * layout or a route having checked first — a Server Action is a public endpoint
+ * layout or a route having checked first - a Server Action is a public endpoint
  * and may be called directly.
  *
  * Non-membership is reported as NOT FOUND, never as forbidden. A 403 would make

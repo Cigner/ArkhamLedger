@@ -7,7 +7,7 @@
  * algorithm consumes and what daylight-saving transitions require. The interface
  * works in whole-day ranges because that is the only shape of answer this domain
  * can use: a session runs from its start to the end of the evening with a
- * minimum length, so "free 16–17 and 20–22" is expressible but useless — no
+ * minimum length, so "free 16–17 and 20–22" is expressible but useless - no
  * session fits in it.
  *
  * Converting between the two happens in one place, which keeps the constraint

@@ -44,7 +44,7 @@ export function tokensMatch(presentedHash: string, storedHash: string): boolean 
  *
  * Distinct from token hashing above and not interchangeable with it: a token is
  * only ever compared, so a digest is enough and is safer. A webhook URL has to
- * be sent to Discord, so it must be recoverable — which makes the key, not the
+ * be sent to Discord, so it must be recoverable - which makes the key, not the
  * ciphertext, the thing that has to be protected.
  *
  * AES-256-GCM: the tag authenticates the ciphertext, so a tampered value fails

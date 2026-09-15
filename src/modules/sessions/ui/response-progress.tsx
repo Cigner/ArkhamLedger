@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
  * How many people have answered.
  *
  * Shown to everyone, because it is an aggregate and reveals nothing about who
- * said what — the distinction the whole privacy rule rests on. The bar is
+ * said what - the distinction the whole privacy rule rests on. The bar is
  * accompanied by the numbers rather than replacing them.
  */
 export function ResponseProgress({

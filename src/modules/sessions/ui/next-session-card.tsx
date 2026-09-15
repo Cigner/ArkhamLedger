@@ -13,7 +13,7 @@ import { SessionStatusBadge } from './session-status-badge'
  * Campaigns do not usually end in an argument; they end because the evening
  * after the last one was never arranged, and by the time anybody notices, too
  * much time has passed to restart. So the absence of a next date is not rendered
- * as an empty space — it is the loudest thing on the page, and it carries the
+ * as an empty space - it is the loudest thing on the page, and it carries the
  * action that fixes it.
  *
  * Three states, in the order they matter: a date is set, a date is being worked

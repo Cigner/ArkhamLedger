@@ -34,7 +34,7 @@ import type { ParticipantPriority, SessionDetail } from '../domain/types'
  * Who is invited, and how much their presence matters.
  *
  * Priorities are the Keeper's private working notes. They are never shown to the
- * people they describe — being told you are "optional" is a social injury the
+ * people they describe - being told you are "optional" is a social injury the
  * feature does not need to inflict to do its job.
  *
  * Keepers are pinned to required and their control is disabled: a session
@@ -200,7 +200,7 @@ export function ParticipantsForm({
                     )}
                   </TableCell>
                   <TableCell className="text-text-secondary">
-                    {participant?.respondedAt ? 'Yes' : '—'}
+                    {participant?.respondedAt ? 'Yes' : '-'}
                   </TableCell>
                 </TableRow>
               )
@@ -221,8 +221,8 @@ export function ParticipantsForm({
           required
         />
         <FieldDescription>
-          How many of the invited have to be free for the session to happen. Half plus one —{' '}
-          {defaultQuorum(investigatorCount)} for this group — keeps a single busy person from
+          How many of the invited have to be free for the session to happen. Half plus one -{' '}
+          {defaultQuorum(investigatorCount)} for this group - keeps a single busy person from
           holding up the campaign.
         </FieldDescription>
       </Field>

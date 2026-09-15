@@ -7,8 +7,8 @@ import { authPort, type AuthenticatedUser } from './port'
  * Global authorization guards.
  *
  * These run inside the data access layer and inside every Server Action, never
- * only in the proxy. Middleware is bypassable — CVE-2025-29927 demonstrated
- * exactly that — so it is treated as a redirect convenience and nothing more.
+ * only in the proxy. Middleware is bypassable - CVE-2025-29927 demonstrated
+ * exactly that - so it is treated as a redirect convenience and nothing more.
  *
  * Campaign-scoped guards live with the campaigns module, because they need its
  * membership table; these two cover identity only.

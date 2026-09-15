@@ -7,7 +7,7 @@ import * as schema from './schema'
 /**
  * Shared database connection pool.
  *
- * Only the POOL is cached across hot reloads — creating one per reload exhausts
+ * Only the POOL is cached across hot reloads - creating one per reload exhausts
  * MySQL connections within minutes. The Drizzle wrapper is rebuilt every time
  * because it captures the schema at construction: caching it too means a newly
  * added relation is invisible until the dev server restarts, which costs more

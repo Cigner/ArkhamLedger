@@ -4,7 +4,7 @@ import type { DeliveryOutcome, DispatchContext, NotificationDispatcher } from '.
 /**
  * Discord delivery.
  *
- * One post per event to the campaign's channel, not one per person — the
+ * One post per event to the campaign's channel, not one per person - the
  * carrying recipient is chosen when the notification is written, and the wording
  * is the room's rather than the reader's.
  *
@@ -28,7 +28,7 @@ export const discordDispatcher: NotificationDispatcher = {
     if (!url) return { kind: 'PERMANENT', error: 'no webhook configured' }
 
     const content =
-      `**${context.campaign?.name ?? 'Arkham Ledger'}** — ${context.message.channelText}`.slice(
+      `**${context.campaign?.name ?? 'Arkham Ledger'}** - ${context.message.channelText}`.slice(
         0,
         MAX_CONTENT_LENGTH,
       )

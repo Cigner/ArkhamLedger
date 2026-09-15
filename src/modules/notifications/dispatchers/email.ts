@@ -43,7 +43,7 @@ export const emailDispatcher: NotificationDispatcher = {
 /**
  * The calendar entry for a session whose time is now known.
  *
- * Returns nothing when the payload has no times — a notification that names no
+ * Returns nothing when the payload has no times - a notification that names no
  * date has nothing to put in a calendar, and attaching an empty event would give
  * the reader a broken file instead of none.
  */

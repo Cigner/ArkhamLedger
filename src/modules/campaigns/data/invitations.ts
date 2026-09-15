@@ -186,7 +186,7 @@ function rejectionFor(
  * following the last remaining use of a shared link cannot both succeed: exactly
  * one UPDATE matches. A check based on a prior SELECT would let both through.
  *
- * Returns null when the claim did not land, without saying why — the caller
+ * Returns null when the claim did not land, without saying why - the caller
  * re-reads through previewInvitation to produce a specific message.
  */
 export async function claimInvitation(

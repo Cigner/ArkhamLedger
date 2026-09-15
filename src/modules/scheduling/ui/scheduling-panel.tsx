@@ -161,7 +161,7 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
         <EmptyState
           title="No dates worked out yet"
           icon={<CalendarSearch className="size-8" strokeWidth={1.25} />}
-          description="Searching decides nothing — it ranks the evenings that would work."
+          description="Searching decides nothing - it ranks the evenings that would work."
           action={
             view.canRun ? (
               <Button variant="accent" disabled={search.isPending} onClick={runSearch}>

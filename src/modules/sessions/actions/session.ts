@@ -57,7 +57,7 @@ import {
  *
  * Every transition goes through transitionSession, whose WHERE clause names the
  * status it is moving from. Two Keepers acting at once therefore cannot both
- * apply a transition from the same starting point — the second finds no row and
+ * apply a transition from the same starting point - the second finds no row and
  * is told the session moved on, rather than silently overwriting the first.
  */
 /**
@@ -200,7 +200,7 @@ export const updateSession = authActionClient
 
       /*
        * Answers describe the question they were asked. Move the dates or the
-       * hours and they describe a question nobody asked, so they go — and the
+       * hours and they describe a question nobody asked, so they go - and the
        * form warns before it gets here, because this is not recoverable.
        */
       if (context.sessionStatus === 'COLLECTING' && editInvalidatesAnswers(before, parsedInput)) {
@@ -293,7 +293,7 @@ export const publishSession = authActionClient
  *
  * The warning path matters more than the happy one: a Keeper who picks a date
  * somebody said no to is told who, and has to acknowledge it. Refusing outright
- * would be wrong — they may know something the grid does not.
+ * would be wrong - they may know something the grid does not.
  */
 export const setSessionDate = authActionClient
   .metadata({ name: 'session.setDate' })

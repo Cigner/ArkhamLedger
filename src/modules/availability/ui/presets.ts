@@ -5,7 +5,7 @@ import type { DayRange, SlotState } from '../domain/types'
  *
  * These are not only a convenience. They are the route through the grid for
  * somebody using a keyboard or a switch, who would otherwise step through every
- * cell of a fortnight; and they match how people actually describe their week —
+ * cell of a fortnight; and they match how people actually describe their week -
  * "weeknights after six", not a set of ninety-six hours.
  */
 export type PresetId = 'weeknights' | 'weekends' | 'everyEvening' | 'noneOfThese' | 'clear'
@@ -50,7 +50,7 @@ function weekdayOf(date: string): number {
  * Builds a complete answer from a preset.
  *
  * Returns every date rather than only the ones it touches, so applying a preset
- * replaces the answer instead of layering onto whatever was there — which is
+ * replaces the answer instead of layering onto whatever was there - which is
  * what "weeknights" means when said out loud.
  */
 export function applyPreset(input: {

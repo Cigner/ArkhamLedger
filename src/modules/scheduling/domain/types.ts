@@ -11,7 +11,7 @@ import type { ParticipantPriority } from '@/modules/sessions/domain/types'
  * slots, and six consecutive slots are six real hours on every day of the year.
  *
  * Nothing here carries a display name. A breakdown identifies people by id, and
- * the Keeper's view resolves those to names — an availability answer is
+ * the Keeper's view resolves those to names - an availability answer is
  * private data, and the algorithm has no business holding it in a readable form.
  */
 export type SchedulingSlot = {
@@ -68,7 +68,7 @@ export type ExplanationNote =
 export type CandidateExplanation = {
   /**
    * `EVERYONE_FREE` only when every invited person is firmly free for the whole
-   * core — including the ones whose absence would not have blocked it.
+   * core - including the ones whose absence would not have blocked it.
    */
   readonly headline: 'EVERYONE_FREE' | 'ALL_REQUIRED_FREE'
   readonly requiredMet: number
@@ -105,7 +105,7 @@ export type RankedCandidate = {
   readonly endUtc: string
   readonly localDate: string
   readonly startHour: number
-  /** 0–100, rounded to two decimals — the number a Keeper is shown. */
+  /** 0–100, rounded to two decimals - the number a Keeper is shown. */
   readonly score: number
   readonly breakdown: CandidateBreakdown
   readonly explanation: CandidateExplanation

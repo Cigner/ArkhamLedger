@@ -8,7 +8,7 @@ import type { WindowSummary } from '../domain/types'
  * whether the group can play and roughly when; reading that off a heatmap is
  * work the application can do for them.
  *
- * Counts only — no names appear in this shape at all.
+ * Counts only - no names appear in this shape at all.
  */
 export function WindowSummaryList({
   windows,

@@ -32,7 +32,7 @@ export const CANCELLATION_REASON_MAX_LENGTH = 500
  * Default quorum: half the participants plus one.
  *
  * Requiring everybody hands a veto to whoever is busiest, which is the failure
- * mode that ends campaigns. Keepers are outside this count — a session without
+ * mode that ends campaigns. Keepers are outside this count - a session without
  * its Keeper is not a session.
  */
 export function defaultQuorum(investigatorCount: number): number {

@@ -9,8 +9,8 @@ import type { OperationsSnapshot } from '../domain/types'
  *
  * Ordered by what an administrator would act on first: whether the worker is
  * alive, then whether anything is stuck, then the shape of what is running. The
- * two numbers that mean "something is wrong right now" — a stale worker and
- * overdue deadlines — are stated as sentences rather than left as figures to
+ * two numbers that mean "something is wrong right now" - a stale worker and
+ * overdue deadlines - are stated as sentences rather than left as figures to
  * interpret.
  */
 export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) {

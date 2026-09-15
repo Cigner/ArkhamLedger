@@ -15,7 +15,7 @@ import type { SessionStatus } from '../domain/types'
  *
  * A session inherits its permissions from its campaign, so the campaign id is
  * resolved first and the campaign guards do the deciding. Resolving it in a
- * single query — rather than reading the session and then checking membership —
+ * single query - rather than reading the session and then checking membership -
  * is what keeps a non-member from learning that a session id exists at all.
  */
 export type SessionContext = CampaignContext & {

@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 /**
  * A control that is only an icon.
  *
- * For dense places — a table row, a card corner — where a word per action turns
+ * For dense places - a table row, a card corner - where a word per action turns
  * a scannable list into a wall of text. Everywhere else a button says what it
  * does in words, because an icon alone is a guess until you have learnt it.
  *

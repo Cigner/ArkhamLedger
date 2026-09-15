@@ -19,7 +19,7 @@ import type { DeliveryChannel, NotificationDraft } from '../domain/types'
  * two is not a thing that can happen. Delivery itself is the worker's problem.
  *
  * Deliberately free of anything request-shaped. The worker raises notifications
- * too — for a deadline that passed, for a campaign with nothing in the diary —
+ * too - for a deadline that passed, for a campaign with nothing in the diary -
  * and it runs in a process with no session, no request headers and no reason to
  * carry an authentication library. Reads that belong to a person live in
  * inbox.ts, which does.

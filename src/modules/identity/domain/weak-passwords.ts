@@ -3,7 +3,7 @@
  *
  * Length alone does not make a password good: "passwordpassword" is sixteen
  * characters and appears in every credential dump. This list is deliberately
- * short — it catches the passwords an attacker tries first, which is where the
+ * short - it catches the passwords an attacker tries first, which is where the
  * value is, rather than attempting to be a full dictionary.
  *
  * Comparison is case-insensitive and ignores trailing digits, because "Summer2024"

@@ -93,7 +93,7 @@ export const campaign = mysqlTable(
  * Campaign membership.
  *
  * Unique on (campaign, user) so that rejoining after leaving reactivates the
- * existing row instead of creating a second one — this preserves the member's
+ * existing row instead of creating a second one - this preserves the member's
  * historical availability and attendance.
  */
 export const campaignMember = mysqlTable(

@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
  *
  * Reads as a ruled line on a ledger rather than a rounded pill. The invalid
  * state changes the border colour, but the field always pairs with a Field
- * component that renders the error as text too — colour alone never carries the
+ * component that renders the error as text too - colour alone never carries the
  * fact that something is wrong.
  */
 export function Input({ className, ...props }: InputPrimitive.Props) {

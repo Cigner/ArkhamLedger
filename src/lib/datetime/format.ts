@@ -33,8 +33,8 @@ export function formatWindow(startUtc: Date, endUtc: Date, timeZone: string): st
 /**
  * Renders a deadline as the day it runs to the end of.
  *
- * A deadline is stored as the instant the day ends — midnight opening the next
- * one — so formatting it directly would name the wrong date and a time nobody
+ * A deadline is stored as the instant the day ends - midnight opening the next
+ * one - so formatting it directly would name the wrong date and a time nobody
  * chose. Stepping back a moment puts it back inside the day somebody picked.
  */
 export function formatDeadline(instant: Date, timeZone: string): string {

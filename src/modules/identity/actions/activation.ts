@@ -14,7 +14,7 @@ import { canActivateAccount } from '../domain/rules'
 /**
  * First sign-in: the account's owner sets their own password.
  *
- * Public by necessity — the user has no session yet — so the activation token is
+ * Public by necessity - the user has no session yet - so the activation token is
  * the entire authorization. It is claimed inside the transaction with a
  * conditional update, which is what stops two concurrent submissions of the same
  * link from both succeeding.

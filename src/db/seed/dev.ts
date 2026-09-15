@@ -29,7 +29,7 @@ import {
  *
  * Wipes and rebuilds the whole dataset so the database always matches the
  * fixture, rather than accumulating whatever previous runs left behind. That is
- * only acceptable because it refuses to run against production — the guard is
+ * only acceptable because it refuses to run against production - the guard is
  * the first thing it does, and the reason a destructive seed is safe at all.
  *
  * Returns the material a developer needs to actually use the result: who to sign
@@ -240,7 +240,7 @@ export async function seedDevelopmentData(baseUrl: string): Promise<SeedReport> 
  * Read from the campaign's own membership rather than from a list of names: the
  * same person is a Keeper in one campaign and a player in another, and flagging
  * them as a Keeper everywhere makes them a hard constraint on sessions they are
- * merely invited to — which silently rules out every date in those sessions.
+ * merely invited to - which silently rules out every date in those sessions.
  */
 function keepersOf(campaignKey: string): ReadonlySet<string> {
   const campaignSeed = SEED_CAMPAIGNS.find((entry) => entry.key === campaignKey)
@@ -257,7 +257,7 @@ function keepersOf(campaignKey: string): ReadonlySet<string> {
  *
  * Availability is expanded from local hour ranges into the exact grid slots the
  * application would generate, so the seeded rows are indistinguishable from ones
- * a player produced — including on the night the clocks go back, where the grid
+ * a player produced - including on the night the clocks go back, where the grid
  * has twenty-five hours and two of them carry the same label.
  */
 async function insertSession(

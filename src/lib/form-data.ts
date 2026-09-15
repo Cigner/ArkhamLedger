@@ -2,7 +2,7 @@
  * Typed reads from a FormData.
  *
  * `FormData.get` returns `string | File | null`, and stringifying the File case
- * silently yields "[object File]" — which then fails validation with a message
+ * silently yields "[object File]" - which then fails validation with a message
  * that points nowhere near the cause. Reading through these helpers makes the
  * non-string cases explicit instead.
  */

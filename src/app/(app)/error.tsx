@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 /**
  * Boundary for genuine failures inside the application.
  *
- * Refused permissions never reach here — those are interrupts handled by
- * forbidden.tsx and not-found.tsx — so anything that does is unexpected, and the
+ * Refused permissions never reach here - those are interrupts handled by
+ * forbidden.tsx and not-found.tsx - so anything that does is unexpected, and the
  * digest is the only thing that ties what the user saw to what the server logged.
  */
 export default function AppError({

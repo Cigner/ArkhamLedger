@@ -5,7 +5,7 @@ import { z } from 'zod'
  *
  * Parsed once at module load so a misconfigured deployment fails at startup
  * rather than at the first request that happens to need a missing variable.
- * Client-safe values must be prefixed NEXT_PUBLIC_ and read separately — they
+ * Client-safe values must be prefixed NEXT_PUBLIC_ and read separately - they
  * are inlined at build time and cannot come from this module.
  */
 const serverEnvSchema = z.object({
@@ -20,7 +20,7 @@ const serverEnvSchema = z.object({
    * AES-256-GCM key for secrets at rest: base64 that decodes to exactly 32 bytes.
    *
    * Checked by decoding rather than by length. A 44-character string that is not
-   * a 32-byte key passes a length check and then fails at the first encryption —
+   * a 32-byte key passes a length check and then fails at the first encryption -
    * which happens in production, the first time somebody saves a webhook.
    */
   ENCRYPTION_KEY: z.string().refine((value) => decodedLength(value) === 32, {

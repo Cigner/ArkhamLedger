@@ -27,7 +27,7 @@ import type { AvailabilityEditor } from './use-availability-editor'
  *
  * Hours belong to a date rather than to a separate mode, so this replaces the
  * whole-window grid: refining means opening the evening you want to refine.
- * It also scales — a month, or the ninety-day maximum, costs nothing here,
+ * It also scales - a month, or the ninety-day maximum, costs nothing here,
  * whereas a grid of that width squeezes its columns below the point of being
  * aimable.
  *

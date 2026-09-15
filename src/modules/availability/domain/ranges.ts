@@ -34,8 +34,8 @@ export function rangeToCells(
 /**
  * Collapses stored cells back into one range per day.
  *
- * Tolerant of data the current interface cannot produce — a fragmented answer
- * from an earlier version, or one written directly — by taking the outer bounds
+ * Tolerant of data the current interface cannot produce - a fragmented answer
+ * from an earlier version, or one written directly - by taking the outer bounds
  * of the strongest state present. Losing the gap is acceptable because no
  * session could have used it; silently dropping the whole answer would not be.
  */

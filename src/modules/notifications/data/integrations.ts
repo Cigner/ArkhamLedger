@@ -12,7 +12,7 @@ import { newId } from '@/lib/ids'
  * The URL is a bearer credential: anybody holding it can post to the channel as
  * the application. It is encrypted at rest, it is never returned to the
  * interface, and the only function that recovers it is the one the dispatcher
- * calls. What the settings page gets instead is whether one is configured —
+ * calls. What the settings page gets instead is whether one is configured -
  * which is all it needs to render.
  */
 export type IntegrationStatus = {

@@ -81,7 +81,7 @@ export default function DesignSystemPage() {
             one who said so aloud.
           </p>
           <p className="font-ui text-sm text-text-secondary">
-            Interface text in Inter — labels, tables and the availability grid.
+            Interface text in Inter - labels, tables and the availability grid.
           </p>
           <p data-tabular className="font-ui text-sm text-text-muted">
             18:00 · 19:00 · 20:00 · 111 · 000
@@ -166,7 +166,7 @@ export default function DesignSystemPage() {
         <div className="flex flex-col gap-4">
           <div>
             <p className="mb-2 font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-              Slot states — colour plus glyph, never colour alone
+              Slot states - colour plus glyph, never colour alone
             </p>
             <div className="flex gap-2">
               {(
@@ -190,7 +190,7 @@ export default function DesignSystemPage() {
           </div>
           <div>
             <p className="mb-2 font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-              Density ramp — the count is always printed
+              Density ramp - the count is always printed
             </p>
             <div className="flex gap-1">
               {AVAIL_STEPS.map((step) => (
@@ -264,7 +264,7 @@ export default function DesignSystemPage() {
                 <TableCell>
                   <Badge variant="warning">collecting</Badge>
                 </TableCell>
-                <TableCell className="text-text-muted">—</TableCell>
+                <TableCell className="text-text-muted">-</TableCell>
               </TableRow>
             </TableBody>
           </Table>
