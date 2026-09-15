@@ -44,6 +44,7 @@ export function DateField({
   onChange?: ((value: string) => void) | undefined
 }) {
   const [segments, setSegments] = useState<Segments>(() => split(defaultValue))
+  const dayRef = useRef<HTMLInputElement>(null)
   const monthRef = useRef<HTMLInputElement>(null)
   const yearRef = useRef<HTMLInputElement>(null)
 
@@ -66,8 +67,20 @@ export function DateField({
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
 
       <div
+        /*
+         * The segments occupy a fraction of the box they sit in, so a click that
+         * lands anywhere else used to do nothing at all — the control looked
+         * inert unless you hit three characters exactly. Clicking the box starts
+         * at the day, which is where entry starts anyway.
+         */
+        onMouseDown={(event) => {
+          if (disabled) return
+          if (event.target !== event.currentTarget) return
+          event.preventDefault()
+          dayRef.current?.focus()
+        }}
         className={cn(
-          'flex h-10 w-full items-center gap-1 rounded-sm border border-border-default bg-surface-subtle px-3',
+          'flex h-10 w-full cursor-text items-center gap-1 rounded-sm border border-border-default bg-surface-subtle px-3',
           'font-ui text-sm text-text-primary transition-interactive',
           'focus-within:border-focus-ring hover:border-border-strong',
           disabled && 'cursor-not-allowed opacity-45',
@@ -75,6 +88,7 @@ export function DateField({
       >
         <Segment
           id={id}
+          ref={dayRef}
           label="Day"
           placeholder="dd"
           width="w-7"
@@ -82,7 +96,7 @@ export function DateField({
           disabled={disabled}
           onValueChange={(raw) => update('day', raw, monthRef.current)}
         />
-        <span aria-hidden="true" className="text-text-muted">
+        <span aria-hidden="true" className="pointer-events-none select-none text-text-muted">
           /
         </span>
         <Segment
@@ -94,7 +108,7 @@ export function DateField({
           disabled={disabled}
           onValueChange={(raw) => update('month', raw, yearRef.current)}
         />
-        <span aria-hidden="true" className="text-text-muted">
+        <span aria-hidden="true" className="pointer-events-none select-none text-text-muted">
           /
         </span>
         <Segment
