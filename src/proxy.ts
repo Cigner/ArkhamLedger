@@ -16,6 +16,14 @@ import { NextResponse, type NextRequest } from 'next/server'
  * It also issues the correlation id that ties a request's log lines together.
  */
 const SESSION_COOKIE = 'arkham.session_token'
+/**
+ * Better Auth prefixes the session cookie with `__Secure-` whenever it issues it
+ * over HTTPS — which is every deployment, but not local development. Checking
+ * only the bare name makes every production request look anonymous: this file
+ * redirects to sign-in, the sign-in page validates the session properly, sees a
+ * user and redirects back, and the browser gives up with a redirect loop.
+ */
+const SESSION_COOKIES = [SESSION_COOKIE, `__Secure-${SESSION_COOKIE}`]
 const CORRELATION_HEADER = 'x-correlation-id'
 const NONCE_HEADER = 'x-nonce'
 
@@ -89,7 +97,9 @@ export function proxy(request: NextRequest): NextResponse {
   // running version, in case the reverse proxy in front is misconfigured.
   requestHeaders.delete('x-middleware-subrequest')
 
-  if (!isPublicPath(pathname) && !request.cookies.has(SESSION_COOKIE)) {
+  const hasSessionCookie = SESSION_COOKIES.some((name) => request.cookies.has(name))
+
+  if (!isPublicPath(pathname) && !hasSessionCookie) {
     const signIn = new URL('/sign-in', request.url)
     if (pathname !== '/') signIn.searchParams.set('next', `${pathname}${search}`)
     return withSecurityHeaders(NextResponse.redirect(signIn), nonce)
