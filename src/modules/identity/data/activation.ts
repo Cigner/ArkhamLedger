@@ -1,7 +1,7 @@
 import 'server-only'
 import { and, eq, isNull, lt } from 'drizzle-orm'
 import { type DbOrTx, db } from '@/db/client'
-import { authUser, userActivationToken } from '@/db/schema'
+import { authAccount, authUser, userActivationToken } from '@/db/schema'
 import { hashToken, issueToken } from '@/lib/crypto'
 import { newId } from '@/lib/ids'
 import { securityLogger, tokenPrefix } from '@/lib/logger'
@@ -70,16 +70,26 @@ export async function checkActivationToken(token: string, now: Date): Promise<To
   if (!row) return { ok: false, reason: 'INVALID' }
 
   const usable = isTokenUsable({ expiresAt: row.expiresAt, usedAt: row.usedAt }, now)
+
   if (!usable.ok) {
-    return { ok: false, reason: row.usedAt !== null ? 'ALREADY_USED' : 'EXPIRED' }
+    return {
+      ok: false,
+      reason: row.usedAt !== null ? 'ALREADY_USED' : 'EXPIRED',
+    }
   }
 
   const user = row.user as { email: string; name: string; status: UserStatus } | undefined
+
   if (!user || user.status !== 'PENDING_ACTIVATION') {
     return { ok: false, reason: 'ALREADY_USED' }
   }
 
-  return { ok: true, userId: row.userId, email: user.email, name: user.name }
+  return {
+    ok: true,
+    userId: row.userId,
+    email: user.email,
+    name: user.name,
+  }
 }
 
 /**
@@ -102,7 +112,10 @@ export async function claimActivationToken(
   })
 
   if (!row) return null
-  if (!isTokenUsable({ expiresAt: row.expiresAt, usedAt: row.usedAt }, now).ok) return null
+
+  if (!isTokenUsable({ expiresAt: row.expiresAt, usedAt: row.usedAt }, now).ok) {
+    return null
+  }
 
   const [result] = await executor
     .update(userActivationToken)
@@ -114,7 +127,54 @@ export async function claimActivationToken(
   return { userId: row.userId }
 }
 
-/** Marks an account active once its activation token has been claimed. */
+/**
+ * Sets the credential password inside the caller's transaction.
+ *
+ * The password is already hashed by Better Auth before this function is called.
+ * Activation accounts normally already have a credential row containing an
+ * unusable placeholder password, because administrator-created users are
+ * provisioned that way. The insert fallback makes activation robust for older
+ * accounts that may not have that row.
+ */
+export async function setActivationPassword(
+  userId: string,
+  passwordHash: string,
+  now: Date,
+  executor: DbOrTx,
+): Promise<void> {
+  const credential = await executor.query.authAccount.findFirst({
+    where: and(
+      eq(authAccount.userId, userId),
+      eq(authAccount.providerId, 'credential'),
+      eq(authAccount.accountId, userId),
+    ),
+    columns: { id: true },
+  })
+
+  if (credential) {
+    await executor
+      .update(authAccount)
+      .set({
+        password: passwordHash,
+        updatedAt: now,
+      })
+      .where(eq(authAccount.id, credential.id))
+
+    return
+  }
+
+  await executor.insert(authAccount).values({
+    id: newId(),
+    userId,
+    accountId: userId,
+    providerId: 'credential',
+    password: passwordHash,
+    createdAt: now,
+    updatedAt: now,
+  })
+}
+
+/** Marks an account active once its activation token and credential are ready. */
 export async function markAccountActivated(
   userId: string,
   now: Date,
@@ -122,7 +182,11 @@ export async function markAccountActivated(
 ): Promise<void> {
   await executor
     .update(authUser)
-    .set({ status: 'ACTIVE', emailVerified: true, updatedAt: now })
+    .set({
+      status: 'ACTIVE',
+      emailVerified: true,
+      updatedAt: now,
+    })
     .where(eq(authUser.id, userId))
 }
 

@@ -26,8 +26,7 @@ export function PasswordFields({ disabled = false }: { disabled?: boolean }) {
           disabled={disabled}
         />
         <FieldDescription>
-          At least {PASSWORD_MIN_LENGTH} characters. Length matters more than symbols - a phrase you
-          can remember beats a short tangle you cannot.
+          At least {PASSWORD_MIN_LENGTH} characters.
         </FieldDescription>
       </Field>
 

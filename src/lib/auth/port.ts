@@ -31,15 +31,17 @@ export type CreateUserInput = {
   readonly email: string
   readonly name: string
   readonly role: GlobalRole
-  /** Random placeholder; replaced when the user consumes their activation link. */
   readonly temporaryPassword: string
 }
 
 export interface AuthPort {
   /** Current user, or null when the request carries no valid session. */
   getCurrentUser(): Promise<AuthenticatedUser | null>
+
   createUser(input: CreateUserInput): Promise<{ id: string }>
-  setPassword(userId: string, password: string): Promise<void>
+
+  hashPassword(password: string): Promise<string>
+
   /** Invalidates every session of a user; used on password change and disable. */
   revokeAllSessions(userId: string): Promise<void>
 }
@@ -83,14 +85,13 @@ export const authPort: AuthPort = {
       },
       headers: await headers(),
     })
+
     return { id: created.user.id }
   },
 
-  async setPassword(userId, password) {
-    await auth.api.setUserPassword({
-      body: { userId, newPassword: password },
-      headers: await headers(),
-    })
+  async hashPassword(password) {
+    const context = await auth.$context
+    return context.password.hash(password)
   },
 
   async revokeAllSessions(userId) {

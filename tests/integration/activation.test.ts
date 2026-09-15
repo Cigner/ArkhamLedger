@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { eq } from 'drizzle-orm'
 import { db } from '@/db/client'
-import { authUser, userActivationToken } from '@/db/schema'
+import { authAccount, authUser, userActivationToken } from '@/db/schema'
 import { hashToken } from '@/lib/crypto'
 import {
   checkActivationToken,
@@ -9,6 +9,7 @@ import {
   deleteExpiredActivationTokens,
   issueActivationToken,
   markAccountActivated,
+  setActivationPassword,
 } from '@/modules/identity/data/activation'
 import { createUserRow, truncateAll } from './helpers/fixtures'
 
@@ -157,6 +158,51 @@ describe('claiming', () => {
 
     expect(claimed).toBeNull()
   })
+
+  it('sets the credential inside the same transaction as activation', async () => {
+    const user = await createUserRow()
+    const now = new Date()
+    const { token } = await issueActivationToken(user.id, user.id, now)
+
+    const passwordHash = 'test-password-digest'
+
+    await db.transaction(async (tx) => {
+      const claimed = await claimActivationToken(token, now, tx)
+
+      expect(claimed).toEqual({ userId: user.id })
+
+      await setActivationPassword(user.id, passwordHash, now, tx)
+      await markAccountActivated(user.id, now, tx)
+    })
+
+    const [account] = await db
+      .select({
+        password: authAccount.password,
+        providerId: authAccount.providerId,
+      })
+      .from(authAccount)
+      .where(eq(authAccount.userId, user.id))
+
+    expect(account?.providerId).toBe('credential')
+    expect(account?.password).toBe(passwordHash)
+
+    const [userRow] = await db
+      .select({
+        status: authUser.status,
+        emailVerified: authUser.emailVerified,
+      })
+      .from(authUser)
+      .where(eq(authUser.id, user.id))
+
+    expect(userRow?.status).toBe('ACTIVE')
+    expect(userRow?.emailVerified).toBe(true)
+
+    const tokenCheck = await checkActivationToken(token, now)
+    expect(tokenCheck).toEqual({
+      ok: false,
+      reason: 'ALREADY_USED',
+    })
+  })
 })
 
 describe('housekeeping', () => {
@@ -179,5 +225,41 @@ describe('constraints', () => {
     await createUserRow({ email: 'duplicate@example.test' })
 
     await expect(createUserRow({ email: 'duplicate@example.test' })).rejects.toThrow()
+  })
+})
+
+describe('rollback', () => {
+  it('rolls back token consumption when password persistence fails', async () => {
+    const user = await createUserRow()
+    const now = new Date()
+    const { token } = await issueActivationToken(user.id, user.id, now)
+
+    await expect(
+      db.transaction(async (tx) => {
+        const claimed = await claimActivationToken(token, now, tx)
+
+        expect(claimed).toEqual({ userId: user.id })
+
+        throw new Error('simulated password persistence failure')
+      }),
+    ).rejects.toThrow('simulated password persistence failure')
+
+    const tokenCheck = await checkActivationToken(token, now)
+
+    expect(tokenCheck).toMatchObject({
+      ok: true,
+      userId: user.id,
+    })
+
+    const [userRow] = await db
+      .select({
+        status: authUser.status,
+        emailVerified: authUser.emailVerified,
+      })
+      .from(authUser)
+      .where(eq(authUser.id, user.id))
+
+    expect(userRow?.status).toBe('PENDING_ACTIVATION')
+    expect(userRow?.emailVerified).toBe(false)
   })
 })
