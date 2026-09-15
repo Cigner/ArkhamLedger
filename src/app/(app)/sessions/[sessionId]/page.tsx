@@ -1,5 +1,6 @@
 import { CalendarClock, FileText, TriangleAlert, Users, Wand2 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { formatDeadline } from '@/lib/datetime/format'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getSessionDetail } from '@/modules/sessions/data/sessions'
@@ -77,16 +78,9 @@ export default async function SessionOverviewPage({
 
             {session.availabilityDeadline && session.status === 'COLLECTING' ? (
               <p className="font-ui text-sm text-text-secondary">
-                Answers close{' '}
+                Answer by{' '}
                 <time dateTime={session.availabilityDeadline.toISOString()}>
-                  {session.availabilityDeadline.toLocaleString('en-GB', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    timeZone: session.timezone,
-                  })}
+                  {formatDeadline(session.availabilityDeadline, session.timezone)}
                 </time>
               </p>
             ) : null}

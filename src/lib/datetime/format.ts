@@ -30,6 +30,34 @@ export function formatWindow(startUtc: Date, endUtc: Date, timeZone: string): st
   return `${day}, ${clock(start)} – ${clock(end, { midnightAsEndOfDay: true })}`
 }
 
+/**
+ * Renders a deadline as the day it runs to the end of.
+ *
+ * A deadline is stored as the instant the day ends — midnight opening the next
+ * one — so formatting it directly would name the wrong date and a time nobody
+ * chose. Stepping back a moment puts it back inside the day somebody picked.
+ */
+export function formatDeadline(instant: Date, timeZone: string): string {
+  return new Date(instant.getTime() - 1).toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone,
+  })
+}
+
+/** The deadline's own day, as an ISO date, for putting back into a form. */
+export function deadlineToLocalDate(instant: Date, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone,
+  }).format(new Date(instant.getTime() - 1))
+
+  return parts
+}
+
 /** Whole hours between two instants, which is what the session actually runs. */
 export function hoursBetween(startUtc: Date, endUtc: Date): number {
   return Math.round((endUtc.getTime() - startUtc.getTime()) / 3_600_000)

@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Field, FieldDescription, FieldLabel, FieldNote } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { DateField, DateTimeField } from '@/components/patterns/date-field'
-import { instantToLocalDateTime } from '@/lib/datetime/slots'
+import { DateField } from '@/components/patterns/date-field'
+import { deadlineToLocalDate } from '@/lib/datetime/format'
 import { readString } from '@/lib/form-data'
 import { resolveActionError } from '@/modules/identity/ui/action-errors'
 import { FormError } from '@/modules/identity/ui/form-error'
@@ -248,17 +248,17 @@ export function SessionDefinitionForm({
           Answering
         </p>
 
-        <DateTimeField
+        <DateField
           id="availabilityDeadline"
           name="availabilityDeadline"
-          label="Deadline"
+          label="Last day to answer"
           defaultValue={
             session?.availabilityDeadline
-              ? instantToLocalDateTime(session.availabilityDeadline, session.timezone)
+              ? deadlineToLocalDate(session.availabilityDeadline, session.timezone)
               : undefined
           }
           disabled={busy}
-          description={`Optional, in ${session?.timezone ?? 'the campaign’s zone'}. When it passes, answering closes on its own and the dates are worked out.`}
+          description={`Optional. Answering closes when this day ends in ${session?.timezone ?? 'the campaign’s zone'}, and the dates are worked out on their own.`}
         />
 
         {editing ? (

@@ -9,6 +9,7 @@ import { useMediaQuery } from '@/lib/hooks/use-media-query'
 import { resolveActionError } from '@/modules/identity/ui/action-errors'
 import { FormError } from '@/modules/identity/ui/form-error'
 import { saveAvailability, suggestPreviousAnswer } from '../actions/availability'
+import { formatDeadline } from '@/lib/datetime/format'
 import { rangeIsLongEnough } from '../domain/ranges'
 import type { AvailabilityView } from '../domain/types'
 import { AvailabilityLegend } from './availability-legend'
@@ -125,16 +126,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
     .toArray()
     .filter((range) => !rangeIsLongEnough(range, view.minSessionHours))
 
-  const deadlineLabel = view.deadline
-    ? view.deadline.toLocaleString('en-GB', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: view.timezone,
-      })
-    : null
+  const deadlineLabel = view.deadline ? formatDeadline(view.deadline, view.timezone) : null
 
   return (
     <div className="flex flex-col gap-6">
@@ -146,7 +138,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
         {deadlineLabel ? (
           <p className="flex items-center gap-1.5 font-ui text-sm text-text-secondary">
             <Clock3 className="size-4 text-text-muted" aria-hidden="true" />
-            Closes <time>{deadlineLabel}</time>
+            Answer by <time>{deadlineLabel}</time>
           </p>
         ) : null}
       </div>

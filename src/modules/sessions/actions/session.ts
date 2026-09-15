@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db/client'
 import { recordAudit } from '@/lib/audit'
-import { localDateTimeToInstant, localHourToInstant } from '@/lib/datetime/slots'
+import { localHourToInstant } from '@/lib/datetime/slots'
 import { ConflictError, DomainRuleError } from '@/lib/errors'
 import { authActionClient } from '@/lib/safe-action'
 import { requireKeeper } from '@/modules/campaigns/data/guards'
@@ -60,9 +60,17 @@ import {
  * apply a transition from the same starting point — the second finds no row and
  * is told the session moved on, rather than silently overwriting the first.
  */
+/**
+ * The instant a deadline day ends.
+ *
+ * Hour 24 is midnight opening the next day, which is what "answers close on the
+ * fourth" means to the person who typed the fourth. Storing an instant rather
+ * than a date keeps the comparison the worker makes unambiguous across the two
+ * nights a year when a local day is not 24 hours long.
+ */
 function deadlineFrom(value: string | undefined, timezone: string): Date | null {
   if (!value) return null
-  return localDateTimeToInstant(value, timezone)
+  return localHourToInstant(value, 24, timezone)
 }
 
 export const createSession = authActionClient

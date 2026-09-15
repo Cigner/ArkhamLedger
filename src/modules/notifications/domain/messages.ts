@@ -1,4 +1,4 @@
-import { formatWindow } from '@/lib/datetime/format'
+import { formatDeadline, formatWindow } from '@/lib/datetime/format'
 import type { NotificationPayload, NotificationType } from './types'
 
 /**
@@ -206,16 +206,8 @@ function deadlineSentence(payload: NotificationPayload): string {
   const deadline = new Date(payload.deadlineUtc)
   if (Number.isNaN(deadline.getTime())) return ''
 
-  const formatted = deadline.toLocaleString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: payload.timezone ?? 'UTC',
-  })
-
-  return `Answers close ${formatted}.`
+  // Stored as the instant the day ends, so it is rendered as that day.
+  return `Answer by ${formatDeadline(deadline, payload.timezone ?? 'UTC')}.`
 }
 
 function reasonSentence(payload: NotificationPayload): string {

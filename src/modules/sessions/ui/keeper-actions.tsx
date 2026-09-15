@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Field, FieldDescription, FieldLabel, FieldNote } from '@/components/ui/field'
+import { DateField } from '@/components/patterns/date-field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { ConfirmDialog } from '@/components/patterns/confirm-dialog'
@@ -243,18 +244,13 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             </DialogHeader>
 
             <DialogBody className="flex flex-col gap-4">
-              <Field>
-                <FieldLabel htmlFor="date">Date</FieldLabel>
-                <Input
-                  id="date"
-                  name="date"
-                  type="date"
-                  required
-                  defaultValue={session.searchWindowStart}
-                  min={session.searchWindowStart}
-                  max={session.searchWindowEnd}
-                />
-              </Field>
+              <DateField
+                id="date"
+                name="date"
+                label="Date"
+                required
+                defaultValue={session.searchWindowStart}
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
@@ -321,18 +317,12 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             </DialogHeader>
 
             <DialogBody>
-              <Field>
-                <FieldLabel htmlFor="availabilityDeadline">New deadline</FieldLabel>
-                <Input
-                  id="availabilityDeadline"
-                  name="availabilityDeadline"
-                  type="datetime-local"
-                />
-                <FieldDescription>
-                  Optional, in {session.timezone}. Without one, collection stays open until you
-                  close it.
-                </FieldDescription>
-              </Field>
+              <DateField
+                id="availabilityDeadline"
+                name="availabilityDeadline"
+                label="Last day to answer"
+                description={`Optional. Answering closes when this day ends in ${session.timezone}; without one it stays open until you close it.`}
+              />
             </DialogBody>
 
             <DialogFooter>

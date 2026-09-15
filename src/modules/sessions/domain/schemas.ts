@@ -45,8 +45,12 @@ export const createSessionSchema = z.object({
   gridStartHour: hourSchema.default(DEFAULT_GRID_START_HOUR),
   gridEndHour: hourSchema.default(DEFAULT_GRID_END_HOUR),
   minSessionHours: z.coerce.number().int().min(1).max(24).default(DEFAULT_MIN_SESSION_HOURS),
-  /** Local datetime from the form, interpreted in the campaign's zone. */
-  availabilityDeadline: z.string().optional(),
+  /**
+   * The last day answers are accepted, as a local date. Answering closes when
+   * that day ends in the campaign's zone — a deadline with a time of day is a
+   * precision nobody wanted and everybody had to fill in.
+   */
+  availabilityDeadline: localDateSchema.optional(),
 })
 
 /**
@@ -97,7 +101,7 @@ export const setSessionDateSchema = z.object({
 
 export const reopenCollectionSchema = z.object({
   sessionId: idSchema,
-  availabilityDeadline: z.string().optional(),
+  availabilityDeadline: localDateSchema.optional(),
 })
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>

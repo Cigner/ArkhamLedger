@@ -137,18 +137,22 @@ describe('times in a message', () => {
     expect(rendered.body).not.toContain('Invalid')
   })
 
-  it('names the deadline when asking for availability', () => {
+  /*
+   * A deadline is stored as the instant its day ends — midnight opening the
+   * next one — so naming it means naming the day before that instant.
+   */
+  it('names the last day to answer, not the midnight that ends it', () => {
     const rendered = renderNotification({
       ...BASE,
       type: 'AVAILABILITY_REQUESTED',
       payload: {
         sessionTitle: 'Chapter Two',
-        deadlineUtc: '2026-10-04T12:00:00Z',
+        deadlineUtc: '2026-10-04T22:00:00Z',
         timezone: 'Europe/Warsaw',
       },
     })
 
-    expect(rendered.body).toContain('Answers close Sunday 4 October')
+    expect(rendered.body).toContain('Answer by Sunday 4 October')
   })
 })
 

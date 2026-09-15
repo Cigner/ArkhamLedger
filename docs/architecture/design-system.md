@@ -127,6 +127,28 @@ Icon-only is for dense places — a table row, a card corner — where a word pe
 action turns a scannable list into a wall. Everywhere else a button says what it
 does in words: an icon alone is a guess until you have learnt it.
 
+## Dates
+
+Entered as three segments — day, month, year, in that order, on every browser
+and operating system.
+
+The native `<input type="date">` was the obvious control and had to go. Its
+display format follows the _browser's_ locale rather than the page's, so one
+person saw `05/10/2026` and another `10/05/2026` with nothing on screen to say
+which; Chrome ignores `lang` for this entirely. A session searching the wrong
+month is not obvious until nobody can make any of the dates.
+
+`DateField` submits an ISO `YYYY-MM-DD` through a hidden input, so nothing
+downstream knows the control exists, and it echoes the value in words
+underneath — `Saturday, 3 October 2026` — which removes the ambiguity again for
+anybody who mistypes.
+
+A **deadline is a day, not a moment.** It is entered as a date and stored as the
+instant that day ends in the campaign's zone, so "answer by Saturday 3 October"
+means what it says. Rendering it has to step back a moment, which is what
+`formatDeadline` is for — printing the stored instant directly would name the
+following day at midnight.
+
 ## Primitives
 
 Generated once with shadcn/ui in a throwaway project, then rewritten. What was
