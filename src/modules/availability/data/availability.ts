@@ -7,6 +7,7 @@ import { generateGridSlots } from '@/lib/datetime/slots'
 import { newId } from '@/lib/ids'
 import { requireSessionMember } from '@/modules/sessions/data/guards'
 import { canSubmitAvailability } from '@/modules/sessions/domain/lifecycle'
+import type { SessionStatus } from '@/modules/sessions/domain/types'
 import {
   MIN_RESPONDENTS_FOR_HEATMAP,
   bestPerDay,
@@ -182,7 +183,8 @@ export async function getAvailabilityView(sessionId: string): Promise<Availabili
     minSessionHours: session.minSessionHours,
     quorum: session.quorum,
     dates,
-    editable: canSubmitAvailability(session.status as 'COLLECTING').ok,
+    editable: canSubmitAvailability(session.status as SessionStatus).ok,
+    status: session.status as SessionStatus,
     deadline: session.availabilityDeadline,
     own: cellsToRanges(byUser.get(context.user.id) ?? [], dates),
     tallies: discloseTallies ? tallySlots(answers, slots, participants.length) : [],
@@ -338,6 +340,19 @@ export async function findPreviousAnswer(input: {
   }
 
   return null
+}
+
+/**
+ * Discards every answer to a session.
+ *
+ * Used when the question changes — the window moves, or the Keeper reopens
+ * collection. Marking people as not having answered while leaving their answers
+ * in place was the old behaviour, and it produced a session where everybody
+ * showed as silent while their stale answers still drove the heatmap and the
+ * ranking.
+ */
+export async function deleteAllAvailability(sessionId: string, executor: DbOrTx): Promise<void> {
+  await executor.delete(availabilitySlot).where(eq(availabilitySlot.gameSessionId, sessionId))
 }
 
 /** Clears a participant's answer, used when they are dropped from a session. */

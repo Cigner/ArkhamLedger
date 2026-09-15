@@ -6,6 +6,7 @@ import {
   canRecordAttendance,
   canSetDate,
   canSubmitAvailability,
+  editInvalidatesAnswers,
   canTransition,
   isTerminal,
 } from '@/modules/sessions/domain/lifecycle'
@@ -105,8 +106,45 @@ describe('canTransition', () => {
 })
 
 describe('capability gates', () => {
-  it.each(ALL_STATUSES)('definition is editable only in DRAFT (%s)', (status) => {
-    expect(canEditDefinition(status).ok).toBe(status === 'DRAFT')
+  /*
+   * Editable while answers are being collected too. Refusing meant a mistyped
+   * date could only be fixed by cancelling the session and starting again; the
+   * cost is paid by clearing the answers, which the action does and the form
+   * warns about.
+   */
+  it.each(ALL_STATUSES)('definition is editable in DRAFT and COLLECTING (%s)', (status) => {
+    expect(canEditDefinition(status).ok).toBe(status === 'DRAFT' || status === 'COLLECTING')
+  })
+
+  it.each([
+    ['searchWindowStart', '2026-10-06'],
+    ['searchWindowEnd', '2026-10-20'],
+    ['gridStartHour', 14],
+    ['gridEndHour', 22],
+  ] as const)('changing %s discards the answers already given', (field, value) => {
+    const before = {
+      searchWindowStart: '2026-10-05',
+      searchWindowEnd: '2026-10-19',
+      gridStartHour: 12,
+      gridEndHour: 24,
+    }
+
+    expect(editInvalidatesAnswers(before, { ...before, [field]: value })).toBe(true)
+  })
+
+  /*
+   * An answer describes the question it was asked. Retitling a session or moving
+   * its deadline does not change that question, so the answers stand.
+   */
+  it('leaves the answers alone when only the wording or the deadline changes', () => {
+    const definition = {
+      searchWindowStart: '2026-10-05',
+      searchWindowEnd: '2026-10-19',
+      gridStartHour: 12,
+      gridEndHour: 24,
+    }
+
+    expect(editInvalidatesAnswers(definition, { ...definition })).toBe(false)
   })
 
   it.each(ALL_STATUSES)('participants are editable in DRAFT and COLLECTING (%s)', (status) => {

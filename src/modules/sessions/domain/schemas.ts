@@ -49,7 +49,13 @@ export const createSessionSchema = z.object({
   availabilityDeadline: z.string().optional(),
 })
 
-export const updateSessionSchema = createSessionSchema.extend({
+/**
+ * Editing a session.
+ *
+ * The campaign is not an input: it is implied by the session, and accepting it
+ * would be a field a caller could disagree with the database about.
+ */
+export const updateSessionSchema = createSessionSchema.omit({ campaignId: true }).extend({
   sessionId: idSchema,
   quorum: z.coerce.number().int().min(1).max(64),
 })

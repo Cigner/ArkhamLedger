@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { eq } from 'drizzle-orm'
 import { db } from '@/db/client'
-import { gameSession, sessionParticipant } from '@/db/schema'
+import { availabilitySlot, gameSession, sessionParticipant } from '@/db/schema'
 import { newId } from '@/lib/ids'
+import { deleteAllAvailability } from '@/modules/availability/data/availability'
 import { findExpiredCollections } from '@/modules/notifications/data/nudges'
 import { transitionSession } from '@/modules/sessions/data/session-store'
 import {
@@ -200,5 +201,42 @@ describe('deadline sweep', () => {
     const due = await findExpiredCollections(NOW)
 
     expect(due.map((row) => row.sessionId)).toEqual([past.sessionId])
+  })
+})
+
+describe('reopening collection', () => {
+  /*
+   * The old behaviour marked everybody as not having answered and left their
+   * answers in the table. The session then showed a party of silent people whose
+   * stale answers still drove the heatmap and the ranking.
+   */
+  it('discards the answers themselves, not only the fact that they answered', async () => {
+    const { sessionId, keeper } = await seedSession({ status: 'COLLECTING' })
+
+    await db.insert(availabilitySlot).values({
+      id: newId(),
+      gameSessionId: sessionId,
+      userId: keeper.id,
+      slotStartUtc: new Date('2026-10-08T16:00:00Z'),
+      localDate: '2026-10-08',
+      localHour: 18,
+      state: 'YES',
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+
+    await db.transaction(async (tx) => {
+      await clearResponses(sessionId, NOW, tx)
+      await deleteAllAvailability(sessionId, tx)
+    })
+
+    const answers = await db
+      .select()
+      .from(availabilitySlot)
+      .where(eq(availabilitySlot.gameSessionId, sessionId))
+    const participants = await listParticipantRecords(sessionId)
+
+    expect(answers).toEqual([])
+    expect(participants.every((participant) => participant.respondedAt === null)).toBe(true)
   })
 })

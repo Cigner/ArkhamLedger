@@ -9,6 +9,7 @@ import { authActionClient } from '@/lib/safe-action'
 import { requireKeeper } from '@/modules/campaigns/data/guards'
 import { findCampaignState } from '@/modules/campaigns/data/campaigns'
 import { canModifyContent } from '@/modules/campaigns/domain/rules'
+import { deleteAllAvailability } from '@/modules/availability/data/availability'
 import { announceToSession } from '@/modules/notifications/data/announce'
 import { defaultQuorum } from '../domain/constants'
 import {
@@ -16,6 +17,7 @@ import {
   canRecordAttendance,
   canSetDate,
   canTransition,
+  editInvalidatesAnswers,
 } from '../domain/lifecycle'
 import {
   canPublish,
@@ -165,6 +167,7 @@ export const updateSession = authActionClient
     const quorum = validateQuorum(parsedInput.quorum, countPlayers(participants))
     if (!quorum.ok) throw new DomainRuleError(quorum.error.key, quorum.error.params)
 
+    const before = await findSessionState(parsedInput.sessionId)
     const now = new Date()
     const deadline = deadlineFrom(parsedInput.availabilityDeadline, context.timezone)
 
@@ -186,6 +189,16 @@ export const updateSession = authActionClient
         now,
         executor: tx,
       })
+
+      /*
+       * Answers describe the question they were asked. Move the dates or the
+       * hours and they describe a question nobody asked, so they go — and the
+       * form warns before it gets here, because this is not recoverable.
+       */
+      if (context.sessionStatus === 'COLLECTING' && editInvalidatesAnswers(before, parsedInput)) {
+        await clearResponses(parsedInput.sessionId, now, tx)
+        await deleteAllAvailability(parsedInput.sessionId, tx)
+      }
 
       await recordAudit(
         {
@@ -380,6 +393,7 @@ export const reopenCollection = authActionClient
       if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
 
       await clearResponses(parsedInput.sessionId, now, tx)
+      await deleteAllAvailability(parsedInput.sessionId, tx)
 
       await announceToSession({
         sessionId: parsedInput.sessionId,

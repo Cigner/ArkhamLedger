@@ -33,6 +33,30 @@ const MESSAGES: Record<string, string> = {
   'sessions.errors.notCollecting': 'This session is not asking for availability at the moment.',
 }
 
+/**
+ * Why the calendar is read-only.
+ *
+ * A session nobody has been asked about yet and one whose answers have closed
+ * are opposite situations, and both used to say "answers are closed" — which
+ * reads as a fault to the Keeper who has just created the thing.
+ */
+function closedReason(status: AvailabilityView['status']): string {
+  switch (status) {
+    case 'DRAFT':
+      return 'Nobody has been asked yet. The Keeper opens this when the session is ready.'
+    case 'PROPOSED':
+      return 'Answers are closed. The Keeper is choosing between the dates that work.'
+    case 'SCHEDULED':
+      return 'The date is settled, so answers are closed.'
+    case 'COMPLETED':
+      return 'This session has been played.'
+    case 'CANCELLED':
+      return 'This session was cancelled.'
+    case 'COLLECTING':
+      return 'Answers are open.'
+  }
+}
+
 export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
   const router = useRouter()
   const narrow = useMediaQuery('(max-width: 767px)')
@@ -255,7 +279,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
           </span>
         </div>
       ) : (
-        <p className="font-ui text-sm text-text-muted">Answers are closed for this session.</p>
+        <p className="font-ui text-sm text-text-muted">{closedReason(view.status)}</p>
       )}
 
       <section className="flex flex-col gap-3 border-t border-border-subtle pt-6">

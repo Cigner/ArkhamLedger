@@ -40,9 +40,15 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
       <TabsContent value="heatmap" className="pt-5">
         <div className="overflow-x-auto">
           <div
+            /*
+             * Both columns are fixed rather than fractional. `auto` on the first
+             * one collapsed to twelve pixels as soon as the dates overflowed —
+             * the names were still there, truncated to nothing — and a date
+             * column narrower than this clips "Wed 21".
+             */
             className="grid gap-1"
             style={{
-              gridTemplateColumns: `auto repeat(${view.dates.length}, minmax(2.5rem, 1fr))`,
+              gridTemplateColumns: `3rem repeat(${view.dates.length}, 3rem)`,
             }}
           >
             <div />
@@ -91,12 +97,14 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
       <TabsContent value="people" className="pt-5">
         <div className="overflow-x-auto">
           <div
+            // Names need room, and at thirty columns they need to stay put
+            // while the dates scroll past them.
             className="grid gap-1"
             style={{
-              gridTemplateColumns: `auto repeat(${view.dates.length}, minmax(2.5rem, 1fr))`,
+              gridTemplateColumns: `10rem repeat(${view.dates.length}, 3rem)`,
             }}
           >
-            <div />
+            <div className="sticky left-0 z-10 bg-surface-raised" />
             {view.dates.map((date) => (
               <div key={date} className="pb-1 text-center font-ui text-2xs text-text-muted">
                 {new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {
@@ -109,7 +117,10 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
 
             {view.participants.map((participant) => (
               <div key={participant.userId} className="contents">
-                <div className="truncate pr-3 font-ui text-xs leading-8 text-text-primary">
+                <div
+                  className="sticky left-0 z-10 truncate bg-surface-raised pr-3 font-ui text-xs leading-8 text-text-primary"
+                  title={participant.name}
+                >
                   {participant.name}
                 </div>
                 {view.dates.map((date) => {

@@ -149,6 +149,13 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
+        {status === 'DRAFT' || status === 'COLLECTING' ? (
+          <ButtonLink href={`/sessions/${session.id}/edit`} variant="outline">
+            <Pencil className="size-4" aria-hidden="true" />
+            Edit
+          </ButtonLink>
+        ) : null}
+
         {status === 'DRAFT' ? (
           <Button
             variant="accent"

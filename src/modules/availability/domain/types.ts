@@ -13,6 +13,8 @@
  * Converting between the two happens in one place, which keeps the constraint
  * out of the algorithm and leaves room to relax it later without a migration.
  */
+import type { SessionStatus } from '@/modules/sessions/domain/types'
+
 export type SlotState = 'YES' | 'IF_NEED_BE' | 'NO'
 
 /** One day's answer. A null state means the day has not been answered. */
@@ -85,6 +87,11 @@ export type AvailabilityView = {
   readonly quorum: number
   readonly dates: readonly string[]
   readonly editable: boolean
+  /**
+   * Why answering is closed, when it is. "Not open yet" and "no longer open"
+   * are opposite situations and used to read identically.
+   */
+  readonly status: SessionStatus
   readonly deadline: Date | null
   readonly own: readonly DayRange[]
   readonly tallies: readonly SlotTally[]

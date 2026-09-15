@@ -26,7 +26,7 @@ export function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        'relative -mb-px border-b-2 border-transparent px-3 py-2',
+        'relative -mb-px cursor-pointer border-b-2 border-transparent px-3 py-2',
         'font-ui text-sm text-text-secondary transition-interactive',
         'hover:text-text-primary active:text-text-primary',
         // Base UI marks the active tab with data-active, not data-selected;

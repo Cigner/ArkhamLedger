@@ -54,7 +54,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      // en-GB rather than en: it is what every formatted date in the
+      // application uses, and Firefox follows it for native date inputs too.
+      lang="en-GB"
       className={`${cinzel.variable} ${spectral.variable} ${inter.variable} ${imFell.variable}`}
     >
       <body>{children}</body>

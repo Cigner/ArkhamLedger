@@ -45,13 +45,43 @@ export function canTransition(from: SessionStatus, to: SessionStatus): Result<vo
 /**
  * Statuses in which the Keeper may still change what the session is about.
  *
- * Editing the title or the search window after people have answered would
- * invalidate their answers, so it stops once collection begins — except for
- * DRAFT, where nobody has been asked anything yet.
+ * Both DRAFT and COLLECTING. Editing while people are answering has a cost —
+ * answers given against a window that has moved describe a question nobody
+ * asked — so the action clears them when the dates or hours change, and the form
+ * says so before it is submitted. Refusing the edit outright was worse: the only
+ * way to fix a mistyped date was to cancel the session and start again.
  */
 export function canEditDefinition(status: SessionStatus): Result<void> {
-  if (status === 'DRAFT') return ok()
+  if (status === 'DRAFT' || status === 'COLLECTING') return ok()
   return fail('sessions.errors.definitionLocked')
+}
+
+/**
+ * Whether a change to the definition invalidates the answers already given.
+ *
+ * Only the question changing does that. Retitling a session, or moving its
+ * deadline, leaves every answer meaning exactly what it meant.
+ */
+export function editInvalidatesAnswers(
+  before: {
+    readonly searchWindowStart: string
+    readonly searchWindowEnd: string
+    readonly gridStartHour: number
+    readonly gridEndHour: number
+  },
+  after: {
+    readonly searchWindowStart: string
+    readonly searchWindowEnd: string
+    readonly gridStartHour: number
+    readonly gridEndHour: number
+  },
+): boolean {
+  return (
+    before.searchWindowStart !== after.searchWindowStart ||
+    before.searchWindowEnd !== after.searchWindowEnd ||
+    before.gridStartHour !== after.gridStartHour ||
+    before.gridEndHour !== after.gridEndHour
+  )
 }
 
 /** Whether participants and their priorities may still be changed. */

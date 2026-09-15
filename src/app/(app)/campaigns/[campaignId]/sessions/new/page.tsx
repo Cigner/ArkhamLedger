@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { PageHeader } from '@/components/patterns/page-header'
 import { guardPage } from '@/lib/page-guards'
 import { requireKeeper } from '@/modules/campaigns/data/guards'
-import { CreateSessionForm } from '@/modules/sessions/ui/create-session-form'
+import { SessionDefinitionForm } from '@/modules/sessions/ui/session-definition-form'
 
 /**
  * New session.
@@ -28,7 +28,7 @@ export default async function NewSessionPage({
         icon={<CalendarPlus className="size-6" strokeWidth={1.5} />}
         description="Starts as a draft. Nobody is asked anything until you open it."
       />
-      <CreateSessionForm campaignId={campaignId} />
+      <SessionDefinitionForm campaignId={campaignId} />
     </div>
   )
 }

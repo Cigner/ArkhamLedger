@@ -16,7 +16,7 @@ import { cn } from '@/lib/cn'
  */
 const buttonVariants = cva(
   [
-    'inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap',
+    'inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap',
     'font-ui font-medium tracking-[0.01em]',
     'rounded-md border border-transparent',
     'transition-interactive',
