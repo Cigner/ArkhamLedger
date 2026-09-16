@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge'
+import { useTranslations } from 'next-intl'
 import type { UserStatus } from '../../domain/types'
 
 /**
@@ -7,16 +8,13 @@ import type { UserStatus } from '../../domain/types'
  * Each status gets its own word as well as its own colour, so the table is
  * readable without distinguishing hues.
  */
-const STATUS_PRESENTATION: Record<
-  UserStatus,
-  { label: string; variant: 'positive' | 'warning' | 'muted' }
-> = {
-  ACTIVE: { label: 'Active', variant: 'positive' },
-  PENDING_ACTIVATION: { label: 'Awaiting activation', variant: 'warning' },
-  DISABLED: { label: 'Disabled', variant: 'muted' },
+const STATUS_PRESENTATION: Record<UserStatus, 'positive' | 'warning' | 'muted'> = {
+  ACTIVE: 'positive',
+  PENDING_ACTIVATION: 'warning',
+  DISABLED: 'muted',
 }
 
 export function UserStatusBadge({ status }: { status: UserStatus }) {
-  const presentation = STATUS_PRESENTATION[status]
-  return <Badge variant={presentation.variant}>{presentation.label}</Badge>
+  const t = useTranslations('admin.userStatuses')
+  return <Badge variant={STATUS_PRESENTATION[status]}>{t(status)}</Badge>
 }

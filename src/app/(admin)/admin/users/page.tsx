@@ -1,5 +1,6 @@
 import { Users } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -24,19 +25,23 @@ import { UserStatusBadge } from '@/modules/identity/ui/admin/user-status-badge'
  * requireAdmin independently - the duplication is deliberate, since a query must
  * not rely on having been reached through a particular layout.
  */
-export const metadata: Metadata = { title: 'Users' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('admin.users')
+  return { title: t('title') }
+}
 export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage() {
+  const t = await getTranslations('admin.users')
   const admin = await requireAdmin()
   const users = await listUsersForAdmin()
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Users"
+        title={t('title')}
         icon={<Users className="size-6" strokeWidth={1.5} />}
-        description="Created here, activated by their owner through a link."
+        description={t('description')}
         actions={<CreateUserDialog />}
       />
 
@@ -44,11 +49,11 @@ export default async function AdminUsersPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('columns.name')}</TableHead>
+              <TableHead>{t('columns.email')}</TableHead>
+              <TableHead>{t('columns.role')}</TableHead>
+              <TableHead>{t('columns.status')}</TableHead>
+              <TableHead className="text-right">{t('columns.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,15 +62,15 @@ export default async function AdminUsersPage() {
                 <TableCell>
                   {user.name}
                   {user.id === admin.id ? (
-                    <span className="ml-2 font-ui text-xs text-text-muted">(you)</span>
+                    <span className="ml-2 font-ui text-xs text-text-muted">{t('you')}</span>
                   ) : null}
                 </TableCell>
                 <TableCell className="text-text-secondary">{user.email}</TableCell>
                 <TableCell>
                   {user.role === 'admin' ? (
-                    <Badge variant="candle">Administrator</Badge>
+                    <Badge variant="candle">{t('roles.admin')}</Badge>
                   ) : (
-                    <Badge variant="muted">User</Badge>
+                    <Badge variant="muted">{t('roles.user')}</Badge>
                   )}
                 </TableCell>
                 <TableCell>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 import {
   Dialog,
   DialogBody,
@@ -29,7 +30,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = 'Cancel',
+  cancelLabel,
   destructive = false,
   pending = false,
   onConfirm,
@@ -47,6 +48,8 @@ export function ConfirmDialog({
   /** An extra choice the confirmation depends on, rendered below the description. */
   children?: React.ReactNode
 }) {
+  const t = useTranslations('common')
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md" showCloseButton={false}>
@@ -61,7 +64,7 @@ export function ConfirmDialog({
         ) : null}
         <DialogFooter>
           <DialogClose render={<Button variant="ghost" disabled={pending} />}>
-            {cancelLabel}
+            {cancelLabel ?? t('cancel')}
           </DialogClose>
           <Button
             variant={destructive ? 'danger' : 'accent'}

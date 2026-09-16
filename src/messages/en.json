@@ -1,12 +1,50 @@
 {
   "common": {
     "appName": "Arkham Ledger",
+    "tagline": "That is not dead which can eternal lie",
     "save": "Save",
     "cancel": "Cancel",
+    "done": "Done",
     "confirm": "Confirm",
     "delete": "Delete",
     "loading": "Loading…",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "dateField": {
+      "day": "Day",
+      "dayPlaceholder": "dd",
+      "month": "Month",
+      "monthPlaceholder": "mm",
+      "year": "Year",
+      "yearPlaceholder": "yyyy"
+    }
+  },
+  "metadata": {
+    "description": "Session scheduling for tabletop Call of Cthulhu campaigns"
+  },
+  "httpErrors": {
+    "forbidden": {
+      "title": "Not yours to open",
+      "description": "This part is kept by somebody else. If you think that is wrong, ask whoever runs it.",
+      "back": "Back to campaigns"
+    },
+    "notFound": {
+      "title": "Nothing here",
+      "description": "That page does not exist, or it is not one of yours.",
+      "back": "Back to campaigns"
+    },
+    "unauthorized": {
+      "title": "You have been signed out",
+      "description": "Your session has ended. Sign in again to carry on.",
+      "action": "Sign in"
+    },
+    "unexpected": {
+      "title": "Something went wrong",
+      "description": "The page could not be loaded. Trying again often works.",
+      "reference": "Reference:",
+      "action": "Try again"
+    }
   },
   "errors": {
     "unauthorized": "You need to sign in to continue.",
@@ -18,19 +56,240 @@
   "auth": {
     "signIn": {
       "title": "Sign in",
+      "description": "Accounts are created by an administrator. If you do not have one, ask them for an activation link.",
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
+      "pending": "Signing in…",
       "forgotPassword": "Forgot your password?",
-      "invalidCredentials": "Invalid credentials."
+      "invalidCredentials": "Invalid credentials.",
+      "rateLimited": "Too many attempts. Wait a few minutes and try again."
     },
     "activate": {
       "title": "Set your password",
-      "intro": "Choose a password to finish setting up your account.",
       "submit": "Set password",
-      "tokenExpired": "This activation link has expired. Ask an administrator for a new one.",
-      "tokenUsed": "This activation link has already been used.",
-      "tokenInvalid": "This activation link is not valid."
+      "pending": "Setting password…",
+      "welcome": "Welcome, {name}. Choose a password for {email}.",
+      "back": "Back to sign in",
+      "errors": {
+        "failed": "Could not set your password. Check the requirements and try again."
+      },
+      "rejections": {
+        "expired": {
+          "title": "This link has expired",
+          "description": "Activation links are valid for a limited time. Ask your administrator to issue a new one."
+        },
+        "used": {
+          "title": "This link has already been used",
+          "description": "The account is set up. Sign in with the password you chose."
+        },
+        "invalid": {
+          "title": "This link is not valid",
+          "description": "Check that you copied the whole address. If it still fails, ask your administrator for a new link."
+        }
+      }
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter the address your account uses and we will send a link to set a new password.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "pending": "Sending…",
+      "submitted": "If an account exists for that address, a reset link is on its way. It expires in an hour and can be used once.",
+      "back": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set a new password",
+      "description": "Choose a new password. Every other signed-in session will be ended.",
+      "submit": "Set password",
+      "pending": "Setting password…",
+      "back": "Back to sign in",
+      "errors": {
+        "mismatch": "The two passwords do not match.",
+        "invalidLink": "This link is no longer valid. Request a new one.",
+        "failed": "Could not set your password. Try a longer passphrase."
+      }
+    },
+    "passwordFields": {
+      "password": "New password",
+      "confirm": "Confirm password",
+      "minimum": "At least {count} characters."
+    }
+  },
+  "identity": {
+    "errors": {
+      "passwordTooShort": "That password is too short.",
+      "passwordTooLong": "That password is too long.",
+      "passwordTooCommon": "That password is too easy to guess. Try a longer phrase.",
+      "passwordsDoNotMatch": "The two passwords do not match.",
+      "passwordUnchanged": "Choose a different password.",
+      "tokenInvalid": "This link is no longer valid. Ask an administrator for a new one.",
+      "tokenMalformed": "This link is not valid.",
+      "accountAlreadyActive": "This account has already been activated.",
+      "nameControlCharacters": "The name contains unsupported characters.",
+      "emailAlreadyRegistered": "An account with that address already exists."
+    },
+    "settings": {
+      "title": "Settings",
+      "pageDescription": "Your details, and how you hear from us.",
+      "you": "You",
+      "name": "Name",
+      "nameHint": "How you appear to the rest of your campaigns.",
+      "timezone": "Time zone",
+      "timezoneHint": "An IANA name such as Europe/Warsaw. Sessions always show the campaign’s zone; this one is for your own reminders.",
+      "saving": "Saving…",
+      "save": "Save",
+      "saved": "Saved.",
+      "notifications": "Notifications",
+      "emailMe": "Email me",
+      "emailHint": "Invitations, availability requests and confirmed dates. Sent to {email}.",
+      "inAppHint": "Everything is kept here whether or not it is emailed.",
+      "password": "Password",
+      "currentPassword": "Current password",
+      "changing": "Changing…",
+      "changePassword": "Change password",
+      "passwordChanged": "Changed. Every other signed-in device has been signed out.",
+      "errors": {
+        "invalidTimezone": "That is not a time zone this application recognises.",
+        "passwordMismatch": "The two passwords do not match.",
+        "passwordCommon": "That password appears on lists of the most common ones. Choose another.",
+        "currentPassword": "Your current password is not right.",
+        "profileSave": "Could not save your details.",
+        "passwordChange": "Could not change your password."
+      }
+    }
+  },
+  "navigation": {
+    "appName": "Arkham Ledger",
+    "title": "Navigation",
+    "open": "Open navigation",
+    "close": "Close navigation",
+    "primary": "Primary",
+    "campaigns": "Campaigns",
+    "sessions": "Sessions",
+    "notifications": "Notifications",
+    "administration": "Administration",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "shortcuts": {
+      "planning": "Planning a session",
+      "next": "Next {date}",
+      "played": "Played {date}",
+      "campaign": "Campaign",
+      "collecting": "{campaign} · collecting dates",
+      "choosing": "{campaign} · choosing a date",
+      "sessionStatus": "{campaign} · {status}"
+    },
+    "statuses": {
+      "DRAFT": "draft",
+      "COLLECTING": "collecting",
+      "PROPOSED": "choosing",
+      "SCHEDULED": "scheduled",
+      "COMPLETED": "played",
+      "CANCELLED": "cancelled"
+    },
+    "sessionOverview": {
+      "emptyTitle": "No sessions yet",
+      "emptyDescription": "Sessions from your campaigns will appear here.",
+      "answersDue": "Answers due {date}",
+      "dateNotSet": "Date not set"
+    }
+  },
+  "admin": {
+    "tabs": {
+      "operations": "Operations",
+      "users": "Users",
+      "reports": "Reports"
+    },
+    "operations": {
+      "title": "Operations",
+      "description": "Counts only - no campaign is named here."
+    },
+    "reports": {
+      "title": "Problem reports",
+      "description": "Defects and suggestions submitted from inside the application."
+    },
+    "users": {
+      "title": "Users",
+      "description": "Created here, activated by their owner through a link.",
+      "you": "(you)",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "user": "User"
+      }
+    },
+    "userStatuses": {
+      "ACTIVE": "Active",
+      "PENDING_ACTIVATION": "Awaiting activation",
+      "DISABLED": "Disabled"
+    },
+    "activationLink": {
+      "expires": "Expires",
+      "copied": "Copied",
+      "copy": "Copy link"
+    },
+    "createUser": {
+      "trigger": "New user",
+      "title": "New user",
+      "description": "Creates the account and issues an activation link.",
+      "createdTitle": "Account created",
+      "createdDescription": "Send this activation link to its owner. It will not be shown again.",
+      "name": "Name",
+      "email": "Email",
+      "emailHint": "Used to sign in and to reset the password.",
+      "role": "Role",
+      "roleHint": "Administrators manage accounts. Campaign roles are separate and set per campaign.",
+      "creating": "Creating…",
+      "submit": "Create account",
+      "errors": {
+        "failed": "Could not create the account."
+      }
+    },
+    "userActions": {
+      "issuingLink": "Issuing a new link…",
+      "issueLink": "Issue a new activation link",
+      "enable": "Enable this account",
+      "disable": "Disable this account",
+      "remove": "Remove this account",
+      "newLink": "New activation link",
+      "newLinkDescription": "The previous link for {name} no longer works. This one will not be shown again.",
+      "done": "Done",
+      "removeTitle": "Remove {name}?",
+      "eraseDescription": "Their row and everything addressed to them is destroyed: memberships, availability, notifications. This cannot be undone.",
+      "closeDescription": "They are signed out, cannot sign in again, and leave every campaign. What they did — availability, attendance, sessions played — is kept.",
+      "erasePermanently": "Erase permanently",
+      "closeAccount": "Close the account",
+      "eraseEverything": "Erase everything",
+      "eraseHint": "Removes the row itself. Available because this account authored nothing anybody else depends on.",
+      "eraseBlocked": "Not possible: {blockers}. Those belong to other people’s history.",
+      "disableTitle": "Disable {name}?",
+      "disableDescription": "They will be signed out immediately and cannot sign in again until the account is enabled. Their campaigns and past sessions are untouched.",
+      "disableAccount": "Disable account",
+      "blockers": {
+        "campaigns": "owns {count, plural, one {# campaign} other {# campaigns}}",
+        "sessions": "created {count, plural, one {# session} other {# sessions}}",
+        "invitations": "issued {count, plural, one {# invitation} other {# invitations}}",
+        "scenarios": "wrote {count, plural, one {# scenario} other {# scenarios}}",
+        "activationLinks": "issued {count, plural, one {# activation link} other {# activation links}}"
+      },
+      "errors": {
+        "cannotDeleteSelf": "You cannot remove your own account.",
+        "ownsCampaigns": "They own a campaign. Transfer it first, or close the account instead.",
+        "createdSessions": "They created a session somebody else may be waiting on. Close the account instead.",
+        "createdInvitations": "They issued an invitation that is still on record. Close the account instead.",
+        "createdScenarios": "They wrote a scenario a campaign still refers to. Close the account instead.",
+        "issuedActivationLinks": "They issued an activation link for somebody else. Close the account instead.",
+        "removeFailed": "Could not remove this account."
+      }
     }
   },
   "roles": {
@@ -41,10 +300,797 @@
   "campaigns": {
     "title": "Campaigns",
     "empty": "No campaigns yet. The archive is empty.",
-    "create": "Create campaign",
-    "noNextSession": "No next session is scheduled."
+    "noNextSession": "No next session is scheduled.",
+    "statuses": {
+      "PLANNING": "Planning",
+      "ACTIVE": "Active",
+      "ON_HIATUS": "On hiatus",
+      "COMPLETED": "Completed",
+      "ARCHIVED": "Archived"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "sessions": "Sessions",
+      "members": "Members",
+      "settings": "Settings"
+    },
+    "list": {
+      "title": "Campaigns",
+      "new": "New campaign",
+      "emptyTitle": "The archive is empty",
+      "emptyDescription": "Create a campaign, or wait for a Keeper to invite you.",
+      "create": "Create campaign"
+    },
+    "create": {
+      "title": "New campaign",
+      "description": "You will be its Keeper and its owner.",
+      "name": "Name",
+      "campaignDescription": "Description",
+      "campaignDescriptionHint": "Visible to everyone you invite.",
+      "scenario": "Scenario",
+      "scenarioHint": "Optional. You can add or change this later.",
+      "creating": "Creating…",
+      "submit": "Create campaign",
+      "cancel": "Cancel",
+      "errors": {
+        "invalidTimezone": "That is not a recognised time zone.",
+        "failed": "Could not create the campaign."
+      }
+    },
+    "overview": {
+      "party": "The party",
+      "owner": "Owner",
+      "scenario": "Scenario"
+    },
+    "members": {
+      "title": "Members",
+      "owner": "Owner",
+      "you": "(you)",
+      "outstandingInvitations": "Outstanding invitations",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "actions": "Actions"
+      }
+    },
+    "sessions": {
+      "title": "Sessions",
+      "new": "New session",
+      "emptyTitle": "Nothing is planned",
+      "emptyKeeper": "Create a session and ask the party when they are free.",
+      "emptyInvestigator": "The Keeper has not planned anything yet.",
+      "needsAnswer": "Needs your answer",
+      "invited": "{count} invited",
+      "columns": {
+        "session": "Session",
+        "status": "Status",
+        "when": "When",
+        "answers": "Answers"
+      }
+    },
+    "card": {
+      "accessibleLabel": "{name}, {role}",
+      "keeper": "you keep this",
+      "investigator": "you play in this",
+      "owner": "Owner"
+    },
+    "invitation": {
+      "joining": "Joining…",
+      "accept": "Accept invitation",
+      "notNow": "Not now",
+      "errors": {
+        "expired": "This invitation has expired. Ask the Keeper for a new one.",
+        "revoked": "This invitation has been withdrawn.",
+        "exhausted": "This invitation has already been used up.",
+        "notForYou": "This invitation was issued for somebody else.",
+        "invalid": "This invitation link is not valid.",
+        "failed": "Could not accept this invitation."
+      }
+    },
+    "leave": {
+      "trigger": "Leave",
+      "title": "Leave this campaign?",
+      "description": "You lose access until somebody invites you back. Your past availability and attendance are kept.",
+      "confirm": "Leave campaign"
+    },
+    "memberActions": {
+      "makeInvestigator": "Make an Investigator",
+      "makeKeeper": "Make a Keeper",
+      "removeLabel": "Remove from the campaign",
+      "removeTitle": "Remove {name}?",
+      "removeDescription": "They lose access to this campaign. Their past availability and attendance are kept, and they can be invited back.",
+      "removeConfirm": "Remove from campaign"
+    },
+    "invitePage": {
+      "metadata": "Invitation",
+      "back": "Back to campaigns",
+      "alreadyMemberTitle": "You are already in {campaign}",
+      "alreadyMemberDescription": "Nothing to accept - the campaign is already on your list.",
+      "openCampaign": "Open campaign",
+      "keptBy": "Kept by",
+      "members": "Members",
+      "joinAs": "You would join as",
+      "keeper": "Keeper",
+      "investigator": "Investigator",
+      "rejections": {
+        "expired": {
+          "title": "This invitation has expired",
+          "description": "Invitations last two weeks. Ask the Keeper to send a fresh link."
+        },
+        "revoked": {
+          "title": "This invitation was withdrawn",
+          "description": "The Keeper revoked this link. Ask them for a new one if that was a mistake."
+        },
+        "exhausted": {
+          "title": "This invitation has been used up",
+          "description": "The link reached the number of people it was issued for."
+        },
+        "notForYou": {
+          "title": "This invitation is for somebody else",
+          "description": "It was issued for one specific person and cannot be used by anyone else, even if it was forwarded to you."
+        },
+        "invalid": {
+          "title": "This invitation is not valid",
+          "description": "Check that you copied the whole address, then ask the Keeper for a new link."
+        }
+      }
+    },
+    "invitationList": {
+      "empty": "No invitations are currently outstanding.",
+      "anyone": "Anyone with the link",
+      "keeper": "Keeper",
+      "investigator": "Investigator",
+      "revoke": "Revoke",
+      "columns": {
+        "for": "For",
+        "role": "Joins as",
+        "uses": "Uses",
+        "expires": "Expires",
+        "actions": "Actions"
+      }
+    },
+    "inviteDialog": {
+      "trigger": "Invite",
+      "title": "Invite to the campaign",
+      "description": "Invitations work for people who already have an account here.",
+      "readyTitle": "Invitation ready",
+      "readyDescription": "Send this link to whoever should join. It will not be shown again.",
+      "done": "Done",
+      "modeLabel": "Who is this for",
+      "personal": "One specific person",
+      "shared": "Anyone with the link",
+      "person": "Person",
+      "noCandidates": "Everyone with an account is already in this campaign.",
+      "pendingUser": "{name} (not yet activated)",
+      "notActivated": "not yet activated",
+      "personalHint": "Only they can use the link, even if it is forwarded.",
+      "maxUses": "Number of uses",
+      "maxUsesHint": "The link stops working once this many people have joined.",
+      "roleLabel": "Join as",
+      "keeper": "Keeper",
+      "investigator": "Investigator",
+      "cancel": "Cancel",
+      "creating": "Creating…",
+      "submit": "Create link",
+      "errors": {
+        "alreadyMember": "They are already in this campaign.",
+        "archived": "This campaign is archived and cannot be changed.",
+        "personalSingleUse": "A personal invitation can only be used once.",
+        "failed": "Could not create the invitation."
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "archivedNotice": "This campaign is archived and read-only. Change its status to something else and save to bring it back.",
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "timezone": "Time zone",
+      "timezoneHint": "An IANA identifier such as Europe/Warsaw. The availability grid is drawn in this zone for every member, so that everyone is looking at the same hours.",
+      "saving": "Saving…",
+      "saveChanges": "Save changes",
+      "saved": "Saved",
+      "ownership": "Ownership",
+      "transferTo": "Transfer to",
+      "transferHint": "They become the owner and a Keeper. You stay a Keeper and can then leave if you want to.",
+      "transferOwnership": "Transfer ownership",
+      "noTransferCandidates": "Invite somebody else before you can hand the campaign over.",
+      "archive": "Archive",
+      "archiveHint": "Hides the campaign and makes it read-only. Sessions and availability are kept.",
+      "alreadyArchived": "Already archived",
+      "archiveCampaign": "Archive campaign",
+      "transferConfirmTitle": "Hand over this campaign?",
+      "transferConfirmDescription": "They become the owner and can archive it, manage membership and change roles — including yours. You cannot take it back yourself.",
+      "archiveConfirmTitle": "Archive this campaign?",
+      "archiveConfirmDescription": "It disappears from everyone's list and becomes read-only. Nothing is deleted.",
+      "statuses": {
+        "PLANNING": "Planning",
+        "ACTIVE": "Active",
+        "ON_HIATUS": "On hiatus",
+        "COMPLETED": "Completed",
+        "ARCHIVED": "Archived"
+      },
+      "errors": {
+        "invalidTimezone": "That is not a recognised time zone.",
+        "campaignArchived": "This campaign is archived and cannot be changed.",
+        "newOwnerMustBeMember": "The new owner has to be an active member.",
+        "ownerOnly": "Only the campaign owner can do that.",
+        "saveFailed": "Could not save the campaign."
+      }
+    }
+  },
+  "sessions": {
+    "create": {
+      "title": "New session",
+      "description": "Starts as a draft. Nobody is asked anything until you open it."
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "COLLECTING": "Collecting availability",
+      "PROPOSED": "Awaiting a decision",
+      "SCHEDULED": "Scheduled",
+      "COMPLETED": "Played",
+      "CANCELLED": "Cancelled"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "availability": "Availability",
+      "dates": "Dates",
+      "participants": "Participants"
+    },
+    "definition": {
+      "title": "Title",
+      "description": "What happens",
+      "descriptionHint": "Shown to everyone invited.",
+      "searchWindow": "Search window",
+      "searchDates": "Which dates to search",
+      "from": "From",
+      "to": "To",
+      "hours": "Hours",
+      "offerHours": "Which hours to offer",
+      "earliestStart": "Earliest start",
+      "latestEnd": "Latest end",
+      "minimumHours": "Minimum hours",
+      "hoursHint": "A session runs from its start to the end of the offered hours unless somebody’s availability cuts it short. The minimum is the shortest run worth gathering for.",
+      "answering": "Answering",
+      "deadline": "Last day to answer",
+      "deadlineHint": "Optional. Answering closes when this day ends in {timezone}, and the dates are worked out on their own.",
+      "campaignTimezone": "the campaign’s zone",
+      "quorum": "Quorum",
+      "quorumHint": "How many players have to be free. The Keeper is not counted — they have to be there regardless.",
+      "answersAtRisk": "{count, plural, one {One person has} other {# people have}} already answered. Changing the dates or the hours clears every answer; changing anything else leaves them alone.",
+      "saving": "Saving…",
+      "saveChanges": "Save changes",
+      "createDraft": "Create draft",
+      "errors": {
+        "windowEndsBeforeStart": "The window ends before it begins.",
+        "windowTooWide": "That search window is too wide. Ninety days is the maximum.",
+        "gridEndsBeforeStart": "The evening ends before it starts.",
+        "gridTooShort": "Those hours cannot contain a session of that minimum length.",
+        "definitionLocked": "This session has moved on and its dates can no longer be changed.",
+        "deadlineInPast": "That deadline has already passed.",
+        "deadlineAfterStart": "The deadline falls after the first date being searched.",
+        "quorumTooLow": "A quorum has to be at least one.",
+        "quorumTooHigh": "That is more players than are invited, so no date could ever meet it.",
+        "campaignArchived": "This campaign is archived and cannot be changed.",
+        "createFailed": "Could not create the session.",
+        "saveFailed": "Could not save the session."
+      }
+    },
+    "participants": {
+      "invited": "Invited",
+      "name": "Name",
+      "priority": "How much their presence matters",
+      "answered": "Answered",
+      "invitePerson": "Invite {name}",
+      "keeper": "Keeper",
+      "keeperRequired": "Keepers are always required.",
+      "notInvited": "Not invited",
+      "yes": "Yes",
+      "quorum": "Quorum",
+      "quorumHint": "How many of the invited have to be free for the session to happen. Half plus one — {count} for this group — keeps a single busy person from holding up the campaign.",
+      "saving": "Saving…",
+      "saveRoster": "Save roster",
+      "saved": "Saved",
+      "priorities": {
+        "REQUIRED": { "label": "Required", "help": "No date works without them." },
+        "PREFERRED": { "label": "Preferred", "help": "Counts towards a good date." },
+        "OPTIONAL": { "label": "Optional", "help": "Nice to have; never blocks." }
+      },
+      "errors": {
+        "participantsLocked": "The roster is fixed once a date has been proposed. Reopen availability to change it.",
+        "noKeeper": "Somebody has to run the session.",
+        "quorumTooHigh": "The quorum is higher than the number of people invited, so no date could ever work.",
+        "noParticipants": "Invite at least one person.",
+        "saveFailed": "Could not save the roster."
+      }
+    },
+    "responseProgress": {
+      "ariaLabel": "{responded} of {total} participants have answered",
+      "summary": "{responded} of {total} answered"
+    },
+    "when": {
+      "searching": "Searching {start} – {end}"
+    },
+    "nextCard": {
+      "nextSession": "Next session",
+      "addToCalendar": "Add to calendar",
+      "open": "Open",
+      "beingArranged": "Being arranged",
+      "noDate": "No date settled yet.",
+      "noNextSession": "No next session",
+      "nothingPlanned": "Nothing planned and nothing being arranged. This is the state campaigns quietly end in.",
+      "planNext": "Plan the next one",
+      "keeperOnly": "Only a Keeper can start one. A nudge usually does it.",
+      "lastPlayed": "Last played",
+      "nothingPlayed": "Nothing played yet"
+    },
+    "list": {
+      "title": "Sessions",
+      "description": "Upcoming plans and recent sessions across your campaigns."
+    },
+    "edit": {
+      "title": "Edit session"
+    },
+    "participantsPage": {
+      "title": "Participants",
+      "attendanceTitle": "Who was there",
+      "attendanceDescription": "Record attendance and close the session. This cannot be undone.",
+      "closed": "This session is closed. Its roster is on the overview."
+    },
+    "overview": {
+      "cancelled": "Cancelled",
+      "when": "When",
+      "answerBy": "Answer by",
+      "answered": "You have said when you are free.",
+      "notAnswered": "You have not said when you are free yet.",
+      "needsYou": "This session needs you.",
+      "description": "What happens",
+      "keeper": "Keeper",
+      "invited": "Invited",
+      "you": "(you)",
+      "quorum": "Needs {required} of {total} players free.",
+      "attendance": {
+        "attended": "Was there",
+        "absent": "Missed it",
+        "unknown": "Unknown"
+      }
+    },
+    "keeperActions": {
+      "edit": "Edit",
+      "opening": "Opening…",
+      "askAvailability": "Ask for availability",
+      "findDates": "Find dates",
+      "closeAnswers": "Close answers",
+      "changeDate": "Change the date",
+      "setDate": "Set a date",
+      "reopen": "Reopen",
+      "markPlayed": "Mark as played",
+      "cancel": "Cancel",
+      "manual": {
+        "title": "Set the date by hand",
+        "description": "Everyone invited is told. Times are in {timezone}.",
+        "date": "Date",
+        "startsAt": "Starts at",
+        "endsAt": "Ends at",
+        "warning": "Setting a date by hand overrides what people said they could do.",
+        "setting": "Setting…",
+        "confirm": "Confirm date"
+      },
+      "reopenDialog": {
+        "title": "Ask everyone again?",
+        "description": "Every answer already given is cleared, and any confirmed date is dropped.",
+        "deadline": "Last day to answer",
+        "deadlineHint": "Optional. Answering closes when this day ends in {timezone}; without one it stays open until you close it.",
+        "reopening": "Reopening…",
+        "confirm": "Reopen and clear answers"
+      },
+      "cancelDialog": {
+        "title": "Cancel this session?",
+        "description": "Everyone invited is told, with the reason. This cannot be undone.",
+        "reason": "Why",
+        "reasonHint": "Shown to everyone invited.",
+        "keep": "Keep it",
+        "cancelling": "Cancelling…",
+        "confirm": "Cancel session"
+      },
+      "closeDialog": {
+        "title": "Stop asking for availability?",
+        "description": "Nobody can change their answer afterwards, and the dates already suggested stay as they are. You can reopen it later if plans change."
+      },
+      "completeDialog": {
+        "title": "Mark this session as played?",
+        "description": "Record who was there on the participants tab first if you have not already. A played session cannot be reopened."
+      },
+      "errors": {
+        "noKeeper": "Nobody is set to run this session.",
+        "fewerThanQuorum": "Fewer people are invited than the quorum requires, so no date could ever work.",
+        "deadlineInPast": "That deadline has already passed.",
+        "deadlineAfterStart": "The deadline falls after the first date being searched.",
+        "sessionMovedOn": "Somebody else changed this session. Reload and try again.",
+        "invalidTransition": "That is not possible from the session’s current state.",
+        "endBeforeStart": "The session ends before it starts.",
+        "publishFailed": "Could not open this session for availability.",
+        "scheduleFailed": "Could not set that date.",
+        "reopenFailed": "Could not reopen collection.",
+        "closeFailed": "Could not close the answers.",
+        "cancelFailed": "Could not cancel this session.",
+        "completeFailed": "Could not close this session."
+      }
+    }
+  },
+  "feedback": {
+    "statuses": {
+      "NEW": "New",
+      "DONE": "Done",
+      "PLANNED": "Planned",
+      "REJECTED": "Rejected",
+      "NEEDS_MORE_INFO": "Needs more information"
+    },
+    "statusForm": {
+      "label": "Report status",
+      "saving": "Saving…",
+      "save": "Save status",
+      "error": "Could not update the report."
+    },
+    "report": {
+      "trigger": "Report a problem",
+      "title": "Report a problem",
+      "description": "Describe a defect, confusing behaviour, or an improvement that would help.",
+      "receivedTitle": "Report received",
+      "receivedDescription": "It is now in the administrator’s queue.",
+      "saved": "The report was saved. Email delivery will happen in the background.",
+      "messageLabel": "What happened?",
+      "placeholder": "What did you try, what happened, and what did you expect?",
+      "hint": "The current page is attached automatically. Do not include passwords or private campaign material.",
+      "sending": "Sending…",
+      "submit": "Send report",
+      "errors": {
+        "failed": "The report could not be saved."
+      }
+    },
+    "list": {
+      "emptyTitle": "No reports",
+      "emptyDescription": "Problem reports and product suggestions will appear here.",
+      "accountDeleted": "Account deleted",
+      "from": "From",
+      "lastChanged": " · last changed by {name} {date}"
+    },
+    "errors": {
+      "messageTooShort": "Add a little more detail so the report can be understood.",
+      "messageTooLong": "The report is too long. Keep it below 4,000 characters.",
+      "rateLimited": "You have sent several reports recently. Try again later."
+    }
+  },
+  "notifications": {
+    "messages": {
+      "fallback": {
+        "campaign": "a campaign",
+        "session": "a session",
+        "keeper": "A Keeper",
+        "somebody": "Somebody",
+        "agreedTime": "at the agreed time",
+        "timeTba": "time to be announced",
+        "newTime": "at a new time",
+        "newTimeTba": "new time to be announced",
+        "user": "A user",
+        "userLower": "a user",
+        "noEmail": "no email"
+      },
+      "campaignInvited": {
+        "subject": "You are invited to {campaign}",
+        "body": "{actor} has invited you to {campaign}.",
+        "channel": "{actor} invited somebody to {campaign}."
+      },
+      "memberJoined": {
+        "subject": "{actor} joined {campaign}",
+        "body": "{actor} has joined {campaign}.",
+        "channel": "{actor} has joined {campaign}."
+      },
+      "sessionCreated": {
+        "subject": "A session is being planned: {session}",
+        "body": "{session} is being planned in {campaign}.",
+        "channel": "{session} is being planned in {campaign}."
+      },
+      "availabilityRequested": {
+        "subject": "When are you free for {session}?",
+        "body": "{campaign} is looking for a date for {session}.",
+        "channel": "{campaign} is looking for a date for {session}."
+      },
+      "availabilityReminder": {
+        "subject": "Still waiting on you for {session}",
+        "body": "You have not said when you are free for {session}.",
+        "channel": "Some answers are still missing for {session}."
+      },
+      "collectionClosed": {
+        "subject": "Answers are in for {session}",
+        "body": "The deadline for {session} has passed and the possible dates have been worked out. Pick one when you have a moment.",
+        "channel": "Answers are in for {session}; the Keeper is choosing a date."
+      },
+      "scheduled": {
+        "subject": "{session} is confirmed{suffix}",
+        "body": "{session} will run {when}.",
+        "channel": "{session} is confirmed: {when}."
+      },
+      "rescheduled": {
+        "subject": "{session} has moved{suffix}",
+        "body": "{session} has been moved. It will now run {when}.",
+        "channel": "{session} has moved: {when}."
+      },
+      "cancelled": {
+        "subject": "{session} is cancelled",
+        "body": "{session} will not be running.",
+        "channel": "{session} is cancelled."
+      },
+      "noNext": {
+        "subject": "{campaign} has no next session",
+        "body": "Nothing is scheduled in {campaign}. Campaigns end this way more often than they end badly.",
+        "channel": "Nothing is scheduled in {campaign}."
+      },
+      "issue": {
+        "subject": "New issue report from {actor}",
+        "body": "{actor} ({email}) submitted an issue report.",
+        "page": "Page: {path}",
+        "channel": "A new issue report was submitted."
+      },
+      "deadline": "Answer by {deadline}.",
+      "reason": "Reason: {reason}"
+    },
+    "discord": {
+      "title": "Discord",
+      "description": "Paste a channel webhook to tell the group in Discord as well as by email.",
+      "configuredDescription": "Posts when a session is announced, confirmed, moved or cancelled.",
+      "lastError": "The last post was refused: {error}",
+      "webhookLabel": "Webhook address",
+      "webhookHint": "Channel settings → Integrations → Webhooks → Copy webhook URL.",
+      "webhookConfiguredHint": "One is already stored. Entering another replaces it; it is never shown again.",
+      "saving": "Saving…",
+      "save": "Save webhook",
+      "replace": "Replace webhook",
+      "posting": "Posting…",
+      "test": "Test",
+      "remove": "Remove",
+      "posted": "Posted. Check the channel.",
+      "removeDialog": {
+        "title": "Stop posting to Discord?",
+        "description": "Nothing from this campaign will be posted to the channel afterwards. Email and in-app notifications are unaffected.",
+        "confirm": "Remove webhook"
+      },
+      "errors": {
+        "invalid": "That is not a Discord webhook address. Copy it from the channel’s integration settings.",
+        "missing": "There is nothing to test yet.",
+        "rejected": "Discord refused the message. The webhook may have been deleted.",
+        "rateLimited": "That has been tested a lot recently. Give it a few minutes.",
+        "save": "Could not save that webhook.",
+        "test": "Could not post to that channel.",
+        "remove": "Could not remove that webhook."
+      }
+    },
+    "inbox": {
+      "title": "Notifications",
+      "emptyTitle": "Nothing has happened yet",
+      "emptyDescription": "Invitations, availability requests and confirmed dates arrive here.",
+      "nothingUnread": "Nothing unread.",
+      "unread": "{unread} unread of {total}.",
+      "markAllRead": "Mark all as read"
+    }
+  },
+  "operations": {
+    "utc": "UTC",
+    "worker": {
+      "title": "Worker",
+      "stale": "Not reporting. Nothing is being delivered and no deadline will close until it is back.",
+      "running": "Running.",
+      "lastHeartbeat": "Last heartbeat",
+      "never": "No heartbeat has ever been recorded.",
+      "overdue": "{count, plural, one {# session is} other {# sessions are}} past a deadline that has not been closed."
+    },
+    "metrics": {
+      "accounts": "Accounts",
+      "accountsDetail": "{active} active · {pending} awaiting activation · {disabled} disabled",
+      "campaigns": "Campaigns",
+      "campaignsDetail": "{active} active{idle, plural, =0 {} other {, # with nothing planned}}",
+      "arranging": "Sessions being arranged",
+      "arrangingDetail": "{collecting} collecting · {proposed} awaiting a decision",
+      "ahead": "Sessions ahead",
+      "aheadDetail": "Confirmed, still to come"
+    },
+    "delivery": {
+      "title": "Delivery",
+      "summary": "{pending} waiting · {failed} given up on",
+      "failure": "{attempts, plural, one {# attempt} other {# attempts}} · {date} UTC",
+      "none": "Nothing has failed."
+    },
+    "taken": "Taken {date} UTC"
+  },
+  "designSystem": {
+    "title": "Design system",
+    "description": "Every primitive rendered against the real tokens. Development only.",
+    "dev": "dev",
+    "typography": {
+      "title": "Typography",
+      "display": "Miskatonic",
+      "ornament": "Ex Libris",
+      "body": "Body text in Spectral. The session ran long past midnight, and nobody wished to be the one who said so aloud.",
+      "interface": "Interface text in Inter — labels, tables and the availability grid."
+    },
+    "surfaces": "Surfaces",
+    "surfaceToken": "surface-{name}",
+    "buttons": {
+      "title": "Buttons",
+      "disabled": "disabled",
+      "small": "small",
+      "medium": "medium",
+      "large": "large",
+      "variants": {
+        "accent": "accent",
+        "outline": "outline",
+        "ghost": "ghost",
+        "danger": "danger",
+        "link": "link"
+      }
+    },
+    "badges": {
+      "title": "Badges",
+      "variants": {
+        "neutral": "neutral",
+        "accent": "accent",
+        "candle": "candle",
+        "positive": "positive",
+        "warning": "warning",
+        "danger": "danger",
+        "muted": "muted"
+      }
+    },
+    "forms": {
+      "title": "Forms",
+      "campaignName": "Campaign name",
+      "campaignPlaceholder": "The Haunting",
+      "campaignHint": "Shown to every member of the campaign.",
+      "invalid": "Invalid example",
+      "invalidMessage": "A name must be at least three characters.",
+      "description": "Description",
+      "descriptionPlaceholder": "What the investigators know so far…",
+      "checked": "Checked",
+      "unchecked": "Unchecked"
+    },
+    "availability": {
+      "title": "Availability palette",
+      "states": "Slot states — colour plus glyph, never colour alone",
+      "density": "Density ramp — the count is always printed",
+      "labels": {
+        "yes": "yes",
+        "ifNeedBe": "if need be",
+        "no": "no",
+        "empty": "empty"
+      }
+    },
+    "cards": {
+      "title": "Cards",
+      "campaign": "The Haunting",
+      "campaignDescription": "Four investigators · next session Thursday",
+      "plain": "A plain card on the raised surface.",
+      "open": "Open",
+      "ornamented": "Ornamented",
+      "ornamentedDescription": "Brass corner rules, decoration only",
+      "contrast": "Hidden automatically under prefers-contrast: more."
+    },
+    "table": {
+      "title": "Table",
+      "session": "Session",
+      "status": "Status",
+      "date": "Date",
+      "sessionNumber": "Session {number}",
+      "scheduled": "scheduled",
+      "collecting": "collecting",
+      "dateExample": "9 Oct, 18:00"
+    },
+    "states": {
+      "title": "States",
+      "emptyTitle": "The archive is empty",
+      "emptyDescription": "No campaigns have been recorded yet.",
+      "createCampaign": "Create campaign"
+    },
+    "interactive": {
+      "title": "Overlays",
+      "openDialog": "Open dialog",
+      "dialogTitle": "Schedule session",
+      "dialogDescription": "Availability closes on Thursday at midnight.",
+      "dialogBody": "Focus is trapped, the page behind is locked, and Escape dismisses.",
+      "cancel": "Cancel",
+      "confirmDate": "Confirm date",
+      "openPopover": "Open popover",
+      "popoverBody": "Positioned and dismissed by the primitive.",
+      "hover": "Hover me",
+      "tooltip": "Supplementary only — never load-bearing.",
+      "destructive": "Destructive action",
+      "priorities": {
+        "required": "Required",
+        "preferred": "Preferred",
+        "optional": "Optional"
+      },
+      "tabs": {
+        "heatmap": "Heatmap",
+        "people": "By person",
+        "responses": "Responses",
+        "heatmapBody": "The Keeper’s aggregate view.",
+        "peopleBody": "Named availability — Keeper only.",
+        "responsesBody": "Who has answered and who has not."
+      },
+      "confirm": {
+        "title": "Cancel this session?",
+        "description": "Every participant will be notified. This cannot be undone.",
+        "action": "Cancel session"
+      }
+    }
+  },
+  "scheduling": {
+    "diagnostics": {
+      "nobodyTitle": "Nobody has answered yet",
+      "nobodyDescription": "No date can be worked out until people say when they are free. None of the {count} invited have answered.",
+      "seeMissing": "See who is missing",
+      "tooShortTitle": "No window is long enough",
+      "tooShortDescription": "Every day in the search offers fewer hours than the session needs, so there was nothing to rank. Widen the hours the grid covers, or shorten the minimum length.",
+      "blockedTitle": "No date works for everyone who has to be there",
+      "allRuledOut": "All {count} possible evenings were ruled out.",
+      "keeperUnavailable": " {count} because a Keeper is not free.",
+      "requiredUnavailable": " {count} because somebody required is not free.",
+      "quorumMissed": " {count} because too few players are free: the best any evening reached was {best} of the {quorum} needed.",
+      "rulesOut": "rules out {count} of them.",
+      "whatCanChange": "What can change",
+      "widerRange": "Search a wider range of dates.",
+      "lowerQuorum": "Lower the quorum from {from} to {to}.",
+      "makeOptional": "Make {name} optional, or ask them to answer again.",
+      "shorten": "Shorten the minimum length, or start earlier in the day."
+    },
+    "panel": {
+      "title": "Dates",
+      "summary": "{responded} of {total} have answered. Quorum is {quorum}, and a session runs at least {hours} hours.",
+      "lastSearched": "Last searched",
+      "algorithm": " · algorithm {version}",
+      "searching": "Searching…",
+      "searchAgain": "Search again",
+      "findDates": "Find dates",
+      "stale": "Somebody has answered since this search ran. Search again to take their answer into account.",
+      "choose": "Choose this date",
+      "emptyTitle": "No dates worked out yet",
+      "emptyDescription": "Searching decides nothing — it ranks the evenings that would work.",
+      "confirmTitle": "Confirm this date?",
+      "confirmDescription": "{window} in {timezone}. Everyone invited is told, and answers close.",
+      "confirm": "Confirm date",
+      "errors": {
+        "notSearchable": "Dates can only be searched while a session is collecting answers or choosing between them.",
+        "proposalStale": "That suggestion came from an earlier search. Search again and pick from the new list.",
+        "sessionMovedOn": "Somebody else changed this session. Reload and try again.",
+        "invalidTransition": "That is not possible from the session’s current state.",
+        "rateLimited": "That search has run a lot recently. Give it a few minutes.",
+        "searchFailed": "Could not search for dates.",
+        "confirmFailed": "Could not confirm that date."
+      }
+    },
+    "proposal": {
+      "hours": "{count} hours",
+      "chosen": "Chosen",
+      "atPush": "Only at a push: {names}",
+      "unavailable": "Cannot make it: {names}",
+      "notAnswered": "{count, plural, one {One person has} other {# people have}} not answered",
+      "freeCount": "{available} of {total} players free",
+      "quorumMet": "quorum of {quorum} met",
+      "belowQuorum": "below the quorum of {quorum}",
+      "everyoneFree": "Everyone invited is free.",
+      "keeperFree": "The Keeper is free",
+      "requiredFree": "Everyone required is free",
+      "requiredCanCome": "Everyone required can come",
+      "preferred": "{met} of {total} preferred",
+      "optional": "{met} of {total} optional"
+    }
   },
   "availability": {
+    "page": {
+      "title": "Availability",
+      "keeper": "Keeper"
+    },
     "title": "Set your availability",
     "timezoneNotice": "Times shown in {timeZone}",
     "states": {
@@ -54,6 +1100,103 @@
     },
     "quorumMet": "Quorum met",
     "quorumNotMet": "Below quorum",
-    "groupSummary": "{available} of {total} available"
+    "groupSummary": "{available} of {total} available",
+    "stateLabels": {
+      "YES": "free",
+      "IF_NEED_BE": "free at a push",
+      "NO": "not free",
+      "blank": "no answer"
+    },
+    "dayDialog": {
+      "timezone": "Times in {timezone}.",
+      "question": "Can you make this evening?",
+      "exactTime": "When, exactly",
+      "from": "from",
+      "until": "until",
+      "tooShort": "That is shorter than the {hours} hours this session needs, so it cannot run on this evening.",
+      "hoursHint": "Leave these alone unless you start late or have to leave early.",
+      "clear": "Clear this evening",
+      "done": "Done",
+      "announcement": "{date}: {state}.",
+      "clearedAnnouncement": "{date}: answer cleared.",
+      "states": {
+        "YES": { "label": "Free", "help": "Count me in." },
+        "IF_NEED_BE": { "label": "At a push", "help": "Only if the date depends on it." },
+        "NO": { "label": "Not free", "help": "I cannot make this evening." }
+      }
+    },
+    "dayOverview": {
+      "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "cellLabel": "{weekday} {date}: {state}{detail, select, '' {} other {, {detail}}}. Activate to change.",
+      "hoursLabel": "Exact hours for {weekday} {date}",
+      "exactHours": "Exact hours",
+      "announcement": "{weekday} {date}: {state}. Times in {timezone}."
+    },
+    "panel": {
+      "answerBy": "Answer by",
+      "quickAnswer": "Answer quickly",
+      "sameAsLastTime": "Same as last time",
+      "suggestionApplied": "Filled in from {title}. Check it before saving.",
+      "presetApplied": "{label} applied. {description}",
+      "instructions": "Pick an evening to answer it. Pick it again to change how firm that is. Open the clock on an evening you start late or have to leave early.",
+      "tooShort": "{count, plural, one {One evening is} other {# evenings are}} marked for less than {hours} hours, so this session could not run then. They are outlined below.",
+      "saving": "Saving…",
+      "save": "Save",
+      "undo": "Undo",
+      "notSaved": "Not saved yet.",
+      "saved": "Saved.",
+      "recorded": "Your answer is recorded.",
+      "notAnswered": "You have not answered yet.",
+      "savedAnnouncement": "Your answer has been saved.",
+      "groupWindows": "When the group could play",
+      "privacySummary": "{responded} of {total} answered. Who said what stays between each player and the Keeper.",
+      "closed": {
+        "DRAFT": "Nobody has been asked yet. The Keeper opens this when the session is ready.",
+        "PROPOSED": "Answers are closed. The Keeper is choosing between the dates that work.",
+        "SCHEDULED": "The date is settled, so answers are closed.",
+        "COMPLETED": "This session has been played.",
+        "CANCELLED": "This session was cancelled.",
+        "COLLECTING": "Answers are open."
+      },
+      "presets": {
+        "weeknights": {
+          "label": "Weeknights",
+          "description": "Free every Monday to Friday evening, from the usual start."
+        },
+        "weekends": {
+          "label": "Weekends",
+          "description": "Free on Saturdays and Sundays, the whole evening."
+        },
+        "everyEvening": { "label": "Every evening", "description": "Free on every date offered." },
+        "noneOfThese": {
+          "label": "None of these",
+          "description": "Cannot make any of the dates offered."
+        },
+        "clear": { "label": "Start again", "description": "Clears every answer." }
+      },
+      "errors": {
+        "deadlinePassed": "The deadline has passed, so answers are closed. Ask the Keeper to reopen it.",
+        "notInvited": "You are not on the list for this session.",
+        "notCollecting": "This session is not asking for availability at the moment.",
+        "saveFailed": "Could not save your answer."
+      }
+    },
+    "keeper": {
+      "compare": "How the evenings compare",
+      "people": "What each person said",
+      "pending": "Who has not replied",
+      "freeCount": "{free} of {total} free",
+      "stillToAnswer": "Still to answer ({count})",
+      "everybodyReplied": "Everybody has replied.",
+      "answered": "Answered ({count})"
+    },
+    "windows": {
+      "empty": "No evening yet has enough people free for long enough.",
+      "freeCount": "{available} of {total} free",
+      "atPush": ", {count} at a push",
+      "enough": "enough to play",
+      "below": "below quorum",
+      "timezone": "Times in {timezone}."
+    }
   }
 }

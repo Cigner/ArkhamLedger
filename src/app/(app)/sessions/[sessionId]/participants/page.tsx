@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { guardPage } from '@/lib/page-guards'
 import { listEligibleParticipants } from '@/modules/sessions/data/participants'
@@ -14,8 +15,12 @@ import { ParticipantsForm } from '@/modules/sessions/ui/participants-form'
  * Keeper's private working notes rather than something the party sees about each
  * other. The guard refuses an Investigator here regardless of the missing tab.
  */
-export const metadata: Metadata = { title: 'Participants' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('sessions.participantsPage')
+  return { title: t('title') }
+}
 
 export default async function SessionParticipantsPage({
   params,
@@ -23,6 +28,7 @@ export default async function SessionParticipantsPage({
   params: Promise<{ sessionId: string }>
 }) {
   const { sessionId } = await params
+  const t = await getTranslations('sessions.participantsPage')
   const { session, candidates } = await guardPage(async () => {
     const context = await requireSessionKeeper(sessionId)
     const [detail, eligible] = await Promise.all([
@@ -37,10 +43,8 @@ export default async function SessionParticipantsPage({
       <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Who was there</CardTitle>
-            <CardDescription>
-              Record attendance and close the session. This cannot be undone.
-            </CardDescription>
+            <CardTitle>{t('attendanceTitle')}</CardTitle>
+            <CardDescription>{t('attendanceDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
             <AttendanceForm session={session} />
@@ -51,11 +55,7 @@ export default async function SessionParticipantsPage({
   }
 
   if (session.status === 'COMPLETED' || session.status === 'CANCELLED') {
-    return (
-      <p className="font-ui text-sm text-text-muted">
-        This session is closed. Its roster is on the overview.
-      </p>
-    )
+    return <p className="font-ui text-sm text-text-muted">{t('closed')}</p>
   }
 
   return <ParticipantsForm session={session} candidates={candidates} />

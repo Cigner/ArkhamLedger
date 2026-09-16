@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getOptionalUser } from '@/lib/auth'
@@ -12,7 +13,10 @@ import { SignInForm } from '@/modules/identity/ui/sign-in-form'
  * URL here would turn the sign-in page into an open redirect, which is a
  * convincing phishing primitive precisely because the domain is genuine.
  */
-export const metadata: Metadata = { title: 'Sign in' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.signIn')
+  return { title: t('title') }
+}
 
 function safeRedirectTarget(next: string | undefined): string {
   if (!next) return '/campaigns'
@@ -26,6 +30,7 @@ export default async function SignInPage({
   searchParams: Promise<{ next?: string }>
 }) {
   const user = await getOptionalUser()
+  const t = await getTranslations('auth.signIn')
   const { next } = await searchParams
   const target = safeRedirectTarget(next)
 
@@ -33,14 +38,14 @@ export default async function SignInPage({
 
   return (
     <AuthCard
-      title="Sign in"
-      description="Accounts are created by an administrator. If you do not have one, ask them for an activation link."
+      title={t('title')}
+      description={t('description')}
       footer={
         <Link
           href="/forgot-password"
           className="text-accent-text underline-offset-4 hover:underline"
         >
-          Forgot your password?
+          {t('forgotPassword')}
         </Link>
       }
     >

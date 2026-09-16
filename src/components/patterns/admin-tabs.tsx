@@ -1,8 +1,9 @@
 'use client'
 
-import { Activity, Users } from 'lucide-react'
+import { Activity, MessageSquareWarning, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 
 /**
@@ -12,17 +13,18 @@ import { cn } from '@/lib/cn'
  * something is broken than creating an account, and accounts are created a few
  * times a year.
  */
-const TABS = [
-  { href: '/admin', label: 'Operations', icon: Activity },
-  { href: '/admin/users', label: 'Users', icon: Users },
-]
-
 export function AdminTabs() {
   const pathname = usePathname()
+  const t = useTranslations('admin.tabs')
+  const tabs = [
+    { href: '/admin', label: t('operations'), icon: Activity },
+    { href: '/admin/users', label: t('users'), icon: Users },
+    { href: '/admin/reports', label: t('reports'), icon: MessageSquareWarning },
+  ]
 
   return (
     <nav className="flex items-center gap-1 border-b border-border-subtle">
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const active = pathname === tab.href
 
         return (

@@ -27,11 +27,9 @@ export const discordDispatcher: NotificationDispatcher = {
     const url = context.campaign?.discordWebhookUrl
     if (!url) return { kind: 'PERMANENT', error: 'no webhook configured' }
 
-    const content =
-      `**${context.campaign?.name ?? 'Arkham Ledger'}** - ${context.message.channelText}`.slice(
-        0,
-        MAX_CONTENT_LENGTH,
-      )
+    const content = truncateContent(
+      `**${context.campaign?.name ?? 'Arkham Ledger'}** - ${context.message.channelText}`,
+    )
 
     try {
       const response = await fetch(url, {
@@ -43,17 +41,16 @@ export const discordDispatcher: NotificationDispatcher = {
 
       if (response.ok) return { kind: 'SENT' }
 
-      const permanent =
-        response.status === 401 || response.status === 403 || response.status === 404
+      const retryable = response.status === 408 || response.status === 429 || response.status >= 500
 
       appLogger.warn(
-        { campaignId: context.campaign?.campaignId, status: response.status, permanent },
+        { campaignId: context.campaign?.campaignId, status: response.status, retryable },
         'discord delivery rejected',
       )
 
-      return permanent
-        ? { kind: 'PERMANENT', error: `discord ${response.status}` }
-        : { kind: 'RETRYABLE', error: `discord ${response.status}` }
+      return retryable
+        ? { kind: 'RETRYABLE', error: `discord ${response.status}` }
+        : { kind: 'PERMANENT', error: `discord ${response.status}` }
     } catch (error) {
       /*
        * A timeout or a DNS failure is the network, not the message. Classified
@@ -63,6 +60,10 @@ export const discordDispatcher: NotificationDispatcher = {
       return { kind: 'RETRYABLE', error: errorName(error) }
     }
   },
+}
+
+function truncateContent(value: string): string {
+  return [...value].slice(0, MAX_CONTENT_LENGTH).join('')
 }
 
 function errorName(error: unknown): string {

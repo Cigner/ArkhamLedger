@@ -1,6 +1,7 @@
 'use client'
 
 import { LogIn } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ import { FormError } from './form-error'
  * say what it is or the user will simply keep retrying.
  */
 export function SignInForm({ next }: { next: string }) {
+  const t = useTranslations('auth.signIn')
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -34,11 +36,7 @@ export function SignInForm({ next }: { next: string }) {
     const result = await signIn.email({ email, password })
 
     if (result.error) {
-      setError(
-        result.error.status === 429
-          ? 'Too many attempts. Wait a few minutes and try again.'
-          : 'Invalid credentials.',
-      )
+      setError(result.error.status === 429 ? t('rateLimited') : t('invalidCredentials'))
       return
     }
 
@@ -51,7 +49,7 @@ export function SignInForm({ next }: { next: string }) {
   return (
     <form onSubmit={(event) => void handleSubmit(event)} className="flex flex-col gap-4" noValidate>
       <Field>
-        <FieldLabel htmlFor="email">Email</FieldLabel>
+        <FieldLabel htmlFor="email">{t('email')}</FieldLabel>
         <Input
           id="email"
           name="email"
@@ -64,7 +62,7 @@ export function SignInForm({ next }: { next: string }) {
       </Field>
 
       <Field>
-        <FieldLabel htmlFor="password">Password</FieldLabel>
+        <FieldLabel htmlFor="password">{t('password')}</FieldLabel>
         <Input
           id="password"
           name="password"
@@ -79,7 +77,7 @@ export function SignInForm({ next }: { next: string }) {
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>
         <LogIn className="size-4" aria-hidden="true" />
-        {pending ? 'Signing in…' : 'Sign in'}
+        {pending ? t('pending') : t('submit')}
       </Button>
     </form>
   )

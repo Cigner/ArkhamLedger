@@ -10,6 +10,8 @@ import {
 } from '@/db/schema'
 import { decryptSecret } from '@/lib/crypto'
 import { env } from '@/lib/env'
+import { createAppTranslator } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE, isSupportedLocale } from '@/lib/i18n/locales'
 import { appLogger } from '@/lib/logger'
 import { nextAttemptAfter } from '../domain/backoff'
 import { renderNotification } from '../domain/messages'
@@ -125,6 +127,7 @@ export async function loadDispatchContexts(
       recipientName: authUser.name,
       recipientEmail: authUser.email,
       recipientTimezone: authUser.timezone,
+      recipientLocale: authUser.locale,
     })
     .from(notificationDelivery)
     .innerJoin(notification, eq(notification.id, notificationDelivery.notificationId))
@@ -167,6 +170,9 @@ export async function loadDispatchContexts(
           baseUrl: env.BETTER_AUTH_URL,
           campaignId: row.campaignId,
           gameSessionId: row.gameSessionId,
+          translate: createAppTranslator(
+            isSupportedLocale(row.recipientLocale) ? row.recipientLocale : DEFAULT_LOCALE,
+          ),
         }),
         campaign: row.campaignId ? (outbound.get(row.campaignId) ?? null) : null,
       },

@@ -10,6 +10,7 @@ import {
   Undo2,
   XCircle,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -49,18 +50,6 @@ import type { SessionDetail } from '../domain/types'
  * checks them again regardless - this is about not offering a button that will
  * be refused, which reads as a bug rather than as a rule.
  */
-const MESSAGES: Record<string, string> = {
-  'sessions.errors.noKeeperAmongParticipants': 'Nobody is set to run this session.',
-  'sessions.errors.fewerParticipantsThanQuorum':
-    'Fewer people are invited than the quorum requires, so no date could ever work.',
-  'sessions.errors.deadlineInThePast': 'That deadline has already passed.',
-  'sessions.errors.deadlineAfterWindowStarts':
-    'The deadline falls after the first date being searched.',
-  'sessions.errors.sessionMovedOn': 'Somebody else changed this session. Reload and try again.',
-  'sessions.errors.invalidTransition': 'That is not possible from the session’s current state.',
-  'sessions.errors.endBeforeStart': 'The session ends before it starts.',
-}
-
 /**
  * One error channel for every action on this panel.
  *
@@ -76,12 +65,22 @@ type ActionFailure = {
 }
 
 function useMessage() {
+  const t = useTranslations('sessions.keeperActions')
   const [error, setError] = useState<string | null>(null)
+  const messages: Record<string, string> = {
+    'sessions.errors.noKeeperAmongParticipants': t('errors.noKeeper'),
+    'sessions.errors.fewerParticipantsThanQuorum': t('errors.fewerThanQuorum'),
+    'sessions.errors.deadlineInThePast': t('errors.deadlineInPast'),
+    'sessions.errors.deadlineAfterWindowStarts': t('errors.deadlineAfterStart'),
+    'sessions.errors.sessionMovedOn': t('errors.sessionMovedOn'),
+    'sessions.errors.invalidTransition': t('errors.invalidTransition'),
+    'sessions.errors.endBeforeStart': t('errors.endBeforeStart'),
+  }
 
   const handle = (fallback: string) => (failure: ActionFailure) => {
     setError(
       resolveActionError(
-        MESSAGES,
+        messages,
         fallback,
         failure.error.serverError?.messageKey,
         failure.error.validationErrors,
@@ -93,6 +92,7 @@ function useMessage() {
 }
 
 export function KeeperActions({ session }: { session: SessionDetail }) {
+  const t = useTranslations('sessions.keeperActions')
   const router = useRouter()
   const { error, setError, handle } = useMessage()
 
@@ -106,42 +106,42 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
 
   const publish = useAction(publishSession, {
     onSuccess: refresh,
-    onError: handle('Could not open this session for availability.'),
+    onError: handle(t('errors.publishFailed')),
   })
   const schedule = useAction(setSessionDate, {
     onSuccess: () => {
       setSchedulingOpen(false)
       refresh()
     },
-    onError: handle('Could not set that date.'),
+    onError: handle(t('errors.scheduleFailed')),
   })
   const reopen = useAction(reopenCollection, {
     onSuccess: () => {
       setReopenOpen(false)
       refresh()
     },
-    onError: handle('Could not reopen collection.'),
+    onError: handle(t('errors.reopenFailed')),
   })
   const closeAnswers = useAction(closeCollection, {
     onSuccess: () => {
       setCloseOpen(false)
       refresh()
     },
-    onError: handle('Could not close the answers.'),
+    onError: handle(t('errors.closeFailed')),
   })
   const cancel = useAction(cancelSession, {
     onSuccess: () => {
       setCancelOpen(false)
       refresh()
     },
-    onError: handle('Could not cancel this session.'),
+    onError: handle(t('errors.cancelFailed')),
   })
   const complete = useAction(completeSession, {
     onSuccess: () => {
       setCompleteOpen(false)
       refresh()
     },
-    onError: handle('Could not close this session.'),
+    onError: handle(t('errors.completeFailed')),
   })
 
   const status = session.status
@@ -153,7 +153,7 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
         {status === 'DRAFT' || status === 'COLLECTING' ? (
           <ButtonLink href={`/sessions/${session.id}/edit`} variant="outline">
             <Pencil className="size-4" aria-hidden="true" />
-            Edit
+            {t('edit')}
           </ButtonLink>
         ) : null}
 
@@ -167,21 +167,21 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             }}
           >
             <Send className="size-4" aria-hidden="true" />
-            {publish.isPending ? 'Opening…' : 'Ask for availability'}
+            {publish.isPending ? t('opening') : t('askAvailability')}
           </Button>
         ) : null}
 
         {status === 'COLLECTING' || status === 'PROPOSED' ? (
           <ButtonLink href={`/sessions/${session.id}/scheduling`} variant="accent">
             <CalendarSearch className="size-4" aria-hidden="true" />
-            Find dates
+            {t('findDates')}
           </ButtonLink>
         ) : null}
 
         {status === 'COLLECTING' ? (
           <Button variant="ghost" onClick={() => setCloseOpen(true)}>
             <Lock className="size-4" aria-hidden="true" />
-            Close answers
+            {t('closeAnswers')}
           </Button>
         ) : null}
 
@@ -192,28 +192,28 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             ) : (
               <CalendarCheck className="size-4" aria-hidden="true" />
             )}
-            {status === 'SCHEDULED' ? 'Change the date' : 'Set a date'}
+            {status === 'SCHEDULED' ? t('changeDate') : t('setDate')}
           </Button>
         ) : null}
 
         {status === 'PROPOSED' || status === 'SCHEDULED' ? (
           <Button variant="ghost" onClick={() => setReopenOpen(true)}>
             <Undo2 className="size-4" aria-hidden="true" />
-            Reopen
+            {t('reopen')}
           </Button>
         ) : null}
 
         {status === 'SCHEDULED' ? (
           <Button variant="ghost" onClick={() => setCompleteOpen(true)}>
             <CircleCheck className="size-4" aria-hidden="true" />
-            Mark as played
+            {t('markPlayed')}
           </Button>
         ) : null}
 
         {!terminal ? (
           <Button variant="danger" onClick={() => setCancelOpen(true)}>
             <XCircle className="size-4" aria-hidden="true" />
-            Cancel
+            {t('cancel')}
           </Button>
         ) : null}
       </div>
@@ -237,9 +237,9 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             }}
           >
             <DialogHeader>
-              <DialogTitle>Set the date by hand</DialogTitle>
+              <DialogTitle>{t('manual.title')}</DialogTitle>
               <DialogDescription>
-                Everyone invited is told. Times are in {session.timezone}.
+                {t('manual.description', { timezone: session.timezone })}
               </DialogDescription>
             </DialogHeader>
 
@@ -247,14 +247,14 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
               <DateField
                 id="date"
                 name="date"
-                label="Date"
+                label={t('manual.date')}
                 required
                 defaultValue={session.searchWindowStart}
               />
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="startHour">Starts at</FieldLabel>
+                  <FieldLabel htmlFor="startHour">{t('manual.startsAt')}</FieldLabel>
                   <Input
                     id="startHour"
                     name="startHour"
@@ -266,7 +266,7 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="endHour">Ends at</FieldLabel>
+                  <FieldLabel htmlFor="endHour">{t('manual.endsAt')}</FieldLabel>
                   <Input
                     id="endHour"
                     name="endHour"
@@ -279,17 +279,15 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
                 </Field>
               </div>
 
-              <FieldNote>
-                Setting a date by hand overrides what people said they could do.
-              </FieldNote>
+              <FieldNote>{t('manual.warning')}</FieldNote>
             </DialogBody>
 
             <DialogFooter>
               <Button variant="ghost" onClick={() => setSchedulingOpen(false)}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" variant="accent" disabled={schedule.isPending}>
-                {schedule.isPending ? 'Setting…' : 'Confirm date'}
+                {schedule.isPending ? t('manual.setting') : t('manual.confirm')}
               </Button>
             </DialogFooter>
           </form>
@@ -310,27 +308,25 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             }}
           >
             <DialogHeader>
-              <DialogTitle>Ask everyone again?</DialogTitle>
-              <DialogDescription>
-                Every answer already given is cleared, and any confirmed date is dropped.
-              </DialogDescription>
+              <DialogTitle>{t('reopenDialog.title')}</DialogTitle>
+              <DialogDescription>{t('reopenDialog.description')}</DialogDescription>
             </DialogHeader>
 
             <DialogBody>
               <DateField
                 id="availabilityDeadline"
                 name="availabilityDeadline"
-                label="Last day to answer"
-                description={`Optional. Answering closes when this day ends in ${session.timezone}; without one it stays open until you close it.`}
+                label={t('reopenDialog.deadline')}
+                description={t('reopenDialog.deadlineHint', { timezone: session.timezone })}
               />
             </DialogBody>
 
             <DialogFooter>
               <Button variant="ghost" onClick={() => setReopenOpen(false)}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" variant="accent" disabled={reopen.isPending}>
-                {reopen.isPending ? 'Reopening…' : 'Reopen and clear answers'}
+                {reopen.isPending ? t('reopenDialog.reopening') : t('reopenDialog.confirm')}
               </Button>
             </DialogFooter>
           </form>
@@ -348,26 +344,24 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
             }}
           >
             <DialogHeader>
-              <DialogTitle>Cancel this session?</DialogTitle>
-              <DialogDescription>
-                Everyone invited is told, with the reason. This cannot be undone.
-              </DialogDescription>
+              <DialogTitle>{t('cancelDialog.title')}</DialogTitle>
+              <DialogDescription>{t('cancelDialog.description')}</DialogDescription>
             </DialogHeader>
 
             <DialogBody>
               <Field>
-                <FieldLabel htmlFor="reason">Why</FieldLabel>
+                <FieldLabel htmlFor="reason">{t('cancelDialog.reason')}</FieldLabel>
                 <Textarea id="reason" name="reason" required autoFocus />
-                <FieldDescription>Shown to everyone invited.</FieldDescription>
+                <FieldDescription>{t('cancelDialog.reasonHint')}</FieldDescription>
               </Field>
             </DialogBody>
 
             <DialogFooter>
               <Button variant="ghost" onClick={() => setCancelOpen(false)}>
-                Keep it
+                {t('cancelDialog.keep')}
               </Button>
               <Button type="submit" variant="danger" disabled={cancel.isPending}>
-                {cancel.isPending ? 'Cancelling…' : 'Cancel session'}
+                {cancel.isPending ? t('cancelDialog.cancelling') : t('cancelDialog.confirm')}
               </Button>
             </DialogFooter>
           </form>
@@ -377,9 +371,9 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
       <ConfirmDialog
         open={closeOpen}
         onOpenChange={setCloseOpen}
-        title="Stop asking for availability?"
-        description="Nobody can change their answer afterwards, and the dates already suggested stay as they are. You can reopen it later if plans change."
-        confirmLabel="Close answers"
+        title={t('closeDialog.title')}
+        description={t('closeDialog.description')}
+        confirmLabel={t('closeAnswers')}
         pending={closeAnswers.isPending}
         onConfirm={() => closeAnswers.execute({ sessionId: session.id })}
       />
@@ -387,9 +381,9 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
       <ConfirmDialog
         open={completeOpen}
         onOpenChange={setCompleteOpen}
-        title="Mark this session as played?"
-        description="Record who was there on the participants tab first if you have not already. A played session cannot be reopened."
-        confirmLabel="Mark as played"
+        title={t('completeDialog.title')}
+        description={t('completeDialog.description')}
+        confirmLabel={t('markPlayed')}
         pending={complete.isPending}
         onConfirm={() =>
           complete.execute({

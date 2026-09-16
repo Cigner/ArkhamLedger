@@ -1,4 +1,5 @@
 import { formatWindow } from '@/lib/datetime/format'
+import { getFormatter, getTranslations } from 'next-intl/server'
 
 /**
  * Renders when a session is, or when it might be.
@@ -8,7 +9,7 @@ import { formatWindow } from '@/lib/datetime/format'
  * saying it is four words.
  */
 
-export function SessionWhen({
+export async function SessionWhen({
   confirmedStartUtc,
   confirmedEndUtc,
   searchWindowStart,
@@ -21,6 +22,8 @@ export function SessionWhen({
   searchWindowEnd: string
   timezone: string
 }) {
+  const t = await getTranslations('sessions.when')
+  const format = await getFormatter()
   if (confirmedStartUtc && confirmedEndUtc) {
     return (
       <span data-tabular className="font-ui text-sm text-text-primary">
@@ -32,12 +35,18 @@ export function SessionWhen({
     )
   }
 
-  const format = (value: string) =>
-    new Date(`${value}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-
   return (
     <span data-tabular className="font-ui text-sm text-text-secondary">
-      Searching {format(searchWindowStart)} – {format(searchWindowEnd)}
+      {t('searching', {
+        start: format.dateTime(new Date(`${searchWindowStart}T12:00:00Z`), {
+          day: 'numeric',
+          month: 'short',
+        }),
+        end: format.dateTime(new Date(`${searchWindowEnd}T12:00:00Z`), {
+          day: 'numeric',
+          month: 'short',
+        }),
+      })}
     </span>
   )
 }

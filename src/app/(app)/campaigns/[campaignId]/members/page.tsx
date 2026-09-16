@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import {
   Table,
   TableBody,
@@ -24,7 +25,10 @@ import { LeaveCampaignButton } from '@/modules/campaigns/ui/leave-campaign-butto
  * owner sees the per-member controls. Each of those is enforced by the query or
  * the action behind it, not by the absence of a button.
  */
-export const metadata: Metadata = { title: 'Members' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('campaigns.members')
+  return { title: t('title') }
+}
 export const dynamic = 'force-dynamic'
 
 export default async function CampaignMembersPage({
@@ -33,6 +37,7 @@ export default async function CampaignMembersPage({
   params: Promise<{ campaignId: string }>
 }) {
   const { campaignId } = await params
+  const t = await getTranslations('campaigns.members')
   const campaign = await getCampaignDetail(campaignId)
   const isKeeper = campaign.viewer.role === 'KEEPER'
 
@@ -47,7 +52,7 @@ export default async function CampaignMembersPage({
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-display text-lg tracking-[--tracking-display] text-text-primary">
-            Members
+            {t('title')}
           </h2>
           <div className="flex items-center gap-2">
             <LeaveCampaignButton campaignId={campaignId} viewer={campaign.viewer} />
@@ -61,10 +66,10 @@ export default async function CampaignMembersPage({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('columns.name')}</TableHead>
+                <TableHead>{t('columns.email')}</TableHead>
+                <TableHead>{t('columns.role')}</TableHead>
+                <TableHead className="text-right">{t('columns.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -74,11 +79,11 @@ export default async function CampaignMembersPage({
                     {member.name}
                     {member.isOwner ? (
                       <span className="ml-2 font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-text-muted">
-                        Owner
+                        {t('owner')}
                       </span>
                     ) : null}
                     {member.userId === campaign.viewer.userId ? (
-                      <span className="ml-2 font-ui text-xs text-text-muted">(you)</span>
+                      <span className="ml-2 font-ui text-xs text-text-muted">{t('you')}</span>
                     ) : null}
                   </TableCell>
                   <TableCell className="text-text-secondary">{member.email}</TableCell>
@@ -102,7 +107,7 @@ export default async function CampaignMembersPage({
       {isKeeper ? (
         <section className="flex flex-col gap-4">
           <h2 className="font-display text-lg tracking-[--tracking-display] text-text-primary">
-            Outstanding invitations
+            {t('outstandingInvitations')}
           </h2>
           <InvitationList campaignId={campaignId} invitations={invitations} />
         </section>

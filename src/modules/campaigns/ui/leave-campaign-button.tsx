@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/patterns/confirm-dialog'
@@ -21,6 +22,7 @@ export function LeaveCampaignButton({
   campaignId: string
   viewer: Membership
 }) {
+  const t = useTranslations('campaigns.leave')
   const router = useRouter()
   const [confirming, setConfirming] = useState(false)
 
@@ -38,14 +40,14 @@ export function LeaveCampaignButton({
   return (
     <>
       <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
-        Leave
+        {t('trigger')}
       </Button>
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title="Leave this campaign?"
-        description="You lose access until somebody invites you back. Your past availability and attendance are kept."
-        confirmLabel="Leave campaign"
+        title={t('title')}
+        description={t('description')}
+        confirmLabel={t('confirm')}
         destructive
         pending={leave.isPending}
         onConfirm={() => leave.execute({ campaignId })}

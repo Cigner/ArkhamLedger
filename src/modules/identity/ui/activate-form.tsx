@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
@@ -17,16 +18,8 @@ import { PasswordFields } from './password-fields'
  * straight into the application rather than sending them back to sign in with
  * credentials they chose seconds ago.
  */
-const MESSAGES: Record<string, string> = {
-  'identity.errors.passwordTooShort': 'That password is too short.',
-  'identity.errors.passwordTooCommon': 'That password is too easy to guess. Try a longer phrase.',
-  'identity.errors.passwordsDoNotMatch': 'The two passwords do not match.',
-  'identity.errors.tokenInvalid':
-    'This link is no longer valid. Ask an administrator for a new one.',
-  'identity.errors.accountAlreadyActive': 'This account has already been activated.',
-}
-
 export function ActivateForm({ token }: { token: string }) {
+  const t = useTranslations()
   const router = useRouter()
   const [navigating, startTransition] = useTransition()
   const [formError, setFormError] = useState<string | null>(null)
@@ -41,8 +34,14 @@ export function ActivateForm({ token }: { token: string }) {
     onError: ({ error }) => {
       setFormError(
         resolveActionError(
-          MESSAGES,
-          'Could not set your password. Check the requirements and try again.',
+          {
+            'identity.errors.passwordTooShort': t('identity.errors.passwordTooShort'),
+            'identity.errors.passwordTooCommon': t('identity.errors.passwordTooCommon'),
+            'identity.errors.passwordsDoNotMatch': t('identity.errors.passwordsDoNotMatch'),
+            'identity.errors.tokenInvalid': t('identity.errors.tokenInvalid'),
+            'identity.errors.accountAlreadyActive': t('identity.errors.accountAlreadyActive'),
+          },
+          t('auth.activate.errors.failed'),
           error.serverError?.messageKey,
           error.validationErrors,
         ),
@@ -69,7 +68,7 @@ export function ActivateForm({ token }: { token: string }) {
       <PasswordFields disabled={busy} />
       <FormError>{formError}</FormError>
       <Button type="submit" variant="accent" size="lg" disabled={busy}>
-        {busy ? 'Setting password…' : 'Set password'}
+        {busy ? t('auth.activate.pending') : t('auth.activate.submit')}
       </Button>
     </form>
   )

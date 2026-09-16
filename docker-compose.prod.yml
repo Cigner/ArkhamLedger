@@ -46,8 +46,6 @@ services:
       context: .
       target: runner
     restart: unless-stopped
-    # Single replica by design: the cron jobs are not distributed-safe, and the
-    # outbox claim query assumes a small number of competing consumers.
     deploy:
       replicas: 1
     command: ['node', 'dist-worker/worker.js']

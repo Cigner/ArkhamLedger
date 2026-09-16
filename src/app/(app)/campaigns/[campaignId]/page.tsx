@@ -1,5 +1,6 @@
 import { ScrollText, Users } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaignDetail } from '@/modules/campaigns/data/campaigns'
 import { listMembers } from '@/modules/campaigns/data/members'
@@ -32,6 +33,7 @@ export default async function CampaignOverviewPage({
   params: Promise<{ campaignId: string }>
 }) {
   const { campaignId } = await params
+  const t = await getTranslations('campaigns.overview')
   const [campaign, members, diary] = await Promise.all([
     getCampaignDetail(campaignId),
     listMembers(campaignId),
@@ -53,7 +55,7 @@ export default async function CampaignOverviewPage({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="size-4 text-text-muted" aria-hidden="true" />
-              The party
+              {t('party')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -64,7 +66,7 @@ export default async function CampaignOverviewPage({
                     {member.name}
                     {member.isOwner ? (
                       <span className="ml-2 text-2xs uppercase tracking-[--tracking-smallcaps] text-text-muted">
-                        Owner
+                        {t('owner')}
                       </span>
                     ) : null}
                   </span>
@@ -80,7 +82,7 @@ export default async function CampaignOverviewPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ScrollText className="size-4 text-text-muted" aria-hidden="true" />
-                Scenario
+                {t('scenario')}
               </CardTitle>
             </CardHeader>
             <CardContent className="font-ui text-sm text-text-secondary">

@@ -36,6 +36,7 @@ export const notificationTypes = [
   'SESSION_RESCHEDULED',
   'SESSION_CANCELLED',
   'NO_NEXT_SESSION',
+  'ISSUE_REPORTED',
 ] as const
 
 export const deliveryChannels = ['IN_APP', 'EMAIL', 'DISCORD'] as const

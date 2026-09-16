@@ -27,3 +27,7 @@ logs
 # os
 .DS_Store
 .idea/
+
+.claude
+
+/specs

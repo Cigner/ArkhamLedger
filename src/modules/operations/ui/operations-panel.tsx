@@ -1,4 +1,5 @@
 import { CircleAlert, CircleCheck, Cog, Send } from 'lucide-react'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/cn'
@@ -15,6 +16,8 @@ import type { OperationsSnapshot } from '../domain/types'
  */
 export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) {
   const beat = snapshot.worker.lastBeatAt
+  const t = useTranslations('operations')
+  const format = useFormatter()
 
   return (
     <div className="flex flex-col gap-6">
@@ -26,56 +29,60 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
             ) : (
               <Cog className="size-4 text-text-muted" aria-hidden="true" />
             )}
-            Worker
+            {t('worker.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <p className="font-ui text-sm text-text-secondary">
-            {snapshot.worker.stale
-              ? 'Not reporting. Nothing is being delivered and no deadline will close until it is back.'
-              : 'Running.'}
+            {snapshot.worker.stale ? t('worker.stale') : t('worker.running')}
           </p>
           <p data-tabular className="font-ui text-xs text-text-muted">
             {beat ? (
               <>
-                Last heartbeat <time dateTime={beat.toISOString()}>{formatUtc(beat)}</time> UTC
+                {t('worker.lastHeartbeat')}{' '}
+                <time dateTime={beat.toISOString()}>{formatUtc(beat, format)}</time> {t('utc')}
               </>
             ) : (
-              'No heartbeat has ever been recorded.'
+              t('worker.never')
             )}
           </p>
 
           {snapshot.sessions.overdueDeadlines > 0 ? (
             <p className="font-ui text-sm text-status-warning">
-              {snapshot.sessions.overdueDeadlines} session
-              {snapshot.sessions.overdueDeadlines === 1 ? ' is' : 's are'} past a deadline that has
-              not been closed.
+              {t('worker.overdue', { count: snapshot.sessions.overdueDeadlines })}
             </p>
           ) : null}
         </CardContent>
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric label="Accounts" value={snapshot.accounts.total}>
-          {snapshot.accounts.active} active · {snapshot.accounts.pendingActivation} awaiting
-          activation · {snapshot.accounts.disabled} disabled
+        <Metric label={t('metrics.accounts')} value={snapshot.accounts.total}>
+          {t('metrics.accountsDetail', {
+            active: snapshot.accounts.active,
+            pending: snapshot.accounts.pendingActivation,
+            disabled: snapshot.accounts.disabled,
+          })}
         </Metric>
 
-        <Metric label="Campaigns" value={snapshot.campaigns.total}>
-          {snapshot.campaigns.active} active
-          {snapshot.campaigns.idle > 0 ? `, ${snapshot.campaigns.idle} with nothing planned` : ''}
+        <Metric label={t('metrics.campaigns')} value={snapshot.campaigns.total}>
+          {t('metrics.campaignsDetail', {
+            active: snapshot.campaigns.active,
+            idle: snapshot.campaigns.idle,
+          })}
         </Metric>
 
         <Metric
-          label="Sessions being arranged"
+          label={t('metrics.arranging')}
           value={snapshot.sessions.collecting + snapshot.sessions.proposed}
         >
-          {snapshot.sessions.collecting} collecting · {snapshot.sessions.proposed} awaiting a
-          decision
+          {t('metrics.arrangingDetail', {
+            collecting: snapshot.sessions.collecting,
+            proposed: snapshot.sessions.proposed,
+          })}
         </Metric>
 
-        <Metric label="Sessions ahead" value={snapshot.sessions.scheduledAhead}>
-          Confirmed, still to come
+        <Metric label={t('metrics.ahead')} value={snapshot.sessions.scheduledAhead}>
+          {t('metrics.aheadDetail')}
         </Metric>
       </div>
 
@@ -83,12 +90,15 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Send className="size-4 text-text-muted" aria-hidden="true" />
-            Delivery
+            {t('delivery.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <p className="font-ui text-sm text-text-secondary">
-            {snapshot.deliveries.pending} waiting · {snapshot.deliveries.failed} given up on
+            {t('delivery.summary', {
+              pending: snapshot.deliveries.pending,
+              failed: snapshot.deliveries.failed,
+            })}
           </p>
 
           {snapshot.deliveries.recentFailures.length > 0 ? (
@@ -101,7 +111,10 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
                   <Badge variant="muted">{failure.channel}</Badge>
                   <span className="font-ui text-xs text-text-secondary">{failure.error}</span>
                   <span data-tabular className="font-ui text-2xs text-text-muted">
-                    {failure.attempts} attempts · {formatUtc(failure.at)} UTC
+                    {t('delivery.failure', {
+                      attempts: failure.attempts,
+                      date: formatUtc(failure.at, format),
+                    })}
                   </span>
                 </li>
               ))}
@@ -109,14 +122,14 @@ export function OperationsPanel({ snapshot }: { snapshot: OperationsSnapshot }) 
           ) : (
             <p className="flex items-center gap-2 font-ui text-xs text-text-muted">
               <CircleCheck className="size-4 text-status-positive" aria-hidden="true" />
-              Nothing has failed.
+              {t('delivery.none')}
             </p>
           )}
         </CardContent>
       </Card>
 
       <p data-tabular className="font-ui text-2xs text-text-muted">
-        Taken {formatUtc(snapshot.takenAt)} UTC
+        {t('taken', { date: formatUtc(snapshot.takenAt, format) })}
       </p>
     </div>
   )
@@ -158,8 +171,8 @@ function Metric({
  * speak UTC. Rendering it in a local zone would make comparing them a mental
  * arithmetic exercise at exactly the moment nobody wants one.
  */
-function formatUtc(value: Date): string {
-  return value.toLocaleString('en-GB', {
+function formatUtc(value: Date, format: ReturnType<typeof useFormatter>): string {
+  return format.dateTime(value, {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',

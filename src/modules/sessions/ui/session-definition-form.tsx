@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, TriangleAlert } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -34,23 +35,6 @@ import type { SessionDetail } from '../domain/types'
  * question it was asked. The warning above the button says so with the number of
  * people it affects, before it happens rather than after.
  */
-const MESSAGES: Record<string, string> = {
-  'sessions.errors.windowEndsBeforeItStarts': 'The window ends before it begins.',
-  'sessions.errors.windowTooWide': 'That search window is too wide. Ninety days is the maximum.',
-  'sessions.errors.gridEndsBeforeItStarts': 'The evening ends before it starts.',
-  'sessions.errors.gridTooShortForMinimum':
-    'Those hours cannot contain a session of that minimum length.',
-  'sessions.errors.definitionLocked':
-    'This session has moved on and its dates can no longer be changed.',
-  'sessions.errors.deadlineInThePast': 'That deadline has already passed.',
-  'sessions.errors.deadlineAfterWindowStarts':
-    'The deadline falls after the first date being searched.',
-  'sessions.errors.quorumTooLow': 'A quorum has to be at least one.',
-  'sessions.errors.quorumAboveParticipantCount':
-    'That is more players than are invited, so no date could ever meet it.',
-  'campaigns.errors.campaignArchived': 'This campaign is archived and cannot be changed.',
-}
-
 const DEFAULT_WINDOW_DAYS = 30
 
 /**
@@ -80,10 +64,23 @@ export function SessionDefinitionForm({
   /** How many people have already answered, for the warning. */
   respondentCount?: number
 }) {
+  const t = useTranslations('sessions.definition')
   const router = useRouter()
   const [{ today, windowEnd }] = useState(defaultWindow)
   const [navigating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const messages: Record<string, string> = {
+    'sessions.errors.windowEndsBeforeItStarts': t('errors.windowEndsBeforeStart'),
+    'sessions.errors.windowTooWide': t('errors.windowTooWide'),
+    'sessions.errors.gridEndsBeforeItStarts': t('errors.gridEndsBeforeStart'),
+    'sessions.errors.gridTooShortForMinimum': t('errors.gridTooShort'),
+    'sessions.errors.definitionLocked': t('errors.definitionLocked'),
+    'sessions.errors.deadlineInThePast': t('errors.deadlineInPast'),
+    'sessions.errors.deadlineAfterWindowStarts': t('errors.deadlineAfterStart'),
+    'sessions.errors.quorumTooLow': t('errors.quorumTooLow'),
+    'sessions.errors.quorumAboveParticipantCount': t('errors.quorumTooHigh'),
+    'campaigns.errors.campaignArchived': t('errors.campaignArchived'),
+  }
 
   const editing = session !== undefined
 
@@ -95,7 +92,8 @@ export function SessionDefinitionForm({
         router.refresh()
       })
     },
-    onError: ({ error: failure }) => setError(describe(failure, 'Could not create the session.')),
+    onError: ({ error: failure }) =>
+      setError(describe(failure, messages, t('errors.createFailed'))),
   })
 
   const update = useAction(updateSession, {
@@ -105,7 +103,7 @@ export function SessionDefinitionForm({
         router.refresh()
       })
     },
-    onError: ({ error: failure }) => setError(describe(failure, 'Could not save the session.')),
+    onError: ({ error: failure }) => setError(describe(failure, messages, t('errors.saveFailed'))),
   })
 
   const busy = create.isPending || update.isPending || navigating
@@ -143,7 +141,7 @@ export function SessionDefinitionForm({
   return (
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-5" noValidate>
       <Field>
-        <FieldLabel htmlFor="title">Title</FieldLabel>
+        <FieldLabel htmlFor="title">{t('title')}</FieldLabel>
         <Input
           id="title"
           name="title"
@@ -155,26 +153,26 @@ export function SessionDefinitionForm({
       </Field>
 
       <Field>
-        <FieldLabel htmlFor="description">What happens</FieldLabel>
+        <FieldLabel htmlFor="description">{t('description')}</FieldLabel>
         <Textarea
           id="description"
           name="description"
           disabled={busy}
           defaultValue={session?.description ?? ''}
         />
-        <FieldDescription>Shown to everyone invited.</FieldDescription>
+        <FieldDescription>{t('descriptionHint')}</FieldDescription>
       </Field>
 
       <fieldset className="flex flex-col gap-3 border-t border-border-subtle pt-5">
-        <legend className="sr-only">Search window</legend>
+        <legend className="sr-only">{t('searchWindow')}</legend>
         <p className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-          Which dates to search
+          {t('searchDates')}
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <DateField
             id="searchWindowStart"
             name="searchWindowStart"
-            label="From"
+            label={t('from')}
             defaultValue={session?.searchWindowStart ?? today}
             required
             disabled={busy}
@@ -182,7 +180,7 @@ export function SessionDefinitionForm({
           <DateField
             id="searchWindowEnd"
             name="searchWindowEnd"
-            label="To"
+            label={t('to')}
             defaultValue={session?.searchWindowEnd ?? windowEnd}
             required
             disabled={busy}
@@ -191,13 +189,13 @@ export function SessionDefinitionForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-3 border-t border-border-subtle pt-5">
-        <legend className="sr-only">Hours</legend>
+        <legend className="sr-only">{t('hours')}</legend>
         <p className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-          Which hours to offer
+          {t('offerHours')}
         </p>
         <div className="grid gap-4 sm:grid-cols-3">
           <Field>
-            <FieldLabel htmlFor="gridStartHour">Earliest start</FieldLabel>
+            <FieldLabel htmlFor="gridStartHour">{t('earliestStart')}</FieldLabel>
             <Input
               id="gridStartHour"
               name="gridStartHour"
@@ -210,7 +208,7 @@ export function SessionDefinitionForm({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="gridEndHour">Latest end</FieldLabel>
+            <FieldLabel htmlFor="gridEndHour">{t('latestEnd')}</FieldLabel>
             <Input
               id="gridEndHour"
               name="gridEndHour"
@@ -223,7 +221,7 @@ export function SessionDefinitionForm({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="minSessionHours">Minimum hours</FieldLabel>
+            <FieldLabel htmlFor="minSessionHours">{t('minimumHours')}</FieldLabel>
             <Input
               id="minSessionHours"
               name="minSessionHours"
@@ -236,34 +234,33 @@ export function SessionDefinitionForm({
             />
           </Field>
         </div>
-        <FieldNote>
-          A session runs from its start to the end of the offered hours unless somebody&rsquo;s
-          availability cuts it short. The minimum is the shortest run worth gathering for.
-        </FieldNote>
+        <FieldNote>{t('hoursHint')}</FieldNote>
       </fieldset>
 
       <fieldset className="flex flex-col gap-3 border-t border-border-subtle pt-5">
-        <legend className="sr-only">Answering</legend>
+        <legend className="sr-only">{t('answering')}</legend>
         <p className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-          Answering
+          {t('answering')}
         </p>
 
         <DateField
           id="availabilityDeadline"
           name="availabilityDeadline"
-          label="Last day to answer"
+          label={t('deadline')}
           defaultValue={
             session?.availabilityDeadline
               ? deadlineToLocalDate(session.availabilityDeadline, session.timezone)
               : undefined
           }
           disabled={busy}
-          description={`Optional. Answering closes when this day ends in ${session?.timezone ?? 'the campaign’s zone'}, and the dates are worked out on their own.`}
+          description={t('deadlineHint', {
+            timezone: session?.timezone ?? t('campaignTimezone'),
+          })}
         />
 
         {editing ? (
           <Field>
-            <FieldLabel htmlFor="quorum">Quorum</FieldLabel>
+            <FieldLabel htmlFor="quorum">{t('quorum')}</FieldLabel>
             <Input
               id="quorum"
               name="quorum"
@@ -274,10 +271,7 @@ export function SessionDefinitionForm({
               required
               disabled={busy}
             />
-            <FieldDescription>
-              How many players have to be free. The Keeper is not counted - they have to be there
-              regardless.
-            </FieldDescription>
+            <FieldDescription>{t('quorumHint')}</FieldDescription>
           </Field>
         ) : null}
       </fieldset>
@@ -285,11 +279,7 @@ export function SessionDefinitionForm({
       {answersAtRisk ? (
         <p className="flex items-start gap-2 rounded-sm border border-status-warning/50 bg-candle-3 px-3 py-2 font-ui text-xs text-candle-11">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          <span>
-            {respondentCount === 1 ? 'One person has' : `${respondentCount} people have`} already
-            answered. Changing the dates or the hours clears every answer; changing anything else
-            leaves them alone.
-          </span>
+          <span>{t('answersAtRisk', { count: respondentCount })}</span>
         </p>
       ) : null}
 
@@ -298,7 +288,7 @@ export function SessionDefinitionForm({
       <div className="flex items-center gap-2">
         <Button type="submit" variant="accent" disabled={busy}>
           <Check className="size-4" aria-hidden="true" />
-          {busy ? 'Saving…' : editing ? 'Save changes' : 'Create draft'}
+          {busy ? t('saving') : editing ? t('saveChanges') : t('createDraft')}
         </Button>
       </div>
     </form>
@@ -310,9 +300,13 @@ type ActionFailure = {
   validationErrors?: unknown
 }
 
-function describe(failure: ActionFailure, fallback: string): string {
+function describe(
+  failure: ActionFailure,
+  messages: Record<string, string>,
+  fallback: string,
+): string {
   return resolveActionError(
-    MESSAGES,
+    messages,
     fallback,
     failure.serverError?.messageKey,
     failure.validationErrors,

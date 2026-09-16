@@ -1,15 +1,5 @@
 import pino, { type Logger } from 'pino'
 
-/**
- * Structured logging.
- *
- * Three named streams share one transport so that Docker's json-file driver is
- * the only log sink: `app` for domain events, `security` for authentication and
- * authorization events, `http` for request timing.
- *
- * Never log credentials, full tokens or availability contents. Token values are
- * logged through `tokenPrefix()` only.
- */
 const redactPaths = [
   'password',
   '*.password',
@@ -46,10 +36,6 @@ export function requestLogger(correlationId: string, userId?: string): Logger {
   return appLogger.child(userId ? { correlationId, userId } : { correlationId })
 }
 
-/**
- * Safe representation of a secret token for logs: enough to correlate a log line
- * with a database row, not enough to use the token.
- */
 export function tokenPrefix(token: string): string {
   return `${token.slice(0, 8)}…`
 }

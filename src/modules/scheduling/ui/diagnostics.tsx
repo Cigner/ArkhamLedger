@@ -1,4 +1,5 @@
 import { ButtonLink } from '@/components/ui/button-link'
+import { useTranslations } from 'next-intl'
 import type { RejectionSummary } from '../domain/types'
 import { namesOf } from './format'
 
@@ -23,6 +24,7 @@ export function SchedulingDiagnostics({
   respondentCount: number
   participantCount: number
 }) {
+  const t = useTranslations('scheduling.diagnostics')
   /*
    * Nobody answering looks identical to everybody refusing, and the algorithm
    * reports it as the Keeper being unavailable - technically true and useless.
@@ -30,13 +32,10 @@ export function SchedulingDiagnostics({
    */
   if (respondentCount === 0) {
     return (
-      <Panel title="Nobody has answered yet">
-        <p>
-          No date can be worked out until people say when they are free. None of the{' '}
-          {participantCount} invited have answered.
-        </p>
+      <Panel title={t('nobodyTitle')}>
+        <p>{t('nobodyDescription', { count: participantCount })}</p>
         <ButtonLink href={`/sessions/${sessionId}/availability`} variant="outline" size="sm">
-          See who is missing
+          {t('seeMissing')}
         </ButtonLink>
       </Panel>
     )
@@ -44,11 +43,8 @@ export function SchedulingDiagnostics({
 
   if (summary.windowsConsidered === 0) {
     return (
-      <Panel title="No window is long enough">
-        <p>
-          Every day in the search offers fewer hours than the session needs, so there was nothing to
-          rank. Widen the hours the grid covers, or shorten the minimum length.
-        </p>
+      <Panel title={t('tooShortTitle')}>
+        <p>{t('tooShortDescription')}</p>
       </Panel>
     )
   }
@@ -56,17 +52,21 @@ export function SchedulingDiagnostics({
   const blockers = summary.blockedBy.slice(0, 3)
 
   return (
-    <Panel title="No date works for everyone who has to be there">
+    <Panel title={t('blockedTitle')}>
       <p>
-        All {summary.windowsConsidered} possible evenings were ruled out.
+        {t('allRuledOut', { count: summary.windowsConsidered })}
         {summary.byReason.KEEPER_UNAVAILABLE > 0
-          ? ` ${summary.byReason.KEEPER_UNAVAILABLE} because a Keeper is not free.`
+          ? t('keeperUnavailable', { count: summary.byReason.KEEPER_UNAVAILABLE })
           : ''}
         {summary.byReason.REQUIRED_UNAVAILABLE > 0
-          ? ` ${summary.byReason.REQUIRED_UNAVAILABLE} because somebody required is not free.`
+          ? t('requiredUnavailable', { count: summary.byReason.REQUIRED_UNAVAILABLE })
           : ''}
         {summary.byReason.QUORUM_NOT_MET > 0
-          ? ` ${summary.byReason.QUORUM_NOT_MET} because too few players are free: the best any evening reached was ${summary.bestAvailableCount} of the ${summary.quorum} needed.`
+          ? t('quorumMissed', {
+              count: summary.byReason.QUORUM_NOT_MET,
+              best: summary.bestAvailableCount,
+              quorum: summary.quorum,
+            })
           : ''}
       </p>
 
@@ -77,7 +77,7 @@ export function SchedulingDiagnostics({
               <strong className="font-medium text-text-primary">
                 {namesOf([blocker.userId], names)}
               </strong>{' '}
-              rules out {blocker.windows} of them.
+              {t('rulesOut', { count: blocker.windows })}
             </li>
           ))}
         </ul>
@@ -85,22 +85,22 @@ export function SchedulingDiagnostics({
 
       <div className="flex flex-col gap-1 border-t border-border-subtle pt-3">
         <p className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-          What can change
+          {t('whatCanChange')}
         </p>
         <ul className="list-disc pl-5 font-ui text-sm text-text-muted marker:text-text-muted">
-          <li>Search a wider range of dates.</li>
+          <li>{t('widerRange')}</li>
           {summary.byReason.QUORUM_NOT_MET > 0 ? (
             <li>
-              Lower the quorum from {summary.quorum} to {Math.max(1, summary.bestAvailableCount)}.
+              {t('lowerQuorum', {
+                from: summary.quorum,
+                to: Math.max(1, summary.bestAvailableCount),
+              })}
             </li>
           ) : null}
           {blockers.length > 0 ? (
-            <li>
-              Make {namesOf([blockers[0]?.userId ?? ''], names)} optional, or ask them to answer
-              again.
-            </li>
+            <li>{t('makeOptional', { name: namesOf([blockers[0]?.userId ?? ''], names) })}</li>
           ) : null}
-          <li>Shorten the minimum length, or start earlier in the day.</li>
+          <li>{t('shorten')}</li>
         </ul>
       </div>
     </Panel>

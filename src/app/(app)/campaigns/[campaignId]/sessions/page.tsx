@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { CalendarDays, Plus } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button-link'
@@ -24,7 +25,10 @@ import { SessionWhen } from '@/modules/sessions/ui/session-when'
  * Ordered by what still needs somebody to act, not by date: a session waiting on
  * answers is the reason to open this screen, and history is the reason to scroll.
  */
-export const metadata: Metadata = { title: 'Sessions' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('campaigns.sessions')
+  return { title: t('title') }
+}
 export const dynamic = 'force-dynamic'
 
 export default async function CampaignSessionsPage({
@@ -33,6 +37,7 @@ export default async function CampaignSessionsPage({
   params: Promise<{ campaignId: string }>
 }) {
   const { campaignId } = await params
+  const t = await getTranslations('campaigns.sessions')
   const [campaign, sessions] = await Promise.all([
     getCampaignDetail(campaignId),
     listCampaignSessions(campaignId),
@@ -44,30 +49,26 @@ export default async function CampaignSessionsPage({
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-display text-lg tracking-[--tracking-display] text-text-primary">
-          Sessions
+          {t('title')}
         </h2>
         {isKeeper ? (
           <ButtonLink variant="accent" href={`/campaigns/${campaignId}/sessions/new`}>
             <Plus className="size-4" aria-hidden="true" />
-            New session
+            {t('new')}
           </ButtonLink>
         ) : null}
       </div>
 
       {sessions.length === 0 ? (
         <EmptyState
-          title="Nothing is planned"
+          title={t('emptyTitle')}
           icon={<CalendarDays className="size-8" strokeWidth={1.25} />}
-          description={
-            isKeeper
-              ? 'Create a session and ask the party when they are free.'
-              : 'The Keeper has not planned anything yet.'
-          }
+          description={isKeeper ? t('emptyKeeper') : t('emptyInvestigator')}
           action={
             isKeeper ? (
               <ButtonLink variant="accent" href={`/campaigns/${campaignId}/sessions/new`}>
                 <Plus className="size-4" aria-hidden="true" />
-                New session
+                {t('new')}
               </ButtonLink>
             ) : undefined
           }
@@ -77,10 +78,10 @@ export default async function CampaignSessionsPage({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Session</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>When</TableHead>
-                <TableHead>Answers</TableHead>
+                <TableHead>{t('columns.session')}</TableHead>
+                <TableHead>{t('columns.status')}</TableHead>
+                <TableHead>{t('columns.when')}</TableHead>
+                <TableHead>{t('columns.answers')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -94,7 +95,7 @@ export default async function CampaignSessionsPage({
                     !session.viewerHasResponded &&
                     session.status === 'COLLECTING' ? (
                       <span className="ml-2 font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-candle-11">
-                        Needs your answer
+                        {t('needsAnswer')}
                       </span>
                     ) : null}
                   </TableCell>
@@ -118,7 +119,7 @@ export default async function CampaignSessionsPage({
                       />
                     ) : (
                       <span className="font-ui text-sm text-text-muted">
-                        {session.participantCount} invited
+                        {t('invited', { count: session.participantCount })}
                       </span>
                     )}
                   </TableCell>

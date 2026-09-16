@@ -3,6 +3,7 @@
 import { Check } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
@@ -19,11 +20,8 @@ import { createCampaign } from '../actions/campaign'
  * The creator becomes its owner and Keeper in the same transaction, so there is
  * no intermediate state where a campaign exists without anybody able to open it.
  */
-const MESSAGES: Record<string, string> = {
-  'campaigns.errors.invalidTimezone': 'That is not a recognised time zone.',
-}
-
 export function CreateCampaignForm() {
+  const t = useTranslations('campaigns.create')
   const router = useRouter()
   const [navigating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -39,8 +37,8 @@ export function CreateCampaignForm() {
     onError: ({ error: actionError }) => {
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not create the campaign.',
+          { 'campaigns.errors.invalidTimezone': t('errors.invalidTimezone') },
+          t('errors.failed'),
           actionError.serverError?.messageKey,
           actionError.validationErrors,
         ),
@@ -65,20 +63,20 @@ export function CreateCampaignForm() {
   return (
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-5" noValidate>
       <Field>
-        <FieldLabel htmlFor="name">Name</FieldLabel>
+        <FieldLabel htmlFor="name">{t('name')}</FieldLabel>
         <Input id="name" name="name" required autoFocus disabled={busy} />
       </Field>
 
       <Field>
-        <FieldLabel htmlFor="description">Description</FieldLabel>
+        <FieldLabel htmlFor="description">{t('campaignDescription')}</FieldLabel>
         <Textarea id="description" name="description" disabled={busy} />
-        <FieldDescription>Visible to everyone you invite.</FieldDescription>
+        <FieldDescription>{t('campaignDescriptionHint')}</FieldDescription>
       </Field>
 
       <Field>
-        <FieldLabel htmlFor="scenarioName">Scenario</FieldLabel>
+        <FieldLabel htmlFor="scenarioName">{t('scenario')}</FieldLabel>
         <Input id="scenarioName" name="scenarioName" disabled={busy} />
-        <FieldDescription>Optional. You can add or change this later.</FieldDescription>
+        <FieldDescription>{t('scenarioHint')}</FieldDescription>
       </Field>
 
       <FormError>{error}</FormError>
@@ -86,10 +84,10 @@ export function CreateCampaignForm() {
       <div className="flex items-center gap-2">
         <Button type="submit" variant="accent" disabled={busy}>
           <Check className="size-4" aria-hidden="true" />
-          {busy ? 'Creating…' : 'Create campaign'}
+          {busy ? t('creating') : t('submit')}
         </Button>
         <Button variant="ghost" onClick={() => router.push('/campaigns')} disabled={busy}>
-          Cancel
+          {t('cancel')}
         </Button>
       </div>
     </form>

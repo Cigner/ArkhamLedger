@@ -1,5 +1,3 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -36,11 +34,7 @@ import type { AvailabilityEditor } from './use-availability-editor'
  * wants to say something precise, and watching a colour change to find out what
  * they said is not precise.
  */
-const STATE_CHOICES: readonly { value: SlotState; label: string; help: string }[] = [
-  { value: 'YES', label: 'Free', help: 'Count me in.' },
-  { value: 'IF_NEED_BE', label: 'At a push', help: 'Only if the date depends on it.' },
-  { value: 'NO', label: 'Not free', help: 'I cannot make this evening.' },
-]
+const STATE_CHOICES: readonly SlotState[] = ['YES', 'IF_NEED_BE', 'NO']
 
 export function DayHoursDialog({
   date,
@@ -63,6 +57,8 @@ export function DayHoursDialog({
   onClose: () => void
   onAnnounce: (message: string) => void
 }) {
+  const t = useTranslations('availability.dayDialog')
+  const format = useFormatter()
   if (date === null) return null
 
   const day = date
@@ -70,7 +66,7 @@ export function DayHoursDialog({
   const answered = range.state === 'YES' || range.state === 'IF_NEED_BE'
 
   const parsed = new Date(`${day}T12:00:00Z`)
-  const label = parsed.toLocaleDateString('en-GB', {
+  const label = format.dateTime(parsed, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -105,7 +101,7 @@ export function DayHoursDialog({
         range.toHour || gridEndHour,
       )
     }
-    onAnnounce(`${label}: ${cellPresentation(state).label}.`)
+    onAnnounce(t('announcement', { date: label, state: t(`states.${state}.label`) }))
   }
 
   return (
@@ -113,27 +109,27 @@ export function DayHoursDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{label}</DialogTitle>
-          <DialogDescription>Times in {timezone}.</DialogDescription>
+          <DialogDescription>{t('timezone', { timezone })}</DialogDescription>
         </DialogHeader>
 
         <DialogBody className="flex flex-col gap-5">
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-1 font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-              Can you make this evening?
+              {t('question')}
             </legend>
 
             <div className="flex flex-col gap-1.5">
               {STATE_CHOICES.map((choice) => {
-                const selected = range.state === choice.value
-                const presentation = cellPresentation(choice.value)
+                const selected = range.state === choice
+                const presentation = cellPresentation(choice)
 
                 return (
                   <button
-                    key={choice.value}
+                    key={choice}
                     type="button"
                     disabled={readOnly}
                     aria-pressed={selected}
-                    onClick={() => choose(choice.value)}
+                    onClick={() => choose(choice)}
                     className={cn(
                       'flex min-h-11 items-center gap-3 rounded-sm border px-3 py-2 text-left',
                       'transition-interactive disabled:cursor-default',
@@ -146,8 +142,12 @@ export function DayHoursDialog({
                       {presentation.glyph}
                     </span>
                     <span className="flex flex-1 flex-col">
-                      <span className="font-ui text-sm font-medium">{choice.label}</span>
-                      <span className="font-ui text-xs opacity-80">{choice.help}</span>
+                      <span className="font-ui text-sm font-medium">
+                        {t(`states.${choice}.label`)}
+                      </span>
+                      <span className="font-ui text-xs opacity-80">
+                        {t(`states.${choice}.help`)}
+                      </span>
                     </span>
                   </button>
                 )
@@ -158,11 +158,11 @@ export function DayHoursDialog({
           {answered ? (
             <fieldset className="flex flex-col gap-2">
               <legend className="mb-1 font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-                When, exactly
+                {t('exactTime')}
               </legend>
 
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-ui text-sm text-text-secondary">from</span>
+                <span className="font-ui text-sm text-text-secondary">{t('from')}</span>
                 <Select
                   items={startOptions}
                   value={String(range.fromHour)}
@@ -184,7 +184,7 @@ export function DayHoursDialog({
                   </SelectContent>
                 </Select>
 
-                <span className="font-ui text-sm text-text-secondary">until</span>
+                <span className="font-ui text-sm text-text-secondary">{t('until')}</span>
                 <Select
                   items={endOptions}
                   value={String(range.toHour)}
@@ -209,13 +209,10 @@ export function DayHoursDialog({
 
               {tooShort ? (
                 <p className="font-ui text-xs text-status-warning">
-                  That is shorter than the {minSessionHours} hours this session needs, so it cannot
-                  run on this evening.
+                  {t('tooShort', { hours: minSessionHours })}
                 </p>
               ) : (
-                <p className="font-ui text-xs text-text-muted">
-                  Leave these alone unless you start late or have to leave early.
-                </p>
+                <p className="font-ui text-xs text-text-muted">{t('hoursHint')}</p>
               )}
             </fieldset>
           ) : null}
@@ -227,17 +224,18 @@ export function DayHoursDialog({
               variant="ghost"
               onClick={() => {
                 editor.clearDay(day)
-                onAnnounce(`${label}: answer cleared.`)
+                onAnnounce(t('clearedAnnouncement', { date: label }))
               }}
             >
-              Clear this evening
+              {t('clear')}
             </Button>
           ) : null}
           <Button variant="accent" onClick={onClose}>
-            Done
+            {t('done')}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
+import { useFormatter, useTranslations } from 'next-intl'

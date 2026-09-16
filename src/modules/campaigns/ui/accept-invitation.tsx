@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
 import { FormError } from '@/modules/identity/ui/form-error'
@@ -13,16 +14,15 @@ import { acceptInvitation } from '../actions/invitations'
  * The link is only claimed when the visitor presses the button, so opening the
  * page - or reloading it - never consumes a use of a shared link.
  */
-const MESSAGES: Record<string, string> = {
-  'campaigns.errors.invitationEXPIRED':
-    'This invitation has expired. Ask the Keeper for a new one.',
-  'campaigns.errors.invitationREVOKED': 'This invitation has been withdrawn.',
-  'campaigns.errors.invitationEXHAUSTED': 'This invitation has already been used up.',
-  'campaigns.errors.invitationNOT_FOR_YOU': 'This invitation was issued for somebody else.',
-  'campaigns.errors.invitationINVALID': 'This invitation link is not valid.',
-}
-
 export function AcceptInvitation({ token }: { token: string }) {
+  const t = useTranslations('campaigns.invitation')
+  const messages: Record<string, string> = {
+    'campaigns.errors.invitationEXPIRED': t('errors.expired'),
+    'campaigns.errors.invitationREVOKED': t('errors.revoked'),
+    'campaigns.errors.invitationEXHAUSTED': t('errors.exhausted'),
+    'campaigns.errors.invitationNOT_FOR_YOU': t('errors.notForYou'),
+    'campaigns.errors.invitationINVALID': t('errors.invalid'),
+  }
   const router = useRouter()
   const [navigating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -37,7 +37,7 @@ export function AcceptInvitation({ token }: { token: string }) {
     },
     onError: ({ error: actionError }) => {
       const key = actionError.serverError?.messageKey
-      setError((key ? MESSAGES[key] : undefined) ?? 'Could not accept this invitation.')
+      setError((key ? messages[key] : undefined) ?? t('errors.failed'))
     },
   })
 
@@ -48,10 +48,10 @@ export function AcceptInvitation({ token }: { token: string }) {
       <FormError>{error}</FormError>
       <div className="flex items-center gap-2">
         <Button variant="accent" size="lg" disabled={busy} onClick={() => execute({ token })}>
-          {busy ? 'Joining…' : 'Accept invitation'}
+          {busy ? t('joining') : t('accept')}
         </Button>
         <Button variant="ghost" onClick={() => router.push('/campaigns')} disabled={busy}>
-          Not now
+          {t('notNow')}
         </Button>
       </div>
     </div>

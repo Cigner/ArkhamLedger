@@ -1,5 +1,6 @@
 import { BookOpen, ScrollText, Users } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { CampaignListItem } from '../domain/types'
 import { CampaignRoleBadge, CampaignStatusBadge } from './campaign-status-badge'
@@ -17,12 +18,17 @@ import { CampaignRoleBadge, CampaignStatusBadge } from './campaign-status-badge'
  * card.
  */
 export function CampaignCard({ campaign }: { campaign: CampaignListItem }) {
+  const t = useTranslations('campaigns.card')
+
   return (
     <Link
       href={`/campaigns/${campaign.id}`}
       // Named explicitly: without it the accessible name is the whole card read
       // out as one run-on sentence, badges and counts included.
-      aria-label={`${campaign.name}, ${campaign.role === 'KEEPER' ? 'you keep this' : 'you play in this'}`}
+      aria-label={t('accessibleLabel', {
+        name: campaign.name,
+        role: campaign.role === 'KEEPER' ? t('keeper') : t('investigator'),
+      })}
       className="group block rounded-lg focus-visible:outline-none"
     >
       <Card
@@ -39,7 +45,7 @@ export function CampaignCard({ campaign }: { campaign: CampaignListItem }) {
             {campaign.isOwner ? (
               <span className="inline-flex items-center gap-1 font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-text-muted">
                 <BookOpen className="size-3" aria-hidden="true" />
-                Owner
+                {t('owner')}
               </span>
             ) : null}
           </div>

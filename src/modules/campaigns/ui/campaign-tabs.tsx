@@ -3,6 +3,7 @@
 import { CalendarDays, FileText, Settings2, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 
 /**
@@ -14,13 +15,14 @@ import { cn } from '@/lib/cn'
  */
 export function CampaignTabs({ campaignId, isKeeper }: { campaignId: string; isKeeper: boolean }) {
   const pathname = usePathname()
+  const t = useTranslations('campaigns.tabs')
   const base = `/campaigns/${campaignId}`
 
   const tabs = [
-    { href: base, label: 'Overview', icon: FileText },
-    { href: `${base}/sessions`, label: 'Sessions', icon: CalendarDays },
-    { href: `${base}/members`, label: 'Members', icon: Users },
-    ...(isKeeper ? [{ href: `${base}/settings`, label: 'Settings', icon: Settings2 }] : []),
+    { href: base, label: t('overview'), icon: FileText },
+    { href: `${base}/sessions`, label: t('sessions'), icon: CalendarDays },
+    { href: `${base}/members`, label: t('members'), icon: Users },
+    ...(isKeeper ? [{ href: `${base}/settings`, label: t('settings'), icon: Settings2 }] : []),
   ]
 
   return (

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -61,35 +62,35 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-export default function DesignSystemPage() {
+export default async function DesignSystemPage() {
   if (process.env.NODE_ENV === 'production') notFound()
+  const t = await getTranslations('designSystem')
 
   return (
     <main className="relative z-10 mx-auto flex max-w-4xl flex-col gap-12 px-6 py-10">
       <PageHeader
-        title="Design system"
-        description="Every primitive rendered against the real tokens. Development only."
-        actions={<Badge variant="candle">dev</Badge>}
+        title={t('title')}
+        description={t('description')}
+        actions={<Badge variant="candle">{t('dev')}</Badge>}
       />
 
-      <Section title="Typography">
+      <Section title={t('typography.title')}>
         <div className="flex flex-col gap-3">
-          <p className="font-display text-4xl tracking-[--tracking-display]">Miskatonic</p>
-          <p className="font-ornament text-2xl text-text-secondary">Ex Libris</p>
+          <p className="font-display text-4xl tracking-[--tracking-display]">
+            {t('typography.display')}
+          </p>
+          <p className="font-ornament text-2xl text-text-secondary">{t('typography.ornament')}</p>
           <p className="max-w-prose font-body text-base text-text-primary">
-            Body text in Spectral. The session ran long past midnight, and nobody wished to be the
-            one who said so aloud.
+            {t('typography.body')}
           </p>
-          <p className="font-ui text-sm text-text-secondary">
-            Interface text in Inter - labels, tables and the availability grid.
-          </p>
+          <p className="font-ui text-sm text-text-secondary">{t('typography.interface')}</p>
           <p data-tabular className="font-ui text-sm text-text-muted">
             18:00 · 19:00 · 20:00 · 111 · 000
           </p>
         </div>
       </Section>
 
-      <Section title="Surfaces">
+      <Section title={t('surfaces')}>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {SURFACE_TOKENS.map((name) => (
             <div
@@ -97,82 +98,82 @@ export default function DesignSystemPage() {
               className="rounded-lg border border-border-subtle p-4 font-ui text-xs text-text-secondary"
               style={{ background: `var(--color-surface-${name})` }}
             >
-              surface-{name}
+              {t('surfaceToken', { name })}
             </div>
           ))}
         </div>
       </Section>
 
-      <Section title="Buttons">
+      <Section title={t('buttons.title')}>
         <div className="flex flex-wrap items-center gap-3">
           {BUTTON_VARIANTS.map((variant) => (
             <Button key={variant} variant={variant}>
-              {variant}
+              {t(`buttons.variants.${variant}`)}
             </Button>
           ))}
           <Button variant="accent" disabled>
-            disabled
+            {t('buttons.disabled')}
           </Button>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Button size="sm">small</Button>
-          <Button size="md">medium</Button>
-          <Button size="lg">large</Button>
+          <Button size="sm">{t('buttons.small')}</Button>
+          <Button size="md">{t('buttons.medium')}</Button>
+          <Button size="lg">{t('buttons.large')}</Button>
         </div>
       </Section>
 
-      <Section title="Badges">
+      <Section title={t('badges.title')}>
         <div className="flex flex-wrap items-center gap-2">
           {BADGE_VARIANTS.map((variant) => (
             <Badge key={variant} variant={variant}>
-              {variant}
+              {t(`badges.variants.${variant}`)}
             </Badge>
           ))}
         </div>
       </Section>
 
-      <Section title="Forms">
+      <Section title={t('forms.title')}>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field>
-            <FieldLabel>Campaign name</FieldLabel>
-            <Input placeholder="The Haunting" />
-            <FieldDescription>Shown to every member of the campaign.</FieldDescription>
+            <FieldLabel>{t('forms.campaignName')}</FieldLabel>
+            <Input placeholder={t('forms.campaignPlaceholder')} />
+            <FieldDescription>{t('forms.campaignHint')}</FieldDescription>
           </Field>
           <Field>
-            <FieldLabel>Invalid example</FieldLabel>
+            <FieldLabel>{t('forms.invalid')}</FieldLabel>
             <Input defaultValue="x" data-invalid="" />
-            <FieldError>A name must be at least three characters.</FieldError>
+            <FieldError>{t('forms.invalidMessage')}</FieldError>
           </Field>
           <Field className="sm:col-span-2">
-            <FieldLabel>Description</FieldLabel>
-            <Textarea placeholder="What the investigators know so far…" />
+            <FieldLabel>{t('forms.description')}</FieldLabel>
+            <Textarea placeholder={t('forms.descriptionPlaceholder')} />
           </Field>
         </div>
         <div className="flex items-center gap-3">
           <Checkbox id="ds-check" defaultChecked />
           <label htmlFor="ds-check" className="font-ui text-sm text-text-primary">
-            Checked
+            {t('forms.checked')}
           </label>
           <Checkbox id="ds-check-2" />
           <label htmlFor="ds-check-2" className="font-ui text-sm text-text-primary">
-            Unchecked
+            {t('forms.unchecked')}
           </label>
         </div>
       </Section>
 
       <DesignSystemInteractive />
 
-      <Section title="Availability palette">
+      <Section title={t('availability.title')}>
         <div className="flex flex-col gap-4">
           <div>
             <p className="mb-2 font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-              Slot states - colour plus glyph, never colour alone
+              {t('availability.states')}
             </p>
             <div className="flex gap-2">
               {(
                 [
                   ['yes', '●', 'color-slot-yes'],
-                  ['if need be', '◐', 'color-slot-if-need-be'],
+                  ['ifNeedBe', '◐', 'color-slot-if-need-be'],
                   ['no', '✕', 'color-slot-no'],
                   ['empty', '', 'color-slot-empty'],
                 ] as const
@@ -183,14 +184,14 @@ export default function DesignSystemPage() {
                   style={{ background: `var(--${token})` }}
                 >
                   <span aria-hidden="true">{glyph}</span>
-                  <span>{label}</span>
+                  <span>{t(`availability.labels.${label}`)}</span>
                 </div>
               ))}
             </div>
           </div>
           <div>
             <p className="mb-2 font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-              Density ramp - the count is always printed
+              {t('availability.density')}
             </p>
             <div className="flex gap-1">
               {AVAIL_STEPS.map((step) => (
@@ -215,54 +216,54 @@ export default function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section title="Cards">
+      <Section title={t('cards.title')}>
         <div className="grid gap-4 sm:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>The Haunting</CardTitle>
-              <CardDescription>Four investigators · next session Thursday</CardDescription>
+              <CardTitle>{t('cards.campaign')}</CardTitle>
+              <CardDescription>{t('cards.campaignDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="font-ui text-sm text-text-secondary">
-              A plain card on the raised surface.
+              {t('cards.plain')}
             </CardContent>
             <CardFooter>
-              <Button size="sm">Open</Button>
+              <Button size="sm">{t('cards.open')}</Button>
             </CardFooter>
           </Card>
           <Card ornamented>
             <CardHeader>
-              <CardTitle>Ornamented</CardTitle>
-              <CardDescription>Brass corner rules, decoration only</CardDescription>
+              <CardTitle>{t('cards.ornamented')}</CardTitle>
+              <CardDescription>{t('cards.ornamentedDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="font-ui text-sm text-text-secondary">
-              Hidden automatically under prefers-contrast: more.
+              {t('cards.contrast')}
             </CardContent>
           </Card>
         </div>
       </Section>
 
-      <Section title="Table">
+      <Section title={t('table.title')}>
         <TableContainer>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Session</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('table.session')}</TableHead>
+                <TableHead>{t('table.status')}</TableHead>
+                <TableHead>{t('table.date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell>Session 12</TableCell>
+                <TableCell>{t('table.sessionNumber', { number: 12 })}</TableCell>
                 <TableCell>
-                  <Badge variant="positive">scheduled</Badge>
+                  <Badge variant="positive">{t('table.scheduled')}</Badge>
                 </TableCell>
-                <TableCell data-tabular>9 Oct, 18:00</TableCell>
+                <TableCell data-tabular>{t('table.dateExample')}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Session 13</TableCell>
+                <TableCell>{t('table.sessionNumber', { number: 13 })}</TableCell>
                 <TableCell>
-                  <Badge variant="warning">collecting</Badge>
+                  <Badge variant="warning">{t('table.collecting')}</Badge>
                 </TableCell>
                 <TableCell className="text-text-muted">-</TableCell>
               </TableRow>
@@ -271,11 +272,11 @@ export default function DesignSystemPage() {
         </TableContainer>
       </Section>
 
-      <Section title="States">
+      <Section title={t('states.title')}>
         <EmptyState
-          title="The archive is empty"
-          description="No campaigns have been recorded yet."
-          action={<Button variant="accent">Create campaign</Button>}
+          title={t('states.emptyTitle')}
+          description={t('states.emptyDescription')}
+          action={<Button variant="accent">{t('states.createCampaign')}</Button>}
         />
         <Separator />
         <div className="flex flex-col gap-2">

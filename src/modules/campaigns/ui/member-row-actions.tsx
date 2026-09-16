@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAction } from 'next-safe-action/hooks'
+import { useTranslations } from 'next-intl'
 import { BookOpen, UserMinus, UserRound } from 'lucide-react'
 import { IconButton } from '@/components/patterns/icon-button'
 import { ConfirmDialog } from '@/components/patterns/confirm-dialog'
@@ -24,6 +25,7 @@ export function MemberRowActions({
   member: CampaignMemberListItem
   viewer: Membership
 }) {
+  const t = useTranslations('campaigns.memberActions')
   const [confirmingRemoval, setConfirmingRemoval] = useState(false)
 
   const changeRole = useAction(changeMemberRole)
@@ -40,7 +42,7 @@ export function MemberRowActions({
     <div className="flex items-center justify-end gap-2">
       <IconButton
         variant="ghost"
-        label={member.role === 'KEEPER' ? 'Make an Investigator' : 'Make a Keeper'}
+        label={member.role === 'KEEPER' ? t('makeInvestigator') : t('makeKeeper')}
         icon={
           member.role === 'KEEPER' ? (
             <UserRound className="size-4" aria-hidden="true" />
@@ -54,7 +56,7 @@ export function MemberRowActions({
 
       <IconButton
         variant="ghost"
-        label="Remove from the campaign"
+        label={t('removeLabel')}
         icon={<UserMinus className="size-4" aria-hidden="true" />}
         disabled={busy}
         onClick={() => setConfirmingRemoval(true)}
@@ -63,9 +65,9 @@ export function MemberRowActions({
       <ConfirmDialog
         open={confirmingRemoval}
         onOpenChange={setConfirmingRemoval}
-        title={`Remove ${member.name}?`}
-        description="They lose access to this campaign. Their past availability and attendance are kept, and they can be invited back."
-        confirmLabel="Remove from campaign"
+        title={t('removeTitle', { name: member.name })}
+        description={t('removeDescription')}
+        confirmLabel={t('removeConfirm')}
         destructive
         pending={remove.isPending}
         onConfirm={() => remove.execute({ campaignId, userId: member.userId })}

@@ -214,6 +214,7 @@
    * tooltip above that.
    */
   --z-index-dialog: 50;
+  --z-index-sidebar: 40;
   --z-index-popover: 60;
   --z-index-tooltip: 70;
   --z-index-toast: 80;

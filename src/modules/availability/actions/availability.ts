@@ -13,14 +13,6 @@ import { saveAvailabilitySchema, sessionIdSchema } from '../domain/schemas'
 import { findPreviousAnswer, saveOwnAvailability } from '../data/availability'
 import type { DayRange } from '../domain/types'
 
-/**
- * Submitting availability.
- *
- * Always the caller's own. The user id comes from the session rather than the
- * payload, so the shape of this action offers no way to answer on somebody
- * else's behalf - which matters more than any check, because there is nothing
- * to check.
- */
 export const saveAvailability = authActionClient
   .metadata({ name: 'availability.save' })
   .inputSchema(saveAvailabilitySchema)
@@ -31,10 +23,6 @@ export const saveAvailability = authActionClient
     const open = canSubmitAvailability(session.status)
     if (!open.ok) throw new DomainRuleError(open.error.key)
 
-    /*
-     * The deadline is enforced here, not only hidden in the interface. A form
-     * left open in a tab is the ordinary way to submit after it has passed.
-     */
     if (
       session.availabilityDeadline !== null &&
       session.availabilityDeadline.getTime() <= Date.now()
@@ -76,13 +64,7 @@ export const saveAvailability = authActionClient
     return { savedAt: now }
   })
 
-/**
- * Offers the viewer's answer to the previous session, mapped onto this window.
- *
- * Reads only. What comes back is a proposal the player can adjust before saving,
- * because "the same as last time" is an assumption rather than an answer, and
- * committing it silently would put words in their mouth.
- */
+/** Offers the viewer's answer to the previous session, mapped onto this window. */
 export const suggestPreviousAnswer = authActionClient
   .metadata({ name: 'availability.suggestPrevious' })
   .inputSchema(sessionIdSchema)
@@ -101,7 +83,6 @@ export const suggestPreviousAnswer = authActionClient
     return {
       found: true as const,
       sessionTitle: previous.sessionTitle,
-      // Weekday-keyed, because the dates themselves do not repeat.
       byWeekday: [...previous.byWeekday.entries()].map(([weekday, range]) => ({
         weekday,
         state: range.state,

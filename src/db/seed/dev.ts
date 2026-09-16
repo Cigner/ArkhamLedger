@@ -6,6 +6,7 @@ import {
   campaignInvitation,
   campaignMember,
   gameSession,
+  issueReport,
   scenario,
   sessionParticipant,
   userActivationToken,
@@ -48,6 +49,7 @@ export type SeedReport = {
   readonly invitationLinks: readonly { campaign: string; label: string; url: string }[]
   readonly campaigns: readonly { name: string; status: string; members: number }[]
   readonly sessions: readonly { campaign: string; title: string; status: string }[]
+  readonly issueReports: number
 }
 
 /** Tables the dev fixture owns. Order is irrelevant: checks are off while truncating. */
@@ -63,7 +65,9 @@ const SEEDED_TABLES = [
   'scenario',
   'notification_delivery',
   'notification',
+  'notification_preference',
   'campaign_integration',
+  'issue_report',
   'user_activation_token',
   'identity_throttle',
   'auth_rate_limit',
@@ -72,6 +76,7 @@ const SEEDED_TABLES = [
   'auth_verification',
   'auth_user',
   'audit_log',
+  'worker_heartbeat',
 ] as const
 
 async function wipe(): Promise<void> {
@@ -224,6 +229,64 @@ export async function seedDevelopmentData(baseUrl: string): Promise<SeedReport> 
     })
   }
 
+  const administratorId = userIds.get('warden')
+  if (!administratorId) throw new Error('Missing development administrator')
+
+  const reportFixtures = [
+    {
+      reporterKey: 'anna',
+      message: 'The selected date is difficult to distinguish from a hovered date.',
+      sourcePath: '/sessions/example/availability',
+      status: 'NEW',
+    },
+    {
+      reporterKey: 'tomas',
+      message: 'Add a compact summary of unanswered invitations to the campaign overview.',
+      sourcePath: '/campaigns/example',
+      status: 'PLANNED',
+    },
+    {
+      reporterKey: 'jozef',
+      message: 'The mobile session card wrapped the status badge onto a separate line.',
+      sourcePath: '/sessions',
+      status: 'DONE',
+    },
+    {
+      reporterKey: 'marcus',
+      message: 'Allow public campaign links that do not require an existing account.',
+      sourcePath: '/campaigns/example/members',
+      status: 'REJECTED',
+    },
+    {
+      reporterKey: 'harriet',
+      message: 'Sometimes the dates page does not look right after editing an answer.',
+      sourcePath: '/sessions/example/availability',
+      status: 'NEEDS_MORE_INFO',
+    },
+  ] as const
+
+  await db.insert(issueReport).values(
+    reportFixtures.map((fixture, index) => {
+      const reporterId = userIds.get(fixture.reporterKey)
+      if (!reporterId) throw new Error(`Unknown report author: ${fixture.reporterKey}`)
+
+      const createdAt = new Date(now.getTime() - (index + 1) * 60 * 60 * 1000)
+      const changed = fixture.status !== 'NEW'
+
+      return {
+        id: newId(),
+        reporterId,
+        message: fixture.message,
+        sourcePath: fixture.sourcePath,
+        status: fixture.status,
+        statusChangedBy: changed ? administratorId : null,
+        statusChangedAt: changed ? now : null,
+        createdAt,
+        updatedAt: changed ? now : createdAt,
+      }
+    }),
+  )
+
   return {
     password: DEV_PASSWORD,
     users,
@@ -231,6 +294,7 @@ export async function seedDevelopmentData(baseUrl: string): Promise<SeedReport> 
     invitationLinks,
     campaigns,
     sessions,
+    issueReports: reportFixtures.length,
   }
 }
 

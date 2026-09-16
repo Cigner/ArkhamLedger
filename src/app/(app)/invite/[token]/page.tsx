@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { ButtonLink } from '@/components/ui/button-link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { requireUser } from '@/lib/auth'
@@ -16,49 +17,37 @@ import { AcceptInvitation } from '@/modules/campaigns/ui/accept-invitation'
  * The preview is read-only - arriving, looking, and reloading never consume a
  * use of a shared link.
  */
-export const metadata: Metadata = { title: 'Invitation' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('campaigns.invitePage')
+  return { title: t('metadata') }
+}
 export const dynamic = 'force-dynamic'
 
-const REJECTION_COPY: Record<InvitationRejection, { title: string; description: string }> = {
-  EXPIRED: {
-    title: 'This invitation has expired',
-    description: 'Invitations last two weeks. Ask the Keeper to send a fresh link.',
-  },
-  REVOKED: {
-    title: 'This invitation was withdrawn',
-    description: 'The Keeper revoked this link. Ask them for a new one if that was a mistake.',
-  },
-  EXHAUSTED: {
-    title: 'This invitation has been used up',
-    description: 'The link reached the number of people it was issued for.',
-  },
-  NOT_FOR_YOU: {
-    title: 'This invitation is for somebody else',
-    description:
-      'It was issued for one specific person and cannot be used by anyone else, even if it was forwarded to you.',
-  },
-  INVALID: {
-    title: 'This invitation is not valid',
-    description: 'Check that you copied the whole address, then ask the Keeper for a new link.',
-  },
+const REJECTION_KEYS: Record<InvitationRejection, string> = {
+  EXPIRED: 'expired',
+  REVOKED: 'revoked',
+  EXHAUSTED: 'exhausted',
+  NOT_FOR_YOU: 'notForYou',
+  INVALID: 'invalid',
 }
 
 export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
+  const t = await getTranslations('campaigns.invitePage')
   const user = await requireUser()
   const preview = await previewInvitation(token, user.id, new Date())
 
   if (!preview.ok) {
-    const copy = REJECTION_COPY[preview.reason]
+    const key = REJECTION_KEYS[preview.reason]
     return (
       <Card className="mx-auto max-w-lg">
         <CardHeader>
-          <CardTitle>{copy.title}</CardTitle>
+          <CardTitle>{t(`rejections.${key}.title`)}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
-          <p>{copy.description}</p>
+          <p>{t(`rejections.${key}.description`)}</p>
           <ButtonLink variant="outline" href="/campaigns">
-            Back to campaigns
+            {t('back')}
           </ButtonLink>
         </CardContent>
       </Card>
@@ -69,12 +58,12 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
     return (
       <Card className="mx-auto max-w-lg">
         <CardHeader>
-          <CardTitle>You are already in {preview.campaignName}</CardTitle>
+          <CardTitle>{t('alreadyMemberTitle', { campaign: preview.campaignName })}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
-          <p>Nothing to accept - the campaign is already on your list.</p>
+          <p>{t('alreadyMemberDescription')}</p>
           <ButtonLink variant="accent" href={`/campaigns/${preview.campaignId}`}>
-            Open campaign
+            {t('openCampaign')}
           </ButtonLink>
         </CardContent>
       </Card>
@@ -89,17 +78,17 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
       <CardContent className="flex flex-col gap-5">
         <dl className="flex flex-col gap-2 font-ui text-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-text-muted">Kept by</dt>
+            <dt className="text-text-muted">{t('keptBy')}</dt>
             <dd className="text-text-primary">{preview.keeperNames.join(', ') || '-'}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-text-muted">Members</dt>
+            <dt className="text-text-muted">{t('members')}</dt>
             <dd className="text-text-primary">{preview.memberCount}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-text-muted">You would join as</dt>
+            <dt className="text-text-muted">{t('joinAs')}</dt>
             <dd className="text-text-primary">
-              {preview.roleOnJoin === 'KEEPER' ? 'Keeper' : 'Investigator'}
+              {preview.roleOnJoin === 'KEEPER' ? t('keeper') : t('investigator')}
             </dd>
           </div>
         </dl>

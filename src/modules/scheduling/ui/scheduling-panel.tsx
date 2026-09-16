@@ -1,6 +1,7 @@
 'use client'
 
 import { CalendarSearch, RefreshCw } from 'lucide-react'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -23,28 +24,27 @@ import { ProposalCard } from './proposal-card'
  * tells everybody invited and is what the whole session then hangs on, so it
  * asks first and names the evening it is about to commit to.
  */
-const MESSAGES: Record<string, string> = {
-  'scheduling.errors.notSearchable':
-    'Dates can only be searched while a session is collecting answers or choosing between them.',
-  'scheduling.errors.proposalStale':
-    'That suggestion came from an earlier search. Search again and pick from the new list.',
-  'sessions.errors.sessionMovedOn': 'Somebody else changed this session. Reload and try again.',
-  'sessions.errors.invalidTransition': 'That is not possible from the session’s current state.',
-  'errors.rateLimited': 'That search has run a lot recently. Give it a few minutes.',
-}
-
 export function SchedulingPanel({ view }: { view: SchedulingView }) {
+  const t = useTranslations('scheduling.panel')
+  const format = useFormatter()
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [pendingChoice, setPendingChoice] = useState<ProposalView | null>(null)
+  const messages: Record<string, string> = {
+    'scheduling.errors.notSearchable': t('errors.notSearchable'),
+    'scheduling.errors.proposalStale': t('errors.proposalStale'),
+    'sessions.errors.sessionMovedOn': t('errors.sessionMovedOn'),
+    'sessions.errors.invalidTransition': t('errors.invalidTransition'),
+    'errors.rateLimited': t('errors.rateLimited'),
+  }
 
   const search = useAction(runScheduling, {
     onSuccess: () => router.refresh(),
     onError: ({ error: failure }) =>
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not search for dates.',
+          messages,
+          t('errors.searchFailed'),
           failure.serverError?.messageKey,
           failure.validationErrors,
         ),
@@ -59,8 +59,8 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
     onError: ({ error: failure }) =>
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not confirm that date.',
+          messages,
+          t('errors.confirmFailed'),
           failure.serverError?.messageKey,
           failure.validationErrors,
         ),
@@ -77,14 +77,18 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <p className="font-ui text-sm text-text-secondary">
-            {view.respondentCount} of {view.participantCount} have answered. Quorum is {view.quorum}
-            , and a session runs at least {view.minSessionHours} hours.
+            {t('summary', {
+              responded: view.respondentCount,
+              total: view.participantCount,
+              quorum: view.quorum,
+              hours: view.minSessionHours,
+            })}
           </p>
           {view.run ? (
             <p className="font-ui text-xs text-text-muted">
-              Last searched{' '}
+              {t('lastSearched')}{' '}
               <time dateTime={view.run.createdAt.toISOString()}>
-                {view.run.createdAt.toLocaleString('en-GB', {
+                {format.dateTime(view.run.createdAt, {
                   day: 'numeric',
                   month: 'long',
                   hour: '2-digit',
@@ -92,7 +96,7 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
                   timeZone: view.timezone,
                 })}
               </time>{' '}
-              · algorithm {view.run.algorithmVersion}
+              {t('algorithm', { version: view.run.algorithmVersion })}
             </p>
           ) : null}
         </div>
@@ -104,7 +108,7 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
             ) : (
               <CalendarSearch className="size-4" aria-hidden="true" />
             )}
-            {search.isPending ? 'Searching…' : view.run ? 'Search again' : 'Find dates'}
+            {search.isPending ? t('searching') : view.run ? t('searchAgain') : t('findDates')}
           </Button>
         ) : null}
       </div>
@@ -115,8 +119,7 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
       */}
       {view.run?.staleAnswers ? (
         <p className="rounded-sm border border-status-warning/50 bg-candle-3 px-3 py-2 font-ui text-xs text-candle-11">
-          Somebody has answered since this search ran. Search again to take their answer into
-          account.
+          {t('stale')}
         </p>
       ) : null}
 
@@ -142,7 +145,7 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
                       setPendingChoice(proposal)
                     }}
                   >
-                    Choose this date
+                    {t('choose')}
                   </Button>
                 )
               }
@@ -159,14 +162,14 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
         />
       ) : (
         <EmptyState
-          title="No dates worked out yet"
+          title={t('emptyTitle')}
           icon={<CalendarSearch className="size-8" strokeWidth={1.25} />}
-          description="Searching decides nothing - it ranks the evenings that would work."
+          description={t('emptyDescription')}
           action={
             view.canRun ? (
               <Button variant="accent" disabled={search.isPending} onClick={runSearch}>
                 <CalendarSearch className="size-4" aria-hidden="true" />
-                {search.isPending ? 'Searching…' : 'Find dates'}
+                {search.isPending ? t('searching') : t('findDates')}
               </Button>
             ) : null
           }
@@ -176,13 +179,16 @@ export function SchedulingPanel({ view }: { view: SchedulingView }) {
       <ConfirmDialog
         open={pendingChoice !== null}
         onOpenChange={(open) => !open && setPendingChoice(null)}
-        title="Confirm this date?"
+        title={t('confirmTitle')}
         description={
           pendingChoice
-            ? `${formatWindow(pendingChoice.startUtc, pendingChoice.endUtc, view.timezone)} in ${view.timezone}. Everyone invited is told, and answers close.`
+            ? t('confirmDescription', {
+                window: formatWindow(pendingChoice.startUtc, pendingChoice.endUtc, view.timezone),
+                timezone: view.timezone,
+              })
             : undefined
         }
-        confirmLabel="Confirm date"
+        confirmLabel={t('confirm')}
         pending={accept.isPending}
         onConfirm={() => {
           if (!pendingChoice) return

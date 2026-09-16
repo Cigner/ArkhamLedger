@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
 import { cn } from '@/lib/cn'
 
@@ -44,12 +45,14 @@ export function DateField({
   onChange?: ((value: string) => void) | undefined
 }) {
   const [segments, setSegments] = useState<Segments>(() => split(defaultValue))
+  const locale = useLocale()
+  const t = useTranslations('common.dateField')
   const dayRef = useRef<HTMLInputElement>(null)
   const monthRef = useRef<HTMLInputElement>(null)
   const yearRef = useRef<HTMLInputElement>(null)
 
   const value = join(segments)
-  const spelled = spellDate(value)
+  const spelled = spellDate(value, locale)
 
   function update(part: keyof Segments, raw: string, advanceTo?: HTMLInputElement | null): void {
     const digits = raw.replace(/\D/g, '').slice(0, part === 'year' ? 4 : 2)
@@ -89,8 +92,8 @@ export function DateField({
         <Segment
           id={id}
           ref={dayRef}
-          label="Day"
-          placeholder="dd"
+          label={t('day')}
+          placeholder={t('dayPlaceholder')}
           width="w-7"
           value={segments.day}
           disabled={disabled}
@@ -101,8 +104,8 @@ export function DateField({
         </span>
         <Segment
           ref={monthRef}
-          label="Month"
-          placeholder="mm"
+          label={t('month')}
+          placeholder={t('monthPlaceholder')}
           width="w-7"
           value={segments.month}
           disabled={disabled}
@@ -113,8 +116,8 @@ export function DateField({
         </span>
         <Segment
           ref={yearRef}
-          label="Year"
-          placeholder="yyyy"
+          label={t('year')}
+          placeholder={t('yearPlaceholder')}
           width="w-12"
           value={segments.year}
           disabled={disabled}
@@ -201,13 +204,13 @@ function isRealDate(iso: string): boolean {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === iso
 }
 
-export function spellDate(value: string): string | null {
+export function spellDate(value: string, locale = 'en-GB'): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null
 
   const date = new Date(`${value}T12:00:00Z`)
   if (Number.isNaN(date.getTime())) return null
 
-  return date.toLocaleDateString('en-GB', {
+  return date.toLocaleDateString(locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',

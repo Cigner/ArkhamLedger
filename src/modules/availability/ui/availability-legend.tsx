@@ -1,16 +1,13 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { cellPresentation } from './grid-cell'
 import type { SlotState } from '../domain/types'
 
-/**
- * What the marks mean.
- *
- * Required rather than helpful: the three fills are within about 1.1:1 of each
- * other, so the glyph is what actually distinguishes them and the legend is
- * where that mapping is stated.
- */
 const ENTRIES: readonly (SlotState | null)[] = ['YES', 'IF_NEED_BE', 'NO', null]
 
 export function AvailabilityLegend() {
+  const t = useTranslations('availability.stateLabels')
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
       {ENTRIES.map((state) => {
@@ -23,7 +20,7 @@ export function AvailabilityLegend() {
             >
               {presentation.glyph}
             </span>
-            <span className="font-ui text-xs text-text-secondary">{presentation.label}</span>
+            <span className="font-ui text-xs text-text-secondary">{t(presentation.labelKey)}</span>
           </li>
         )
       })}

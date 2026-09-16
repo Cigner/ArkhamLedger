@@ -1,5 +1,6 @@
 import { CalendarClock, FileText, TriangleAlert, Users, Wand2 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { formatDeadline } from '@/lib/datetime/format'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,13 +9,6 @@ import { KeeperActions } from '@/modules/sessions/ui/keeper-actions'
 import { ResponseProgress } from '@/modules/sessions/ui/response-progress'
 import { SessionWhen } from '@/modules/sessions/ui/session-when'
 
-/**
- * Session overview.
- *
- * Rendered from one DTO that was already narrowed for the viewer: an
- * Investigator's copy carries no priorities and no per-person response times, so
- * there is no version of this page where those are present and merely unrendered.
- */
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({
@@ -33,6 +27,7 @@ export default async function SessionOverviewPage({
   params: Promise<{ sessionId: string }>
 }) {
   const { sessionId } = await params
+  const t = await getTranslations('sessions.overview')
   const session = await getSessionDetail(sessionId)
 
   const responded = session.participants.filter(
@@ -51,7 +46,7 @@ export default async function SessionOverviewPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TriangleAlert className="size-4 text-status-danger" aria-hidden="true" />
-                Cancelled
+                {t('cancelled')}
               </CardTitle>
             </CardHeader>
             <CardContent className="font-ui text-sm text-text-secondary">
@@ -64,7 +59,7 @@ export default async function SessionOverviewPage({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarClock className="size-4 text-text-muted" aria-hidden="true" />
-              When
+              {t('when')}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
@@ -78,7 +73,7 @@ export default async function SessionOverviewPage({
 
             {session.availabilityDeadline && session.status === 'COLLECTING' ? (
               <p className="font-ui text-sm text-text-secondary">
-                Answer by{' '}
+                {t('answerBy')}{' '}
                 <time dateTime={session.availabilityDeadline.toISOString()}>
                   {formatDeadline(session.availabilityDeadline, session.timezone)}
                 </time>
@@ -91,11 +86,9 @@ export default async function SessionOverviewPage({
 
             {session.viewer.isParticipant && session.status === 'COLLECTING' ? (
               <p className="font-ui text-sm text-text-secondary">
-                {session.viewer.ownResponse
-                  ? 'You have said when you are free.'
-                  : 'You have not said when you are free yet.'}
+                {session.viewer.ownResponse ? t('answered') : t('notAnswered')}
                 {session.viewer.ownPresenceRequired ? (
-                  <span className="ml-1 text-candle-11">This session needs you.</span>
+                  <span className="ml-1 text-candle-11">{t('needsYou')}</span>
                 ) : null}
               </p>
             ) : null}
@@ -107,7 +100,7 @@ export default async function SessionOverviewPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="size-4 text-text-muted" aria-hidden="true" />
-                What happens
+                {t('description')}
               </CardTitle>
             </CardHeader>
             <CardContent className="font-body text-base leading-[--leading-body] text-text-secondary">
@@ -121,7 +114,7 @@ export default async function SessionOverviewPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Wand2 className="size-4 text-text-muted" aria-hidden="true" />
-                Keeper
+                {t('keeper')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -135,7 +128,7 @@ export default async function SessionOverviewPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="size-4 text-text-muted" aria-hidden="true" />
-            Invited
+            {t('invited')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -145,26 +138,26 @@ export default async function SessionOverviewPage({
                 <span className="font-ui text-sm text-text-primary">
                   {participant.name}
                   {participant.userId === session.viewer.userId ? (
-                    <span className="ml-2 text-xs text-text-muted">(you)</span>
+                    <span className="ml-2 text-xs text-text-muted">{t('you')}</span>
                   ) : null}
                 </span>
 
                 {session.status === 'COMPLETED' ? (
                   <Badge variant={participant.attendance === 'ATTENDED' ? 'positive' : 'muted'}>
                     {participant.attendance === 'ATTENDED'
-                      ? 'Was there'
+                      ? t('attendance.attended')
                       : participant.attendance === 'ABSENT'
-                        ? 'Missed it'
-                        : 'Unknown'}
+                        ? t('attendance.absent')
+                        : t('attendance.unknown')}
                   </Badge>
                 ) : participant.isKeeper ? (
-                  <Badge variant="candle">Keeper</Badge>
+                  <Badge variant="candle">{t('keeper')}</Badge>
                 ) : null}
               </li>
             ))}
           </ul>
           <p className="mt-4 font-ui text-xs text-text-muted">
-            Needs {session.quorum} of {playerCount} players free.
+            {t('quorum', { required: session.quorum, total: playerCount })}
           </p>
         </CardContent>
       </Card>

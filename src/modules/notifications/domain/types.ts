@@ -21,6 +21,7 @@ export type NotificationType =
   | 'SESSION_RESCHEDULED'
   | 'SESSION_CANCELLED'
   | 'NO_NEXT_SESSION'
+  | 'ISSUE_REPORTED'
 
 export type DeliveryChannel = 'IN_APP' | 'EMAIL' | 'DISCORD'
 export type DeliveryStatus = 'PENDING' | 'SENDING' | 'SENT' | 'FAILED'
@@ -45,6 +46,10 @@ export type NotificationPayload = {
   readonly deadlineUtc?: string
   readonly reason?: string
   readonly url?: string
+  readonly reportId?: string
+  readonly reportMessage?: string
+  readonly reporterEmail?: string
+  readonly sourcePath?: string
 }
 
 export type NotificationRecord = {
@@ -81,6 +86,8 @@ export type NotificationDraft = {
   readonly campaignId?: string | null
   readonly gameSessionId?: string | null
   readonly payload: NotificationPayload
+  /** Operational channels that cannot be disabled by recipient preferences. */
+  readonly requiredChannels?: readonly DeliveryChannel[]
 }
 
 export type Recipient = {

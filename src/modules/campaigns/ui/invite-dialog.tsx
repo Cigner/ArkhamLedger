@@ -3,6 +3,7 @@
 import { Link2, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useAction } from 'next-safe-action/hooks'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -35,16 +36,6 @@ import { createInvitation } from '../actions/invitations'
  * invitation names its recipient and is single-use, a shared link is open and
  * counted. Switching between them is one control rather than two screens.
  */
-const MODE_LABELS = { personal: 'One specific person', shared: 'Anyone with the link' } as const
-const ROLE_LABELS = { INVESTIGATOR: 'Investigator', KEEPER: 'Keeper' } as const
-
-const MESSAGES: Record<string, string> = {
-  'campaigns.errors.alreadyAMember': 'They are already in this campaign.',
-  'campaigns.errors.campaignArchived': 'This campaign is archived and cannot be changed.',
-  'campaigns.errors.personalInvitationMustBeSingleUse':
-    'A personal invitation can only be used once.',
-}
-
 export function InviteDialog({
   campaignId,
   invitableUsers,
@@ -52,6 +43,9 @@ export function InviteDialog({
   campaignId: string
   invitableUsers: readonly { id: string; name: string; email: string; pending: boolean }[]
 }) {
+  const t = useTranslations('campaigns.inviteDialog')
+  const modeLabels = { personal: t('personal'), shared: t('shared') }
+  const roleLabels = { INVESTIGATOR: t('investigator'), KEEPER: t('keeper') }
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<'personal' | 'shared'>('personal')
   const [targetUserId, setTargetUserId] = useState<string>(invitableUsers[0]?.id ?? '')
@@ -67,8 +61,12 @@ export function InviteDialog({
     onError: ({ error: actionError }) => {
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not create the invitation.',
+          {
+            'campaigns.errors.alreadyAMember': t('errors.alreadyMember'),
+            'campaigns.errors.campaignArchived': t('errors.archived'),
+            'campaigns.errors.personalInvitationMustBeSingleUse': t('errors.personalSingleUse'),
+          },
+          t('errors.failed'),
           actionError.serverError?.messageKey,
           actionError.validationErrors,
         ),
@@ -79,7 +77,7 @@ export function InviteDialog({
   const userLabels = Object.fromEntries(
     invitableUsers.map((user) => [
       user.id,
-      user.pending ? `${user.name} (not yet activated)` : user.name,
+      user.pending ? t('pendingUser', { name: user.name }) : user.name,
     ]),
   )
 
@@ -109,16 +107,12 @@ export function InviteDialog({
     <Dialog open={open} onOpenChange={reset}>
       <DialogTrigger render={<Button variant="accent" />}>
         <UserPlus className="size-4" aria-hidden="true" />
-        Invite
+        {t('trigger')}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{issued ? 'Invitation ready' : 'Invite to the campaign'}</DialogTitle>
-          <DialogDescription>
-            {issued
-              ? 'Send this link to whoever should join. It will not be shown again.'
-              : 'Invitations work for people who already have an account here.'}
-          </DialogDescription>
+          <DialogTitle>{issued ? t('readyTitle') : t('title')}</DialogTitle>
+          <DialogDescription>{issued ? t('readyDescription') : t('description')}</DialogDescription>
         </DialogHeader>
 
         {issued ? (
@@ -128,7 +122,7 @@ export function InviteDialog({
             </DialogBody>
             <DialogFooter>
               <Button variant="outline" onClick={() => reset(false)}>
-                Done
+                {t('done')}
               </Button>
             </DialogFooter>
           </>
@@ -136,9 +130,9 @@ export function InviteDialog({
           <form onSubmit={handleSubmit}>
             <DialogBody className="flex flex-col gap-4">
               <Field>
-                <FieldLabel>Who is this for</FieldLabel>
+                <FieldLabel>{t('modeLabel')}</FieldLabel>
                 <Select
-                  items={MODE_LABELS}
+                  items={modeLabels}
                   value={mode}
                   onValueChange={(value) => setMode(value === 'shared' ? 'shared' : 'personal')}
                 >
@@ -146,19 +140,17 @@ export function InviteDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="personal">One specific person</SelectItem>
-                    <SelectItem value="shared">Anyone with the link</SelectItem>
+                    <SelectItem value="personal">{modeLabels.personal}</SelectItem>
+                    <SelectItem value="shared">{modeLabels.shared}</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
 
               {mode === 'personal' ? (
                 <Field>
-                  <FieldLabel>Person</FieldLabel>
+                  <FieldLabel>{t('person')}</FieldLabel>
                   {noCandidates ? (
-                    <p className="font-ui text-sm text-text-muted">
-                      Everyone with an account is already in this campaign.
-                    </p>
+                    <p className="font-ui text-sm text-text-muted">{t('noCandidates')}</p>
                   ) : (
                     <Select
                       items={userLabels}
@@ -174,7 +166,7 @@ export function InviteDialog({
                             {user.name}
                             {user.pending ? (
                               <span className="ml-2 text-xs text-text-muted">
-                                not yet activated
+                                {t('notActivated')}
                               </span>
                             ) : null}
                           </SelectItem>
@@ -182,13 +174,11 @@ export function InviteDialog({
                       </SelectContent>
                     </Select>
                   )}
-                  <FieldDescription>
-                    Only they can use the link, even if it is forwarded.
-                  </FieldDescription>
+                  <FieldDescription>{t('personalHint')}</FieldDescription>
                 </Field>
               ) : (
                 <Field>
-                  <FieldLabel htmlFor="maxUses">Number of uses</FieldLabel>
+                  <FieldLabel htmlFor="maxUses">{t('maxUses')}</FieldLabel>
                   <Input
                     id="maxUses"
                     type="number"
@@ -198,16 +188,14 @@ export function InviteDialog({
                     onChange={(event) => setMaxUses(event.target.value)}
                     disabled={isPending}
                   />
-                  <FieldDescription>
-                    The link stops working once this many people have joined.
-                  </FieldDescription>
+                  <FieldDescription>{t('maxUsesHint')}</FieldDescription>
                 </Field>
               )}
 
               <Field>
-                <FieldLabel>Join as</FieldLabel>
+                <FieldLabel>{t('roleLabel')}</FieldLabel>
                 <Select
-                  items={ROLE_LABELS}
+                  items={roleLabels}
                   value={role}
                   onValueChange={(value) => setRole(value === 'KEEPER' ? 'KEEPER' : 'INVESTIGATOR')}
                 >
@@ -215,8 +203,8 @@ export function InviteDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="INVESTIGATOR">Investigator</SelectItem>
-                    <SelectItem value="KEEPER">Keeper</SelectItem>
+                    <SelectItem value="INVESTIGATOR">{roleLabels.INVESTIGATOR}</SelectItem>
+                    <SelectItem value="KEEPER">{roleLabels.KEEPER}</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
@@ -226,7 +214,7 @@ export function InviteDialog({
 
             <DialogFooter>
               <Button variant="ghost" onClick={() => reset(false)} disabled={isPending}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 type="submit"
@@ -234,7 +222,7 @@ export function InviteDialog({
                 disabled={isPending || (mode === 'personal' && noCandidates)}
               >
                 <Link2 className="size-4" aria-hidden="true" />
-                {isPending ? 'Creating…' : 'Create link'}
+                {isPending ? t('creating') : t('submit')}
               </Button>
             </DialogFooter>
           </form>

@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { Cinzel, IM_Fell_English, Inter, Spectral } from 'next/font/google'
 import '@/design-system/globals.css'
 
@@ -36,13 +38,16 @@ const imFell = IM_Fell_English({
   display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Arkham Ledger',
-    template: '%s · Arkham Ledger',
-  },
-  description: 'Session scheduling for tabletop Call of Cthulhu campaigns',
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations()
+  return {
+    title: {
+      default: t('common.appName'),
+      template: `%s · ${t('common.appName')}`,
+    },
+    description: t('metadata.description'),
+    robots: { index: false, follow: false },
+  }
 }
 
 export const viewport: Viewport = {
@@ -51,15 +56,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [locale, messages] = await Promise.all([getLocale(), getMessages()])
+
   return (
     <html
       // en-GB rather than en: it is what every formatted date in the
       // application uses, and Firefox follows it for native date inputs too.
-      lang="en-GB"
+      lang={locale === 'en' ? 'en-GB' : locale}
       className={`${cinzel.variable} ${spectral.variable} ${inter.variable} ${imFell.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+      </body>
     </html>
   )
 }

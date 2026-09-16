@@ -9,10 +9,6 @@ import { auth } from './config'
  * reasons, in order of importance: a breaking upgrade of the library changes one
  * implementation rather than every call site, and the surface the rest of the
  * code can reach is deliberately narrower than the library's own.
- *
- * Every method reads the session from the incoming request headers rather than
- * from a cached value, because authorization decisions must reflect the session
- * as it is now - an account disabled a second ago must not pass.
  */
 export type GlobalRole = 'admin' | 'user'
 export type UserStatus = 'PENDING_ACTIVATION' | 'ACTIVE' | 'DISABLED'
@@ -35,14 +31,12 @@ export type CreateUserInput = {
 }
 
 export interface AuthPort {
-  /** Current user, or null when the request carries no valid session. */
   getCurrentUser(): Promise<AuthenticatedUser | null>
 
   createUser(input: CreateUserInput): Promise<{ id: string }>
 
   hashPassword(password: string): Promise<string>
 
-  /** Invalidates every session of a user; used on password change and disable. */
   revokeAllSessions(userId: string): Promise<void>
 }
 

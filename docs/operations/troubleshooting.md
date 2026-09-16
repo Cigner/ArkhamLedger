@@ -12,6 +12,18 @@ Failures seen, with the symptom that identifies each.
 | Deliveries waiting, worker healthy    | It is working through them, or SMTP is slow. Waiting is normal for a minute          |
 | Deliveries "given up on", with errors | Five attempts failed. The error text is the relay's own                              |
 
+The worker verifies DNS, TCP, TLS and SMTP authentication before starting. A
+bad relay configuration therefore restarts the worker instead of leaving every
+message stuck in `SENDING`. For an internal relay with a self-signed
+certificate, prefer installing its CA in the container; if that is not
+practical, set `SMTP_TLS_REJECT_UNAUTHORIZED=false` explicitly.
+
+`SMTP_HOST=localhost` points at the worker container, not at the OMV host.
+Use the relay's LAN address, its resolvable DNS name, or attach both services to
+the same Docker network and use the SMTP service name. If the connection uses
+an IP address while the certificate names a host, set `SMTP_TLS_SERVERNAME` to
+that certificate name.
+
 Nothing is ever deleted on failure. A `FAILED` delivery is the only record that
 somebody was not told, which is why the screen lists the most recent ten.
 

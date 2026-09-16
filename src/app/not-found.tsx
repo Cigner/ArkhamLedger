@@ -8,20 +8,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
  * answering "forbidden" for somebody else's campaign would let its existence be
  * discovered by walking identifiers.
  */
-export default function NotFoundPage() {
+export default async function NotFoundPage() {
+  const t = await getTranslations('httpErrors.notFound')
+
   return (
     <div className="relative z-10 flex min-h-dvh items-center justify-center px-4">
       <Card className="max-w-md">
         <CardHeader>
-          <CardTitle>Nothing here</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
-          <p>That page does not exist, or it is not one of yours.</p>
+          <p>{t('description')}</p>
           <ButtonLink variant="outline" href="/campaigns">
-            Back to campaigns
+            {t('back')}
           </ButtonLink>
         </CardContent>
       </Card>
     </div>
   )
 }
+import { getTranslations } from 'next-intl/server'

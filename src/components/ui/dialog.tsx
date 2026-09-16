@@ -2,6 +2,7 @@
 
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'
 import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 import { Button } from './button'
 
@@ -40,6 +41,8 @@ export function DialogContent({
   showCloseButton = true,
   ...props
 }: DialogPrimitive.Popup.Props & { showCloseButton?: boolean }) {
+  const t = useTranslations('common')
+
   return (
     <DialogPrimitive.Portal>
       <DialogBackdrop />
@@ -61,7 +64,7 @@ export function DialogContent({
             render={<Button variant="ghost" size="icon-sm" className="absolute right-3 top-3" />}
           >
             <X aria-hidden="true" />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{t('close')}</span>
           </DialogPrimitive.Close>
         ) : null}
       </DialogPrimitive.Popup>

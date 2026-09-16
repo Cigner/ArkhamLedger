@@ -16,7 +16,6 @@ import { appLogger } from '@/lib/logger'
 const HEARTBEAT_ID = 'worker'
 
 export type JobResult = {
-  /** What the job did, for the log. Zero is normal and not worth a line. */
   readonly handled: number
 }
 
@@ -25,13 +24,6 @@ export type Job = {
   readonly run: (now: Date) => Promise<JobResult>
 }
 
-/**
- * Runs one job, absorbing whatever it throws.
- *
- * Returns rather than rethrows: croner would otherwise silently stop
- * rescheduling a pattern whose handler rejects, and the failure would look like
- * a job that simply never runs again.
- */
 export async function runJob(job: Job, now: Date): Promise<void> {
   const started = Date.now()
 
@@ -54,13 +46,6 @@ export async function runJob(job: Job, now: Date): Promise<void> {
   }
 }
 
-/**
- * Records that the worker is alive.
- *
- * Written after every job rather than on a timer of its own, so the pulse means
- * "work is being done" rather than "the process exists" - a worker stuck on a
- * hung connection would keep a plain timer ticking while doing nothing.
- */
 export async function beat(lastJob: string, now: Date): Promise<void> {
   await db
     .insert(workerHeartbeat)
@@ -80,13 +65,6 @@ export async function lastHeartbeat(): Promise<Date | null> {
   return row?.beatAt ?? null
 }
 
-/**
- * Waits for in-flight work before the process exits.
- *
- * A delivery interrupted mid-send is not lost - the queue reclaims it - but it
- * is delivered late and may be delivered twice by a relay that already accepted
- * it. Draining costs a few seconds of a deploy and avoids both.
- */
 export function createDrain(): {
   track: <T>(work: Promise<T>) => Promise<T>
   drain: (timeoutMs: number) => Promise<void>

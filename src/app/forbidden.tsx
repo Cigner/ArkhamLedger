@@ -13,22 +13,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
  * area too, and "kept by somebody else" would be a confusing thing to read
  * about a screen that belongs to nobody.
  */
-export default function ForbiddenPage() {
+export default async function ForbiddenPage() {
+  const t = await getTranslations('httpErrors.forbidden')
+
   return (
     <div className="relative z-10 flex min-h-dvh items-center justify-center px-4">
       <Card className="max-w-md">
         <CardHeader>
-          <CardTitle>Not yours to open</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 font-ui text-sm text-text-secondary">
-          <p>
-            This part is kept by somebody else. If you think that is wrong, ask whoever runs it.
-          </p>
+          <p>{t('description')}</p>
           <ButtonLink variant="outline" href="/campaigns">
-            Back to campaigns
+            {t('back')}
           </ButtonLink>
         </CardContent>
       </Card>
     </div>
   )
 }
+import { getTranslations } from 'next-intl/server'

@@ -6,12 +6,7 @@ import type { MailPort } from './port'
 
 /**
  * Mail transport selection.
- *
- * Falls back to logging when SMTP is not configured, which keeps development
- * self-contained. In production that fallback is a hard failure instead: an
- * activation or reset email that silently goes to a log file is worse than a
- * deployment that refuses to start, because nobody notices until a user is
- * locked out.
+ * Falls back to logging when SMTP is not configured.
  */
 function selectTransport(): MailPort {
   const configured = Boolean(env.SMTP_HOST && env.SMTP_PORT && env.SMTP_FROM)
@@ -30,6 +25,9 @@ function selectTransport(): MailPort {
     port: env.SMTP_PORT!,
     secure: env.SMTP_SECURE,
     from: env.SMTP_FROM!,
+    requireTls: env.SMTP_REQUIRE_TLS,
+    tlsRejectUnauthorized: env.SMTP_TLS_REJECT_UNAUTHORIZED,
+    ...(env.SMTP_TLS_SERVERNAME ? { tlsServername: env.SMTP_TLS_SERVERNAME } : {}),
     ...(env.SMTP_USER ? { user: env.SMTP_USER } : {}),
     ...(env.SMTP_PASSWORD ? { password: env.SMTP_PASSWORD } : {}),
   })
@@ -42,4 +40,10 @@ export function mailer(): MailPort {
   return cached
 }
 
-export type { MailAttachment, MailMessage, MailPort, MailResult } from './port'
+export type {
+  MailAttachment,
+  MailMessage,
+  MailPort,
+  MailResult,
+  MailVerificationResult,
+} from './port'

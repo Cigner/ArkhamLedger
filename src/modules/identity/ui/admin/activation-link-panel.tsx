@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 /**
@@ -12,6 +13,8 @@ import { Button } from '@/components/ui/button'
  * setup a self-hosted deployment behind a self-signed certificate may have.
  */
 export function ActivationLinkPanel({ url, expiresAt }: { url: string; expiresAt: Date }) {
+  const t = useTranslations('admin.activationLink')
+  const format = useFormatter()
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
@@ -34,14 +37,14 @@ export function ActivationLinkPanel({ url, expiresAt }: { url: string; expiresAt
 
       <div className="flex items-center justify-between gap-3">
         <p className="font-ui text-xs text-text-muted">
-          Expires{' '}
+          {t('expires')}{' '}
           <time dateTime={expiresAt.toISOString()}>
-            {expiresAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}
+            {format.dateTime(expiresAt, { day: 'numeric', month: 'long' })}
           </time>
         </p>
         <Button variant="outline" size="sm" onClick={() => void handleCopy()}>
           {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
-          {copied ? 'Copied' : 'Copy link'}
+          {copied ? t('copied') : t('copy')}
         </Button>
       </div>
     </div>

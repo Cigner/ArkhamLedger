@@ -22,14 +22,6 @@ import type {
   ParticipantAvailability,
 } from '../domain/types'
 
-/**
- * Availability reads and writes.
- *
- * The view is assembled per viewer and the narrowing happens here. A Keeper's
- * copy carries names against answers; an Investigator's carries counts and their
- * own answer, and nothing else - there is no payload in which the names are
- * present and merely unrendered.
- */
 type SessionShape = {
   id: string
   campaignId: string
@@ -66,13 +58,6 @@ async function loadSession(sessionId: string, executor: DbOrTx = db): Promise<Se
   return row
 }
 
-/**
- * The grid this session offers, in the shape the domain speaks.
- *
- * The generator calls the instant `startUtc` and the database column is
- * `slot_start_utc`; renaming once here means neither name leaks into the other's
- * territory, and no code has to remember which it is holding.
- */
 function gridFor(
   session: SessionShape,
 ): { slotStartUtc: string; localDate: string; localHour: number }[] {
@@ -162,7 +147,7 @@ export async function getAvailabilityView(sessionId: string): Promise<Availabili
   /*
    * The hour-by-hour breakdown is withheld until enough people have answered to
    * hide in. With two answers, one count plus the viewer's own names the other
-   * person exactly. Keepers see it regardless - it is their data to read.
+   * person exactly. Keepers see it regardless.
    */
   const discloseTallies = isKeeper || respondentCount >= MIN_RESPONDENTS_FOR_HEATMAP
 
@@ -250,8 +235,7 @@ export async function saveOwnAvailability(input: {
 
   /*
    * Answering counts even when the answer is "none of these". Leaving
-   * respondedAt null would make a deliberate refusal look like silence, and the
-   * two mean opposite things to a Keeper chasing replies.
+   * respondedAt null would make a deliberate refusal look like absence of a response.
    */
   await input.executor
     .update(sessionParticipant)
@@ -346,16 +330,12 @@ export async function findPreviousAnswer(input: {
  * Discards every answer to a session.
  *
  * Used when the question changes - the window moves, or the Keeper reopens
- * collection. Marking people as not having answered while leaving their answers
- * in place was the old behaviour, and it produced a session where everybody
- * showed as silent while their stale answers still drove the heatmap and the
- * ranking.
+ * collection.
  */
 export async function deleteAllAvailability(sessionId: string, executor: DbOrTx): Promise<void> {
   await executor.delete(availabilitySlot).where(eq(availabilitySlot.gameSessionId, sessionId))
 }
 
-/** Clears a participant's answer, used when they are dropped from a session. */
 export async function deleteAvailabilityFor(
   sessionId: string,
   userIds: readonly string[],

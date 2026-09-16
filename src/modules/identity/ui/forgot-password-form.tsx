@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { readString } from '@/lib/form-data'
 import { Field, FieldLabel } from '@/components/ui/field'
@@ -15,6 +16,7 @@ import { requestPasswordReset } from '@/lib/auth/client'
  * user experience cost is one sentence of extra wording.
  */
 export function ForgotPasswordForm() {
+  const t = useTranslations('auth.forgotPassword')
   const [submitted, setSubmitted] = useState(false)
   const [pending, setPending] = useState(false)
 
@@ -32,8 +34,7 @@ export function ForgotPasswordForm() {
   if (submitted) {
     return (
       <p role="status" className="font-ui text-sm leading-[--leading-ui] text-text-secondary">
-        If an account exists for that address, a reset link is on its way. It expires in an hour and
-        can be used once.
+        {t('submitted')}
       </p>
     )
   }
@@ -41,7 +42,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={(event) => void handleSubmit(event)} className="flex flex-col gap-4" noValidate>
       <Field>
-        <FieldLabel htmlFor="email">Email</FieldLabel>
+        <FieldLabel htmlFor="email">{t('email')}</FieldLabel>
         <Input
           id="email"
           name="email"
@@ -54,7 +55,7 @@ export function ForgotPasswordForm() {
       </Field>
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>
-        {pending ? 'Sending…' : 'Send reset link'}
+        {pending ? t('pending') : t('submit')}
       </Button>
     </form>
   )

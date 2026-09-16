@@ -1,11 +1,3 @@
-/**
- * Application error hierarchy.
- *
- * Every error that is safe to surface to a user extends AppError and carries a
- * stable machine-readable code plus an i18n key. Anything else that escapes to
- * the action layer is treated as unexpected: logged with a stack trace and
- * reported to the user as a generic failure with a correlation id.
- */
 export type AppErrorCode =
   | 'UNAUTHORIZED'
   | 'FORBIDDEN'
@@ -19,7 +11,7 @@ export abstract class AppError extends Error {
   abstract readonly code: AppErrorCode
   abstract readonly httpStatus: number
 
-  /** i18n key resolved by the presentation layer; never a pre-rendered sentence. */
+  /** i18n key resolved by the presentation layer. */
   readonly messageKey: string
   readonly messageParams: Record<string, string | number> | undefined
 

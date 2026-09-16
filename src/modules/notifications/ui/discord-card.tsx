@@ -3,6 +3,7 @@
 import { Send, Trash2, Webhook } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,15 +28,6 @@ import type { IntegrationStatus } from '../data/integrations'
  * the alternative way to discover a mistyped webhook is three days later, when
  * the channel stays silent about a session everybody was waiting on.
  */
-const MESSAGES: Record<string, string> = {
-  'notifications.errors.notADiscordWebhook':
-    'That is not a Discord webhook address. Copy it from the channel’s integration settings.',
-  'notifications.errors.noWebhookConfigured': 'There is nothing to test yet.',
-  'notifications.errors.webhookRejected':
-    'Discord refused the message. The webhook may have been deleted.',
-  'errors.rateLimited': 'That has been tested a lot recently. Give it a few minutes.',
-}
-
 export function DiscordCard({
   campaignId,
   status,
@@ -43,6 +35,7 @@ export function DiscordCard({
   campaignId: string
   status: IntegrationStatus
 }) {
+  const t = useTranslations('notifications.discord')
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [tested, setTested] = useState(false)
@@ -59,7 +52,12 @@ export function DiscordCard({
       setTested(false)
       setError(
         resolveActionError(
-          MESSAGES,
+          {
+            'notifications.errors.notADiscordWebhook': t('errors.invalid'),
+            'notifications.errors.noWebhookConfigured': t('errors.missing'),
+            'notifications.errors.webhookRejected': t('errors.rejected'),
+            'errors.rateLimited': t('errors.rateLimited'),
+          },
           fallback,
           failure.error.serverError?.messageKey,
           failure.error.validationErrors,
@@ -69,7 +67,7 @@ export function DiscordCard({
 
   const save = useAction(setDiscordWebhook, {
     onSuccess: () => router.refresh(),
-    onError: handle('Could not save that webhook.'),
+    onError: handle(t('errors.save')),
   })
 
   const test = useAction(testDiscordWebhook, {
@@ -77,7 +75,7 @@ export function DiscordCard({
       setTested(true)
       router.refresh()
     },
-    onError: handle('Could not post to that channel.'),
+    onError: handle(t('errors.test')),
   })
 
   const remove = useAction(removeDiscordWebhook, {
@@ -85,7 +83,7 @@ export function DiscordCard({
       setRemoving(false)
       router.refresh()
     },
-    onError: handle('Could not remove that webhook.'),
+    onError: handle(t('errors.remove')),
   })
 
   return (
@@ -93,20 +91,18 @@ export function DiscordCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Webhook className="size-4 text-text-muted" aria-hidden="true" />
-          Discord
+          {t('title')}
         </CardTitle>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
         <p className="font-ui text-sm text-text-secondary">
-          {status.configured
-            ? 'Posts when a session is announced, confirmed, moved or cancelled.'
-            : 'Paste a channel webhook to tell the group in Discord as well as by email.'}
+          {status.configured ? t('configuredDescription') : t('description')}
         </p>
 
         {status.lastError ? (
           <p className="rounded-sm border border-status-danger/50 bg-sanguine-3 px-3 py-2 font-ui text-xs text-status-danger">
-            The last post was refused: {status.lastError}
+            {t('lastError', { error: status.lastError })}
           </p>
         ) : null}
 
@@ -122,7 +118,7 @@ export function DiscordCard({
           }}
         >
           <Field>
-            <FieldLabel htmlFor="url">Webhook address</FieldLabel>
+            <FieldLabel htmlFor="url">{t('webhookLabel')}</FieldLabel>
             <Input
               id="url"
               name="url"
@@ -132,9 +128,7 @@ export function DiscordCard({
               autoComplete="off"
             />
             <FieldDescription>
-              {status.configured
-                ? 'One is already stored. Entering another replaces it; it is never shown again.'
-                : 'Channel settings → Integrations → Webhooks → Copy webhook URL.'}
+              {status.configured ? t('webhookConfiguredHint') : t('webhookHint')}
             </FieldDescription>
           </Field>
 
@@ -142,12 +136,13 @@ export function DiscordCard({
 
           <div className="flex flex-wrap items-center gap-3">
             <Button type="submit" variant="accent" disabled={save.isPending}>
-              {save.isPending ? 'Saving…' : status.configured ? 'Replace webhook' : 'Save webhook'}
+              {save.isPending ? t('saving') : status.configured ? t('replace') : t('save')}
             </Button>
 
             {status.configured ? (
               <>
                 <Button
+                  type="button"
                   variant="outline"
                   disabled={test.isPending}
                   onClick={() => {
@@ -156,18 +151,18 @@ export function DiscordCard({
                   }}
                 >
                   <Send className="size-4" aria-hidden="true" />
-                  {test.isPending ? 'Posting…' : 'Test'}
+                  {test.isPending ? t('posting') : t('test')}
                 </Button>
-                <Button variant="danger" onClick={() => setRemoving(true)}>
+                <Button type="button" variant="danger" onClick={() => setRemoving(true)}>
                   <Trash2 className="size-4" aria-hidden="true" />
-                  Remove
+                  {t('remove')}
                 </Button>
               </>
             ) : null}
 
             {tested ? (
               <span role="status" className="font-ui text-xs text-status-positive">
-                Posted. Check the channel.
+                {t('posted')}
               </span>
             ) : null}
           </div>
@@ -177,9 +172,9 @@ export function DiscordCard({
       <ConfirmDialog
         open={removing}
         onOpenChange={setRemoving}
-        title="Stop posting to Discord?"
-        description="Nothing from this campaign will be posted to the channel afterwards. Email and in-app notifications are unaffected."
-        confirmLabel="Remove webhook"
+        title={t('removeDialog.title')}
+        description={t('removeDialog.description')}
+        confirmLabel={t('removeDialog.confirm')}
         destructive
         pending={remove.isPending}
         onConfirm={() => remove.execute({ campaignId })}

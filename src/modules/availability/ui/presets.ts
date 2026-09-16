@@ -12,32 +12,14 @@ export type PresetId = 'weeknights' | 'weekends' | 'everyEvening' | 'noneOfThese
 
 export type Preset = {
   readonly id: PresetId
-  readonly label: string
-  readonly description: string
 }
 
 export const PRESETS: readonly Preset[] = [
-  {
-    id: 'weeknights',
-    label: 'Weeknights',
-    description: 'Free every Monday to Friday evening, from the usual start.',
-  },
-  {
-    id: 'weekends',
-    label: 'Weekends',
-    description: 'Free on Saturdays and Sundays, the whole evening.',
-  },
-  {
-    id: 'everyEvening',
-    label: 'Every evening',
-    description: 'Free on every date offered.',
-  },
-  {
-    id: 'noneOfThese',
-    label: 'None of these',
-    description: 'Cannot make any of the dates offered.',
-  },
-  { id: 'clear', label: 'Start again', description: 'Clears every answer.' },
+  { id: 'weeknights' },
+  { id: 'weekends' },
+  { id: 'everyEvening' },
+  { id: 'noneOfThese' },
+  { id: 'clear' },
 ]
 
 const WEEKEND = new Set([0, 6])

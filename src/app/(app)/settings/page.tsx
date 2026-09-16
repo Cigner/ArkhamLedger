@@ -1,22 +1,21 @@
 import { Settings2 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { PageHeader } from '@/components/patterns/page-header'
 import { requireUser } from '@/lib/auth'
 import { guardPage } from '@/lib/page-guards'
 import { SettingsForm } from '@/modules/identity/ui/settings-form'
 import { getMyChannelPreferences } from '@/modules/notifications/data/preferences'
 
-/**
- * Account settings.
- *
- * Everything here is about the signed-in user and nobody else; none of the
- * actions behind it accept a user id, so there is no version of this page that
- * could be pointed at somebody else's account.
- */
-export const metadata: Metadata = { title: 'Settings' }
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('identity.settings')
+  return { title: t('title') }
+}
+
 export default async function SettingsPage() {
+  const t = await getTranslations('identity.settings')
   const [user, preferences] = await guardPage(() =>
     Promise.all([requireUser(), getMyChannelPreferences()]),
   )
@@ -24,9 +23,9 @@ export default async function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Settings"
+        title={t('title')}
         icon={<Settings2 className="size-6" strokeWidth={1.5} />}
-        description="Your details, and how you hear from us."
+        description={t('pageDescription')}
       />
       <SettingsForm
         profile={{ name: user.name, timezone: user.timezone, email: user.email }}

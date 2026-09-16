@@ -3,6 +3,7 @@
 import { CalendarClock, CalendarSearch, FileText, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 
 /**
@@ -22,16 +23,17 @@ export function SessionTabs({
   isParticipant: boolean
 }) {
   const pathname = usePathname()
+  const t = useTranslations('sessions.tabs')
   const base = `/sessions/${sessionId}`
 
   const tabs = [
-    { href: base, label: 'Overview', icon: FileText },
+    { href: base, label: t('overview'), icon: FileText },
     // Only somebody who was invited has an answer to give or a grid to read.
     ...(isParticipant
-      ? [{ href: `${base}/availability`, label: 'Availability', icon: CalendarClock }]
+      ? [{ href: `${base}/availability`, label: t('availability'), icon: CalendarClock }]
       : []),
-    ...(isKeeper ? [{ href: `${base}/scheduling`, label: 'Dates', icon: CalendarSearch }] : []),
-    ...(isKeeper ? [{ href: `${base}/participants`, label: 'Participants', icon: Users }] : []),
+    ...(isKeeper ? [{ href: `${base}/scheduling`, label: t('dates'), icon: CalendarSearch }] : []),
+    ...(isKeeper ? [{ href: `${base}/participants`, label: t('participants'), icon: Users }] : []),
   ]
 
   return (

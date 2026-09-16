@@ -1,4 +1,5 @@
 import { formatDeadline, formatWindow } from '@/lib/datetime/format'
+import type { AppTranslator } from '@/lib/i18n/translator'
 import type { NotificationPayload, NotificationType } from './types'
 
 /**
@@ -15,10 +16,7 @@ import type { NotificationPayload, NotificationType } from './types'
  * saying "you" means nothing. The difference is one line per type and saves
  * every reader a moment of working out who is being spoken to.
  *
- * These strings are deliberately literal rather than catalogue keys. The worker
- * renders them outside any request, where next-intl's server API has no context
- * to resolve against; a translation pass would move them into the catalogue and
- * pass a resolver in, which is a change to this file and to nothing else.
+ * A translator is injected because workers render outside a request context.
  */
 export type RenderedMessage = {
   /** Email subject, and the inbox headline. */
@@ -39,104 +37,148 @@ export type RenderInput = {
   readonly baseUrl: string
   readonly campaignId?: string | null
   readonly gameSessionId?: string | null
+  readonly translate: AppTranslator
 }
 
 export function renderNotification(input: RenderInput): RenderedMessage {
   const href = linkFor(input)
+  const t = input.translate
   const url = href ? `${input.baseUrl.replace(/\/$/, '')}${href}` : null
-  const campaign = input.payload.campaignName ?? 'a campaign'
-  const session = input.payload.sessionTitle ?? 'a session'
+  const campaign = input.payload.campaignName ?? t('notifications.messages.fallback.campaign')
+  const session = input.payload.sessionTitle ?? t('notifications.messages.fallback.session')
   const when = formatWhen(input.payload)
 
   switch (input.type) {
     case 'CAMPAIGN_INVITED':
       return message({
-        subject: `You are invited to ${campaign}`,
-        body: `${input.payload.actorName ?? 'A Keeper'} has invited you to ${campaign}.`,
-        channelText: `${input.payload.actorName ?? 'A Keeper'} invited somebody to ${campaign}.`,
+        subject: t('notifications.messages.campaignInvited.subject', { campaign }),
+        body: t('notifications.messages.campaignInvited.body', {
+          actor: input.payload.actorName ?? t('notifications.messages.fallback.keeper'),
+          campaign,
+        }),
+        channelText: t('notifications.messages.campaignInvited.channel', {
+          actor: input.payload.actorName ?? t('notifications.messages.fallback.keeper'),
+          campaign,
+        }),
         href,
         url,
       })
 
     case 'CAMPAIGN_MEMBER_JOINED':
       return message({
-        subject: `${input.payload.actorName ?? 'Somebody'} joined ${campaign}`,
-        body: `${input.payload.actorName ?? 'Somebody'} has joined ${campaign}.`,
-        channelText: `${input.payload.actorName ?? 'Somebody'} has joined ${campaign}.`,
+        subject: t('notifications.messages.memberJoined.subject', {
+          actor: input.payload.actorName ?? t('notifications.messages.fallback.somebody'),
+          campaign,
+        }),
+        body: t('notifications.messages.memberJoined.body', {
+          actor: input.payload.actorName ?? t('notifications.messages.fallback.somebody'),
+          campaign,
+        }),
+        channelText: t('notifications.messages.memberJoined.channel', {
+          actor: input.payload.actorName ?? t('notifications.messages.fallback.somebody'),
+          campaign,
+        }),
         href,
         url,
       })
 
     case 'SESSION_CREATED':
       return message({
-        subject: `A session is being planned: ${session}`,
-        body: `${session} is being planned in ${campaign}.`,
-        channelText: `${session} is being planned in ${campaign}.`,
+        subject: t('notifications.messages.sessionCreated.subject', { session }),
+        body: t('notifications.messages.sessionCreated.body', { session, campaign }),
+        channelText: t('notifications.messages.sessionCreated.channel', { session, campaign }),
         href,
         url,
       })
 
     case 'AVAILABILITY_REQUESTED':
       return message({
-        subject: `When are you free for ${session}?`,
-        body: [`${campaign} is looking for a date for ${session}.`, deadlineSentence(input.payload)]
+        subject: t('notifications.messages.availabilityRequested.subject', { session }),
+        body: [
+          t('notifications.messages.availabilityRequested.body', { campaign, session }),
+          deadlineSentence(input.payload, t),
+        ]
           .filter(Boolean)
           .join(' '),
         channelText:
-          `${campaign} is looking for a date for ${session}. ${deadlineSentence(input.payload)}`.trim(),
+          `${t('notifications.messages.availabilityRequested.channel', { campaign, session })} ${deadlineSentence(input.payload, t)}`.trim(),
         href,
         url,
       })
 
     case 'AVAILABILITY_REMINDER':
       return message({
-        subject: `Still waiting on you for ${session}`,
+        subject: t('notifications.messages.availabilityReminder.subject', { session }),
         body: [
-          `You have not said when you are free for ${session}.`,
-          deadlineSentence(input.payload),
+          t('notifications.messages.availabilityReminder.body', { session }),
+          deadlineSentence(input.payload, t),
         ]
           .filter(Boolean)
           .join(' '),
         channelText:
-          `Some answers are still missing for ${session}. ${deadlineSentence(input.payload)}`.trim(),
+          `${t('notifications.messages.availabilityReminder.channel', { session })} ${deadlineSentence(input.payload, t)}`.trim(),
         href,
         url,
       })
 
     case 'COLLECTION_CLOSED':
       return message({
-        subject: `Answers are in for ${session}`,
-        body: `The deadline for ${session} has passed and the possible dates have been worked out. Pick one when you have a moment.`,
-        channelText: `Answers are in for ${session}; the Keeper is choosing a date.`,
+        subject: t('notifications.messages.collectionClosed.subject', { session }),
+        body: t('notifications.messages.collectionClosed.body', { session }),
+        channelText: t('notifications.messages.collectionClosed.channel', { session }),
         href,
         url,
       })
 
     case 'SESSION_SCHEDULED':
       return message({
-        subject: `${session} is confirmed${when ? ` - ${when}` : ''}`,
-        body: `${session} will run ${when ?? 'at the agreed time'}.`,
-        channelText: `${session} is confirmed: ${when ?? 'time to be announced'}.`,
+        subject: t('notifications.messages.scheduled.subject', {
+          session,
+          suffix: when ? ` - ${when}` : '',
+        }),
+        body: t('notifications.messages.scheduled.body', {
+          session,
+          when: when ?? t('notifications.messages.fallback.agreedTime'),
+        }),
+        channelText: t('notifications.messages.scheduled.channel', {
+          session,
+          when: when ?? t('notifications.messages.fallback.timeTba'),
+        }),
         href,
         url,
       })
 
     case 'SESSION_RESCHEDULED':
       return message({
-        subject: `${session} has moved${when ? ` - ${when}` : ''}`,
-        body: `${session} has been moved. It will now run ${when ?? 'at a new time'}.`,
-        channelText: `${session} has moved: ${when ?? 'new time to be announced'}.`,
+        subject: t('notifications.messages.rescheduled.subject', {
+          session,
+          suffix: when ? ` - ${when}` : '',
+        }),
+        body: t('notifications.messages.rescheduled.body', {
+          session,
+          when: when ?? t('notifications.messages.fallback.newTime'),
+        }),
+        channelText: t('notifications.messages.rescheduled.channel', {
+          session,
+          when: when ?? t('notifications.messages.fallback.newTimeTba'),
+        }),
         href,
         url,
       })
 
     case 'SESSION_CANCELLED':
       return message({
-        subject: `${session} is cancelled`,
-        body: [`${session} will not be running.`, reasonSentence(input.payload)]
+        subject: t('notifications.messages.cancelled.subject', { session }),
+        body: [
+          t('notifications.messages.cancelled.body', { session }),
+          reasonSentence(input.payload, t),
+        ]
           .filter(Boolean)
           .join(' '),
-        channelText: [`${session} is cancelled.`, reasonSentence(input.payload)]
+        channelText: [
+          t('notifications.messages.cancelled.channel', { session }),
+          reasonSentence(input.payload, t),
+        ]
           .filter(Boolean)
           .join(' '),
         href,
@@ -145,9 +187,31 @@ export function renderNotification(input: RenderInput): RenderedMessage {
 
     case 'NO_NEXT_SESSION':
       return message({
-        subject: `${campaign} has no next session`,
-        body: `Nothing is scheduled in ${campaign}. Campaigns end this way more often than they end badly.`,
-        channelText: `Nothing is scheduled in ${campaign}.`,
+        subject: t('notifications.messages.noNext.subject', { campaign }),
+        body: t('notifications.messages.noNext.body', { campaign }),
+        channelText: t('notifications.messages.noNext.channel', { campaign }),
+        href,
+        url,
+      })
+
+    case 'ISSUE_REPORTED':
+      return message({
+        subject: t('notifications.messages.issue.subject', {
+          actor: input.payload.actorName ?? t('notifications.messages.fallback.userLower'),
+        }),
+        body: [
+          t('notifications.messages.issue.body', {
+            actor: input.payload.actorName ?? t('notifications.messages.fallback.user'),
+            email: input.payload.reporterEmail ?? t('notifications.messages.fallback.noEmail'),
+          }),
+          input.payload.sourcePath
+            ? t('notifications.messages.issue.page', { path: input.payload.sourcePath })
+            : '',
+          input.payload.reportMessage ?? '',
+        ]
+          .filter(Boolean)
+          .join('\n\n'),
+        channelText: t('notifications.messages.issue.channel'),
         href,
         url,
       })
@@ -177,6 +241,7 @@ function message(input: {
 }
 
 function linkFor(input: RenderInput): string | null {
+  if (input.type === 'ISSUE_REPORTED') return '/admin/reports'
   if (input.type === 'AVAILABILITY_REQUESTED' || input.type === 'AVAILABILITY_REMINDER') {
     return input.gameSessionId ? `/sessions/${input.gameSessionId}/availability` : null
   }
@@ -200,16 +265,18 @@ function formatWhen(payload: NotificationPayload): string | null {
   return `${formatWindow(start, end, zone)} (${zone})`
 }
 
-function deadlineSentence(payload: NotificationPayload): string {
+function deadlineSentence(payload: NotificationPayload, t: AppTranslator): string {
   if (!payload.deadlineUtc) return ''
 
   const deadline = new Date(payload.deadlineUtc)
   if (Number.isNaN(deadline.getTime())) return ''
 
   // Stored as the instant the day ends, so it is rendered as that day.
-  return `Answer by ${formatDeadline(deadline, payload.timezone ?? 'UTC')}.`
+  return t('notifications.messages.deadline', {
+    deadline: formatDeadline(deadline, payload.timezone ?? 'UTC'),
+  })
 }
 
-function reasonSentence(payload: NotificationPayload): string {
-  return payload.reason ? `Reason: ${payload.reason}` : ''
+function reasonSentence(payload: NotificationPayload, t: AppTranslator): string {
+  return payload.reason ? t('notifications.messages.reason', { reason: payload.reason }) : ''
 }

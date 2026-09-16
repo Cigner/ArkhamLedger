@@ -1,6 +1,7 @@
 'use client'
 
 import { Clock3 } from 'lucide-react'
+import { useFormatter, useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 import { cellPresentation } from './grid-cell'
 import type { DayRange } from '../domain/types'
@@ -30,8 +31,6 @@ function weekdayIndex(date: string): number {
   return (new Date(`${date}T12:00:00Z`).getUTCDay() + 6) % 7
 }
 
-const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
 export function DayOverview({
   editor,
   dates,
@@ -55,6 +54,8 @@ export function DayOverview({
   onOpenHours: (date: string) => void
   onAnnounce: (message: string) => void
 }) {
+  const t = useTranslations('availability.dayOverview')
+  const weekdays = t.raw('weekdays') as string[]
   const cell = (date: string) => (
     <DayButton
       key={date}
@@ -81,7 +82,7 @@ export function DayOverview({
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-7 gap-1.5">
-        {WEEKDAY_LABELS.map((label) => (
+        {weekdays.map((label) => (
           <div
             key={label}
             className="pb-1 text-center font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-text-muted"
@@ -124,14 +125,17 @@ function DayButton({
   onOpenHours: (date: string) => void
   onAnnounce: (message: string) => void
 }) {
+  const t = useTranslations('availability.dayOverview')
+  const stateT = useTranslations('availability.stateLabels')
+  const format = useFormatter()
   const range = editor.rangeFor(date)
   const presentation = cellPresentation(range.state)
   const parsed = new Date(`${date}T12:00:00Z`)
 
-  const weekday = parsed.toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' })
+  const weekday = format.dateTime(parsed, { weekday: 'long', timeZone: 'UTC' })
   const dayNumber = parsed.getUTCDate()
-  const monthLabel = parsed.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' })
-  const fullDate = parsed.toLocaleDateString('en-GB', {
+  const monthLabel = format.dateTime(parsed, { month: 'short', timeZone: 'UTC' })
+  const fullDate = format.dateTime(parsed, {
     day: 'numeric',
     month: 'long',
     timeZone: 'UTC',
@@ -143,13 +147,19 @@ function DayButton({
     (range.state === 'YES' || range.state === 'IF_NEED_BE') &&
     range.toHour - range.fromHour < minSessionHours
 
-  const label = `${weekday} ${fullDate}: ${presentation.label}${detail ? `, ${detail}` : ''}. Activate to change.`
-  const hoursLabel = `Exact hours for ${weekday} ${fullDate}`
+  const stateLabel = stateT(presentation.labelKey)
+  const label = t('cellLabel', { weekday, date: fullDate, state: stateLabel, detail })
+  const hoursLabel = t('hoursLabel', { weekday, date: fullDate })
 
   function handleClick() {
     editor.cycleDay(date)
     onAnnounce(
-      `${weekday} ${fullDate}: ${cellPresentation(editor.rangeFor(date).state).label}. Times in ${timezone}.`,
+      t('announcement', {
+        weekday,
+        date: fullDate,
+        state: stateT(cellPresentation(editor.rangeFor(date).state).labelKey),
+        timezone,
+      }),
     )
   }
 
@@ -166,7 +176,7 @@ function DayButton({
       type="button"
       onClick={() => onOpenHours(date)}
       aria-label={hoursLabel}
-      title="Exact hours"
+      title={t('exactHours')}
       className={cn(
         'flex items-center justify-center rounded-sm text-text-secondary',
         'transition-interactive hover:bg-surface-hover hover:text-text-primary',
@@ -195,7 +205,7 @@ function DayButton({
             <span className="font-ui text-xs opacity-80">{fullDate}</span>
           </span>
           <span data-tabular className="shrink-0 font-ui text-xs opacity-90">
-            {detail || presentation.label}
+            {detail || stateLabel}
           </span>
         </button>
         {hoursButton('w-11 shrink-0 border border-border-subtle bg-surface-subtle')}
@@ -226,7 +236,7 @@ function DayButton({
         </span>
 
         <span data-tabular className="pr-6 font-ui text-2xs leading-tight opacity-85">
-          {detail || (range.state === null ? '' : presentation.label)}
+          {detail || (range.state === null ? '' : stateLabel)}
         </span>
       </button>
       {hoursButton('absolute bottom-1 right-1 size-6')}

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { guardPage } from '@/lib/page-guards'
 import { getCampaignDetail, getCampaignSettings } from '@/modules/campaigns/data/campaigns'
 import { listMembers } from '@/modules/campaigns/data/members'
@@ -12,8 +13,12 @@ import { DiscordCard } from '@/modules/notifications/ui/discord-card'
  * getCampaignSettings requires a Keeper, so an Investigator who navigates here
  * directly is refused by the query rather than by the missing tab.
  */
-export const metadata: Metadata = { title: 'Settings' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('campaigns.settings')
+  return { title: t('title') }
+}
 
 export default async function CampaignSettingsPage({
   params,

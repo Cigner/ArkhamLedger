@@ -11,8 +11,7 @@ import { appLogger, securityLogger } from '@/lib/logger'
  *
  * Every mutation in the application goes through one of these. The chain is
  * fixed and deliberate: validate input, then authenticate, then authorize, then
- * touch data. Server Actions are public POST endpoints, so none of those steps
- * may be assumed to have happened earlier in the request.
+ * touch data.
  *
  * Errors are mapped here rather than in each action: an AppError carries an i18n
  * key the client can render, while anything unexpected is logged with its stack
@@ -43,8 +42,6 @@ export const actionClient = createSafeActionClient({
     const name = utils.metadata?.name ?? 'unknown'
 
     if (isAppError(error)) {
-      // Expected outcomes: a denied permission or a broken business rule. Logged
-      // at warn so a burst of them is visible, but never with a stack trace.
       const logger =
         error.code === 'FORBIDDEN' || error.code === 'UNAUTHORIZED' ? securityLogger : appLogger
       logger.warn({ action: name, code: error.code, key: error.messageKey }, 'action rejected')
@@ -86,8 +83,7 @@ export const adminActionClient = actionClient.use(async ({ next }) => {
  * Unauthenticated actions: activation, password reset request, password reset.
  *
  * Separate from `actionClient` only to make the absence of an auth check
- * explicit at the call site - an action built on this client is public by
- * design, not by omission.
+ * explicit at the call site.
  */
 export const publicActionClient = actionClient.use(async ({ next }) => {
   return next({ ctx: { correlationId: await correlationId() } })

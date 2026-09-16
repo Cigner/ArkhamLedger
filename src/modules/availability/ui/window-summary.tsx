@@ -1,4 +1,7 @@
+'use client'
+
 import { cn } from '@/lib/cn'
+import { useFormatter, useTranslations } from 'next-intl'
 import type { WindowSummary } from '../domain/types'
 
 /**
@@ -19,18 +22,16 @@ export function WindowSummaryList({
   timezone: string
   className?: string
 }) {
+  const t = useTranslations('availability.windows')
+  const format = useFormatter()
   if (windows.length === 0) {
-    return (
-      <p className={cn('font-ui text-sm text-text-muted', className)}>
-        No evening yet has enough people free for long enough.
-      </p>
-    )
+    return <p className={cn('font-ui text-sm text-text-muted', className)}>{t('empty')}</p>
   }
 
   return (
     <ul className={cn('flex flex-col gap-1', className)}>
       {windows.map((window, index) => {
-        const day = new Date(`${window.date}T12:00:00Z`).toLocaleDateString('en-GB', {
+        const day = format.dateTime(new Date(`${window.date}T12:00:00Z`), {
           weekday: 'long',
           day: 'numeric',
           month: 'long',
@@ -59,8 +60,8 @@ export function WindowSummaryList({
             </span>
 
             <span data-tabular className="font-ui text-xs text-text-secondary">
-              {window.available} of {window.total} free
-              {window.ifNeedBe > 0 ? `, ${window.ifNeedBe} at a push` : ''}
+              {t('freeCount', { available: window.available, total: window.total })}
+              {window.ifNeedBe > 0 ? t('atPush', { count: window.ifNeedBe }) : ''}
             </span>
 
             <span
@@ -69,10 +70,10 @@ export function WindowSummaryList({
                 window.quorumMet ? 'text-status-positive' : 'text-text-muted',
               )}
             >
-              {window.quorumMet ? 'enough to play' : 'below quorum'}
+              {window.quorumMet ? t('enough') : t('below')}
             </span>
 
-            <span className="sr-only">Times in {timezone}.</span>
+            <span className="sr-only">{t('timezone', { timezone })}</span>
           </li>
         )
       })}

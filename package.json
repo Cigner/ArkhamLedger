@@ -15,6 +15,7 @@
     "worker:dev": "tsx --env-file-if-exists=.env --conditions=react-server watch src/worker/index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "i18n:audit": "node scripts/audit-i18n-ui.mjs",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

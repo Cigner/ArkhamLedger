@@ -27,7 +27,6 @@ export function dateFromInstant(instant: Temporal.Instant): Date {
   return new Date(instant.epochMilliseconds)
 }
 
-/** Detects the viewer's IANA zone; falls back to UTC when unavailable. */
 export function detectTimeZone(): string {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
@@ -36,12 +35,6 @@ export function detectTimeZone(): string {
   }
 }
 
-/**
- * Checks an IANA zone identifier by asking Intl to resolve it.
- *
- * Abbreviations such as `CST` are rejected on purpose: they are ambiguous across
- * several real zones, and storing one silently produces the wrong hour.
- */
 export function isValidTimeZone(timeZone: string): boolean {
   if (!timeZone.includes('/') && timeZone !== 'UTC') return false
   try {

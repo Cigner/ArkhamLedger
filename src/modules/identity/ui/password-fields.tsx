@@ -1,6 +1,7 @@
 'use client'
 
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { PASSWORD_MIN_LENGTH } from '../domain/constants'
 
@@ -12,10 +13,12 @@ import { PASSWORD_MIN_LENGTH } from '../domain/constants'
  * one instead of filling in the old value.
  */
 export function PasswordFields({ disabled = false }: { disabled?: boolean }) {
+  const t = useTranslations('auth.passwordFields')
+
   return (
     <>
       <Field>
-        <FieldLabel htmlFor="password">New password</FieldLabel>
+        <FieldLabel htmlFor="password">{t('password')}</FieldLabel>
         <Input
           id="password"
           name="password"
@@ -25,13 +28,11 @@ export function PasswordFields({ disabled = false }: { disabled?: boolean }) {
           autoFocus
           disabled={disabled}
         />
-        <FieldDescription>
-          At least {PASSWORD_MIN_LENGTH} characters.
-        </FieldDescription>
+        <FieldDescription>{t('minimum', { count: PASSWORD_MIN_LENGTH })}</FieldDescription>
       </Field>
 
       <Field>
-        <FieldLabel htmlFor="confirmPassword">Confirm password</FieldLabel>
+        <FieldLabel htmlFor="confirmPassword">{t('confirm')}</FieldLabel>
         <Input
           id="confirmPassword"
           name="confirmPassword"

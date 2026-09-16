@@ -1,18 +1,5 @@
 import { Temporal } from './temporal'
 
-/**
- * Availability grid slot generation.
- *
- * The grid is defined in a campaign's local wall-clock time, but slots are keyed
- * by the UTC instant they start at. This is the only place in the application
- * that converts between the two, which is what keeps daylight-saving handling
- * from leaking into the algorithm, the repository or the UI.
- *
- * Two transition days need explicit handling and are covered by tests:
- *   - spring forward: the skipped local hour produces no slot at all;
- *   - autumn back: the repeated local hour produces two slots with the same
- *     label and different instants, disambiguated by `repeatIndex`.
- */
 export type GridBounds = {
   /** Inclusive local start date, ISO `YYYY-MM-DD`. */
   readonly startDate: string
@@ -39,12 +26,6 @@ export type GridSlot = {
 
 const HOURS_PER_DAY = 24
 
-/**
- * Produces every slot of the grid in chronological order.
- *
- * Iterates instants rather than local hours so that transition days yield the
- * number of slots that actually exist - 23 or 25 - instead of an assumed 24.
- */
 export function generateGridSlots(bounds: GridBounds): GridSlot[] {
   validateBounds(bounds)
 
@@ -61,12 +42,6 @@ export function generateGridSlots(bounds: GridBounds): GridSlot[] {
   return slots
 }
 
-/**
- * Slots for one local day, bounded by the grid's hour window.
- *
- * Walks the day instant by instant from its true start so that a repeated or
- * missing local hour is observed rather than assumed.
- */
 function slotsForDay(date: Temporal.PlainDate, bounds: GridBounds): GridSlot[] {
   const dayStart = date.toZonedDateTime({ timeZone: bounds.timeZone })
   const nextDayStart = date.add({ days: 1 }).toZonedDateTime({ timeZone: bounds.timeZone })
@@ -95,25 +70,16 @@ function slotsForDay(date: Temporal.PlainDate, bounds: GridBounds): GridSlot[] {
   return slots
 }
 
-/**
- * Number of consecutive real hours between two instants.
- *
- * Used to measure a session window: on a transition day the wall-clock
- * difference and the elapsed hours disagree, and scheduling cares about the
- * elapsed hours.
- */
 export function elapsedHours(startUtc: string, endUtc: string): number {
   const start = Temporal.Instant.from(startUtc)
   const end = Temporal.Instant.from(endUtc)
   return start.until(end, { largestUnit: 'hour' }).hours
 }
 
-/** Advances an instant by whole hours, independent of any local calendar. */
 export function addHours(startUtc: string, hours: number): string {
   return Temporal.Instant.from(startUtc).add({ hours }).toString()
 }
 
-/** Renders a slot's local label in the given zone, e.g. `18:00`. */
 export function formatLocalHour(startUtc: string, timeZone: string): string {
   const zoned = Temporal.Instant.from(startUtc).toZonedDateTimeISO(timeZone)
   return `${String(zoned.hour).padStart(2, '0')}:00`
@@ -136,14 +102,6 @@ function validateBounds(bounds: GridBounds): void {
 
 /**
  * Resolves a local wall-clock hour in a zone to the instant it names.
- *
- * The direction that matters for input: a Keeper types "the 24th at 18:00" and
- * means it in the campaign's zone, not in theirs and not in UTC. Converting once
- * here keeps that assumption in a single place.
- *
- * On a spring-forward day the named hour may not exist; Temporal resolves such a
- * time forward by default rather than throwing, which is the behaviour a person
- * expects from a form.
  */
 export function localHourToInstant(date: string, hour: number, timeZone: string): Date {
   const zoned = Temporal.PlainDate.from(date).toZonedDateTime({
@@ -151,8 +109,6 @@ export function localHourToInstant(date: string, hour: number, timeZone: string)
     plainTime: Temporal.PlainTime.from({ hour: hour % 24 }),
   })
 
-  // Hour 24 means midnight at the end of the day, which Temporal cannot express
-  // as a PlainTime.
   const resolved = hour >= 24 ? zoned.add({ days: 1 }) : zoned
 
   return new Date(resolved.toInstant().epochMilliseconds)

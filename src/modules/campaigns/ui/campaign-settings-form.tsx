@@ -1,6 +1,7 @@
 'use client'
 
 import { Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -29,21 +30,6 @@ import type { CampaignMemberListItem, CampaignSettings, Membership } from '../do
  * their own confirmation, because both change who can do what and neither is
  * undone by pressing back.
  */
-const STATUS_LABELS = {
-  PLANNING: 'Planning',
-  ACTIVE: 'Active',
-  ON_HIATUS: 'On hiatus',
-  COMPLETED: 'Completed',
-  ARCHIVED: 'Archived',
-} as const
-
-const MESSAGES: Record<string, string> = {
-  'campaigns.errors.invalidTimezone': 'That is not a recognised time zone.',
-  'campaigns.errors.campaignArchived': 'This campaign is archived and cannot be changed.',
-  'campaigns.errors.newOwnerMustBeMember': 'The new owner has to be an active member.',
-  'campaigns.errors.ownerOnly': 'Only the campaign owner can do that.',
-}
-
 export function CampaignSettingsForm({
   settings,
   members,
@@ -53,12 +39,26 @@ export function CampaignSettingsForm({
   members: readonly CampaignMemberListItem[]
   viewer: Membership
 }) {
+  const t = useTranslations('campaigns.settings')
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [status, setStatus] = useState(settings.status)
   const [confirmingArchive, setConfirmingArchive] = useState(false)
   const [confirmingTransfer, setConfirmingTransfer] = useState(false)
+  const statusLabels = {
+    PLANNING: t('statuses.PLANNING'),
+    ACTIVE: t('statuses.ACTIVE'),
+    ON_HIATUS: t('statuses.ON_HIATUS'),
+    COMPLETED: t('statuses.COMPLETED'),
+    ARCHIVED: t('statuses.ARCHIVED'),
+  } as const
+  const messages: Record<string, string> = {
+    'campaigns.errors.invalidTimezone': t('errors.invalidTimezone'),
+    'campaigns.errors.campaignArchived': t('errors.campaignArchived'),
+    'campaigns.errors.newOwnerMustBeMember': t('errors.newOwnerMustBeMember'),
+    'campaigns.errors.ownerOnly': t('errors.ownerOnly'),
+  }
 
   const transferCandidates = members.filter((member) => member.userId !== viewer.userId)
   const [newOwnerId, setNewOwnerId] = useState(transferCandidates[0]?.userId ?? '')
@@ -71,8 +71,8 @@ export function CampaignSettingsForm({
     onError: ({ error: actionError }) => {
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not save the campaign.',
+          messages,
+          t('errors.saveFailed'),
           actionError.serverError?.messageKey,
           actionError.validationErrors,
         ),
@@ -120,19 +120,18 @@ export function CampaignSettingsForm({
           role="status"
           className="rounded-sm border border-border-ornament bg-candle-3 px-3 py-2 font-ui text-sm leading-[--leading-ui] text-candle-11"
         >
-          This campaign is archived and read-only. Change its status to something else and save to
-          bring it back.
+          {t('archivedNotice')}
         </p>
       ) : null}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
         <Field>
-          <FieldLabel htmlFor="name">Name</FieldLabel>
+          <FieldLabel htmlFor="name">{t('name')}</FieldLabel>
           <Input id="name" name="name" defaultValue={settings.name} required readOnly={archived} />
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="description">Description</FieldLabel>
+          <FieldLabel htmlFor="description">{t('description')}</FieldLabel>
           <Textarea
             id="description"
             name="description"
@@ -142,9 +141,9 @@ export function CampaignSettingsForm({
         </Field>
 
         <Field>
-          <FieldLabel>Status</FieldLabel>
+          <FieldLabel>{t('status')}</FieldLabel>
           <Select
-            items={STATUS_LABELS}
+            items={statusLabels}
             value={status}
             onValueChange={(value) => setStatus(value as CampaignSettings['status'])}
           >
@@ -152,7 +151,7 @@ export function CampaignSettingsForm({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(STATUS_LABELS).map(([value, label]) => (
+              {Object.entries(statusLabels).map(([value, label]) => (
                 <SelectItem key={value} value={value}>
                   {label}
                 </SelectItem>
@@ -162,7 +161,7 @@ export function CampaignSettingsForm({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="timezone">Time zone</FieldLabel>
+          <FieldLabel htmlFor="timezone">{t('timezone')}</FieldLabel>
           <Input
             id="timezone"
             name="timezone"
@@ -170,10 +169,7 @@ export function CampaignSettingsForm({
             required
             readOnly={archived}
           />
-          <FieldDescription>
-            An IANA identifier such as Europe/Warsaw. The availability grid is drawn in this zone
-            for every member, so that everyone is looking at the same hours.
-          </FieldDescription>
+          <FieldDescription>{t('timezoneHint')}</FieldDescription>
         </Field>
 
         <FormError>{error}</FormError>
@@ -181,11 +177,11 @@ export function CampaignSettingsForm({
         <div className="flex items-center gap-3">
           <Button type="submit" variant="accent" disabled={save.isPending}>
             <Check className="size-4" aria-hidden="true" />
-            {save.isPending ? 'Saving…' : 'Save changes'}
+            {save.isPending ? t('saving') : t('saveChanges')}
           </Button>
           {saved ? (
             <span role="status" className="font-ui text-xs text-status-positive">
-              Saved
+              {t('saved')}
             </span>
           ) : null}
         </div>
@@ -194,12 +190,12 @@ export function CampaignSettingsForm({
       {viewer.isOwner ? (
         <section className="flex flex-col gap-5 border-t border-border-subtle pt-8">
           <h2 className="font-display text-lg tracking-[--tracking-display] text-text-primary">
-            Ownership
+            {t('ownership')}
           </h2>
 
           {transferCandidates.length > 0 ? (
             <Field>
-              <FieldLabel>Transfer to</FieldLabel>
+              <FieldLabel>{t('transferTo')}</FieldLabel>
               <Select
                 items={ownerLabels}
                 value={newOwnerId}
@@ -216,34 +212,27 @@ export function CampaignSettingsForm({
                   ))}
                 </SelectContent>
               </Select>
-              <FieldDescription>
-                They become the owner and a Keeper. You stay a Keeper and can then leave if you want
-                to.
-              </FieldDescription>
+              <FieldDescription>{t('transferHint')}</FieldDescription>
               <div className="mt-2">
                 <Button variant="outline" onClick={() => setConfirmingTransfer(true)}>
-                  Transfer ownership
+                  {t('transferOwnership')}
                 </Button>
               </div>
             </Field>
           ) : (
-            <p className="font-ui text-sm text-text-muted">
-              Invite somebody else before you can hand the campaign over.
-            </p>
+            <p className="font-ui text-sm text-text-muted">{t('noTransferCandidates')}</p>
           )}
 
           <div className="flex flex-col gap-2 border-t border-border-subtle pt-6">
-            <h3 className="font-ui text-sm font-medium text-text-primary">Archive</h3>
-            <p className="font-ui text-sm text-text-secondary">
-              Hides the campaign and makes it read-only. Sessions and availability are kept.
-            </p>
+            <h3 className="font-ui text-sm font-medium text-text-primary">{t('archive')}</h3>
+            <p className="font-ui text-sm text-text-secondary">{t('archiveHint')}</p>
             <div className="mt-1">
               <Button
                 variant="danger"
                 disabled={archived}
                 onClick={() => setConfirmingArchive(true)}
               >
-                {archived ? 'Already archived' : 'Archive campaign'}
+                {archived ? t('alreadyArchived') : t('archiveCampaign')}
               </Button>
             </div>
           </div>
@@ -253,9 +242,9 @@ export function CampaignSettingsForm({
       <ConfirmDialog
         open={confirmingTransfer}
         onOpenChange={setConfirmingTransfer}
-        title="Hand over this campaign?"
-        description="They become the owner and can archive it, manage membership and change roles - including yours. You cannot take it back yourself."
-        confirmLabel="Transfer ownership"
+        title={t('transferConfirmTitle')}
+        description={t('transferConfirmDescription')}
+        confirmLabel={t('transferOwnership')}
         pending={transfer.isPending}
         onConfirm={() => transfer.execute({ campaignId: settings.id, newOwnerId })}
       />
@@ -263,9 +252,9 @@ export function CampaignSettingsForm({
       <ConfirmDialog
         open={confirmingArchive}
         onOpenChange={setConfirmingArchive}
-        title="Archive this campaign?"
-        description="It disappears from everyone's list and becomes read-only. Nothing is deleted."
-        confirmLabel="Archive campaign"
+        title={t('archiveConfirmTitle')}
+        description={t('archiveConfirmDescription')}
+        confirmLabel={t('archiveCampaign')}
         destructive
         pending={archive.isPending}
         onConfirm={() => archive.execute({ campaignId: settings.id })}

@@ -1,4 +1,5 @@
 import { cn } from '@/lib/cn'
+import { getTranslations } from 'next-intl/server'
 
 /**
  * How many people have answered.
@@ -7,7 +8,7 @@ import { cn } from '@/lib/cn'
  * said what - the distinction the whole privacy rule rests on. The bar is
  * accompanied by the numbers rather than replacing them.
  */
-export function ResponseProgress({
+export async function ResponseProgress({
   responded,
   total,
   className,
@@ -16,6 +17,7 @@ export function ResponseProgress({
   total: number
   className?: string
 }) {
+  const t = await getTranslations('sessions.responseProgress')
   const percentage = total === 0 ? 0 : Math.round((responded / total) * 100)
 
   return (
@@ -25,7 +27,7 @@ export function ResponseProgress({
         aria-valuenow={responded}
         aria-valuemin={0}
         aria-valuemax={total}
-        aria-label={`${responded} of ${total} participants have answered`}
+        aria-label={t('ariaLabel', { responded, total })}
         className="h-1.5 w-24 overflow-hidden rounded-full bg-surface-hover"
       >
         <div
@@ -34,7 +36,7 @@ export function ResponseProgress({
         />
       </div>
       <span data-tabular className="font-ui text-xs text-text-secondary">
-        {responded} of {total} answered
+        {t('summary', { responded, total })}
       </span>
     </div>
   )

@@ -2,6 +2,7 @@ import { Cron } from 'croner'
 import { closePool } from '@/db/client'
 import { env } from '@/lib/env'
 import { appLogger } from '@/lib/logger'
+import { mailer } from '@/lib/mail'
 import { cleanup } from './jobs/cleanup'
 import { closeDeadlines } from './jobs/close-deadlines'
 import { flushOutbox } from './jobs/flush-outbox'
@@ -26,7 +27,6 @@ import { beat, createDrain, runJob, type Job } from './runtime'
  * rather than ten is not worth a time zone conversation.
  */
 const SCHEDULES: readonly { readonly job: Job; readonly pattern: string }[] = [
-  // The queue: often enough that a confirmation feels immediate.
   { job: flushOutbox, pattern: '*/30 * * * * *' },
   { job: closeDeadlines, pattern: '0 */5 * * * *' },
   { job: sendReminders, pattern: '0 */15 * * * *' },
@@ -36,7 +36,14 @@ const SCHEDULES: readonly { readonly job: Job; readonly pattern: string }[] = [
 
 const DRAIN_TIMEOUT_MS = 15_000
 
-function start(): void {
+async function start(): Promise<void> {
+  const mailTransport = mailer()
+  const mailStatus = await mailTransport.verify()
+  if (!mailStatus.ok) {
+    throw new Error(`SMTP verification failed: ${mailStatus.error}`)
+  }
+  appLogger.info({ transport: mailTransport.name }, 'mail transport verified')
+
   const drain = createDrain()
 
   const crons = SCHEDULES.map(
@@ -51,11 +58,6 @@ function start(): void {
     'worker started',
   )
 
-  /*
-   * `protect: true` above is what keeps a slow run from overlapping itself: a
-   * flush that takes longer than thirty seconds skips its next tick rather than
-   * starting a second copy that fights it for the same rows.
-   */
   void beat('startup', new Date())
 
   const shutdown = (signal: string) => {
@@ -72,13 +74,12 @@ function start(): void {
   process.on('SIGTERM', () => shutdown('SIGTERM'))
   process.on('SIGINT', () => shutdown('SIGINT'))
 
-  /*
-   * A rejection nobody handled would otherwise take the process down under
-   * Node's default, which is the one failure mode this worker cannot afford.
-   */
   process.on('unhandledRejection', (reason) => {
     appLogger.error({ err: reason }, 'unhandled rejection in worker')
   })
 }
 
-start()
+void start().catch((error: unknown) => {
+  appLogger.fatal({ err: error }, 'worker could not start')
+  process.exit(1)
+})

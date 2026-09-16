@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 import { formatWindow, hoursBetween } from '@/lib/datetime/format'
 import type { CandidateExplanation, ProposalView } from '../domain/types'
@@ -28,6 +29,7 @@ export function ProposalCard({
   accepted?: boolean
   action?: React.ReactNode
 }) {
+  const t = useTranslations('scheduling.proposal')
   const best = proposal.rank === 1
   const hours = hoursBetween(proposal.startUtc, proposal.endUtc)
 
@@ -54,19 +56,19 @@ export function ProposalCard({
             </time>
           </span>
           <span data-tabular className="font-ui text-xs text-text-secondary">
-            {hours} hours
+            {t('hours', { count: hours })}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          {accepted ? <Badge variant="positive">Chosen</Badge> : null}
+          {accepted ? <Badge variant="positive">{t('chosen')}</Badge> : null}
           <span data-tabular className="font-ui text-sm text-text-primary">
             {proposal.score}%
           </span>
         </div>
       </div>
 
-      <p className="font-ui text-xs text-text-secondary">{headline(proposal.explanation)}</p>
+      <p className="font-ui text-xs text-text-secondary">{headline(proposal.explanation, t)}</p>
 
       <ul className="flex flex-col gap-1">
         {proposal.explanation.notes.map((note) => (
@@ -75,10 +77,10 @@ export function ProposalCard({
               ⚠
             </span>
             {note.kind === 'AT_A_PUSH'
-              ? `Only at a push: ${namesOf(note.userIds, names)}`
+              ? t('atPush', { names: namesOf(note.userIds, names) })
               : note.kind === 'UNAVAILABLE'
-                ? `Cannot make it: ${namesOf(note.userIds, names)}`
-                : `${note.count} ${note.count === 1 ? 'person has' : 'people have'} not answered`}
+                ? t('unavailable', { names: namesOf(note.userIds, names) })
+                : t('notAnswered', { count: note.count })}
           </li>
         ))}
       </ul>
@@ -90,11 +92,14 @@ export function ProposalCard({
             proposal.breakdown.quorumMet ? 'text-status-positive' : 'text-status-warning',
           )}
         >
-          {proposal.breakdown.availableCount} of {proposal.breakdown.investigatorCount} players free
+          {t('freeCount', {
+            available: proposal.breakdown.availableCount,
+            total: proposal.breakdown.investigatorCount,
+          })}
           {' · '}
           {proposal.breakdown.quorumMet
-            ? `quorum of ${proposal.breakdown.quorum} met`
-            : `below the quorum of ${proposal.breakdown.quorum}`}
+            ? t('quorumMet', { quorum: proposal.breakdown.quorum })
+            : t('belowQuorum', { quorum: proposal.breakdown.quorum })}
         </span>
         {action}
       </div>
@@ -109,29 +114,32 @@ export function ProposalCard({
  * counted as available but named below instead, because reporting them as free
  * is how a Keeper ends up surprised on the night.
  */
-function headline(explanation: CandidateExplanation): string {
-  if (explanation.headline === 'EVERYONE_FREE') return 'Everyone invited is free.'
+function headline(
+  explanation: CandidateExplanation,
+  t: ReturnType<typeof useTranslations>,
+): string {
+  if (explanation.headline === 'EVERYONE_FREE') return t('everyoneFree')
 
   const parts: string[] = []
 
   if (explanation.requiredTotal === 0) {
-    parts.push('The Keeper is free')
+    parts.push(t('keeperFree'))
   } else if (explanation.requiredMet === explanation.requiredTotal) {
-    parts.push('Everyone required is free')
+    parts.push(t('requiredFree'))
   } else {
     /*
      * The shortfall can only be somebody free at a push - an absence would have
      * taken the window out of the list entirely - so they can come, and the note
      * below names them rather than reducing them to a fraction.
      */
-    parts.push('Everyone required can come')
+    parts.push(t('requiredCanCome'))
   }
 
   if (explanation.preferredTotal > 0) {
-    parts.push(`${explanation.preferredMet} of ${explanation.preferredTotal} preferred`)
+    parts.push(t('preferred', { met: explanation.preferredMet, total: explanation.preferredTotal }))
   }
   if (explanation.optionalTotal > 0) {
-    parts.push(`${explanation.optionalMet} of ${explanation.optionalTotal} optional`)
+    parts.push(t('optional', { met: explanation.optionalMet, total: explanation.optionalTotal }))
   }
 
   return `${parts.join(' · ')}.`

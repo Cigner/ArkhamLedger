@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, Clock3, Globe, Undo2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -27,13 +28,6 @@ import { WindowSummaryList } from './window-summary'
  * which matters when the alternative is discovering on the night that their
  * answer never arrived.
  */
-const MESSAGES: Record<string, string> = {
-  'availability.errors.deadlinePassed':
-    'The deadline has passed, so answers are closed. Ask the Keeper to reopen it.',
-  'availability.errors.notInvited': 'You are not on the list for this session.',
-  'sessions.errors.notCollecting': 'This session is not asking for availability at the moment.',
-}
-
 /**
  * Why the calendar is read-only.
  *
@@ -41,24 +35,28 @@ const MESSAGES: Record<string, string> = {
  * are opposite situations, and both used to say "answers are closed" - which
  * reads as a fault to the Keeper who has just created the thing.
  */
-function closedReason(status: AvailabilityView['status']): string {
+function closedReason(
+  status: AvailabilityView['status'],
+  t: ReturnType<typeof useTranslations>,
+): string {
   switch (status) {
     case 'DRAFT':
-      return 'Nobody has been asked yet. The Keeper opens this when the session is ready.'
+      return t('closed.DRAFT')
     case 'PROPOSED':
-      return 'Answers are closed. The Keeper is choosing between the dates that work.'
+      return t('closed.PROPOSED')
     case 'SCHEDULED':
-      return 'The date is settled, so answers are closed.'
+      return t('closed.SCHEDULED')
     case 'COMPLETED':
-      return 'This session has been played.'
+      return t('closed.COMPLETED')
     case 'CANCELLED':
-      return 'This session was cancelled.'
+      return t('closed.CANCELLED')
     case 'COLLECTING':
-      return 'Answers are open.'
+      return t('closed.COLLECTING')
   }
 }
 
 export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
+  const t = useTranslations('availability.panel')
   const router = useRouter()
   const narrow = useMediaQuery('(max-width: 767px)')
 
@@ -73,6 +71,11 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
   const [savedAt, setSavedAt] = useState<Date | null>(null)
   const [announcement, setAnnouncement] = useState('')
   const [suggestion, setSuggestion] = useState<{ title: string } | null>(null)
+  const messages: Record<string, string> = {
+    'availability.errors.deadlinePassed': t('errors.deadlinePassed'),
+    'availability.errors.notInvited': t('errors.notInvited'),
+    'sessions.errors.notCollecting': t('errors.notCollecting'),
+  }
 
   /*
    * Evenings first, hours on request.
@@ -89,14 +92,14 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
     onSuccess: ({ data }) => {
       setSavedAt(data?.savedAt ?? new Date())
       editor.markSaved()
-      setAnnouncement('Your answer has been saved.')
+      setAnnouncement(t('savedAnnouncement'))
       router.refresh()
     },
     onError: ({ error: actionError }) => {
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not save your answer.',
+          messages,
+          t('errors.saveFailed'),
           actionError.serverError?.messageKey,
           actionError.validationErrors,
         ),
@@ -107,11 +110,6 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
   // Looks up the previous answer but never applies it: the button does that.
   const suggest = useAction(suggestPreviousAnswer)
 
-  /*
-   * Looked up once on mount so the offer can name the session it came from.
-   * Nothing is applied until the player asks for it - "the same as last time" is
-   * an assumption, not an answer.
-   */
   useEffect(() => {
     if (view.editable) suggest.execute({ sessionId: view.sessionId })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,7 +136,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
         {deadlineLabel ? (
           <p className="flex items-center gap-1.5 font-ui text-sm text-text-secondary">
             <Clock3 className="size-4 text-text-muted" aria-hidden="true" />
-            Answer by <time>{deadlineLabel}</time>
+            {t('answerBy')} <time>{deadlineLabel}</time>
           </p>
         ) : null}
       </div>
@@ -146,7 +144,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
       {view.editable ? (
         <div className="flex flex-col gap-3">
           <p className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-            Answer quickly
+            {t('quickAnswer')}
           </p>
           <div className="flex flex-wrap gap-2">
             {suggest.result.data?.found ? (
@@ -158,10 +156,10 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
                   if (!data?.found) return
                   editor.useSuggestion(data.byWeekday)
                   setSuggestion({ title: data.sessionTitle })
-                  setAnnouncement(`Filled in from ${data.sessionTitle}. Check it before saving.`)
+                  setAnnouncement(t('suggestionApplied', { title: data.sessionTitle }))
                 }}
               >
-                Same as last time
+                {t('sameAsLastTime')}
               </Button>
             ) : null}
             {PRESETS.map((preset) => (
@@ -169,19 +167,24 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
                 key={preset.id}
                 variant="outline"
                 size="sm"
-                title={preset.description}
+                title={t(`presets.${preset.id}.description`)}
                 onClick={() => {
                   editor.usePreset(preset.id)
-                  setAnnouncement(`${preset.label} applied. ${preset.description}`)
+                  setAnnouncement(
+                    t('presetApplied', {
+                      label: t(`presets.${preset.id}.label`),
+                      description: t(`presets.${preset.id}.description`),
+                    }),
+                  )
                 }}
               >
-                {preset.label}
+                {t(`presets.${preset.id}.label`)}
               </Button>
             ))}
           </div>
           {suggestion ? (
             <p className="font-ui text-xs text-text-muted">
-              Filled in from {suggestion.title}. Check it before saving.
+              {t('suggestionApplied', { title: suggestion.title })}
             </p>
           ) : null}
         </div>
@@ -189,10 +192,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
 
       <AvailabilityLegend />
 
-      <p className="font-ui text-xs text-text-muted">
-        Pick an evening to answer it. Pick it again to change how firm that is. Open the clock on an
-        evening you start late or have to leave early.
-      </p>
+      <p className="font-ui text-xs text-text-muted">{t('instructions')}</p>
 
       <DayOverview
         editor={editor}
@@ -219,19 +219,13 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
         onAnnounce={setAnnouncement}
       />
 
-      {/*
-        Announces finished edits rather than every keystroke inside the dialog,
-        which would be a stream nobody can follow.
-      */}
       <p aria-live="polite" className="sr-only">
         {announcement}
       </p>
 
       {tooShort.length > 0 ? (
         <p className="rounded-sm border border-status-warning/50 bg-candle-3 px-3 py-2 font-ui text-xs text-candle-11">
-          {tooShort.length === 1 ? 'One evening is' : `${tooShort.length} evenings are`} marked for
-          less than {view.minSessionHours} hours, so this session could not run then. They are
-          outlined below.
+          {t('tooShort', { count: tooShort.length, hours: view.minSessionHours })}
         </p>
       ) : null}
 
@@ -245,7 +239,7 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
             onClick={handleSave}
           >
             <Check className="size-4" aria-hidden="true" />
-            {save.isPending ? 'Saving…' : 'Save'}
+            {save.isPending ? t('saving') : t('save')}
           </Button>
 
           {editor.isDirty ? (
@@ -256,31 +250,33 @@ export function AvailabilityPanel({ view }: { view: AvailabilityView }) {
               disabled={save.isPending}
             >
               <Undo2 className="size-4" aria-hidden="true" />
-              Undo
+              {t('undo')}
             </Button>
           ) : null}
 
           <span role="status" className="font-ui text-xs text-text-muted">
             {editor.isDirty
-              ? 'Not saved yet.'
+              ? t('notSaved')
               : savedAt
-                ? 'Saved.'
+                ? t('saved')
                 : view.own.some((range) => range.state !== null)
-                  ? 'Your answer is recorded.'
-                  : 'You have not answered yet.'}
+                  ? t('recorded')
+                  : t('notAnswered')}
           </span>
         </div>
       ) : (
-        <p className="font-ui text-sm text-text-muted">{closedReason(view.status)}</p>
+        <p className="font-ui text-sm text-text-muted">{closedReason(view.status, t)}</p>
       )}
 
       <section className="flex flex-col gap-3 border-t border-border-subtle pt-6">
         <h2 className="font-display text-base tracking-[--tracking-display] text-text-primary">
-          When the group could play
+          {t('groupWindows')}
         </h2>
         <p className="font-ui text-xs text-text-muted">
-          {view.respondentCount} of {view.participantCount} answered. Who said what stays between
-          each player and the Keeper.
+          {t('privacySummary', {
+            responded: view.respondentCount,
+            total: view.participantCount,
+          })}
         </p>
         <WindowSummaryList windows={view.windows} timezone={view.timezone} />
       </section>

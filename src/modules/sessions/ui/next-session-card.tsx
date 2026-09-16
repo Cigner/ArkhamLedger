@@ -1,5 +1,6 @@
 import { CalendarCheck, CalendarClock, CalendarPlus, CalendarX, Download } from 'lucide-react'
 import Link from 'next/link'
+import { getFormatter, getTranslations } from 'next-intl/server'
 import { Badge } from '@/components/ui/badge'
 import { ButtonLink } from '@/components/ui/button-link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,7 +20,7 @@ import { SessionStatusBadge } from './session-status-badge'
  * Three states, in the order they matter: a date is set, a date is being worked
  * out, or nothing is happening.
  */
-export function NextSessionCard({
+export async function NextSessionCard({
   diary,
   campaignId,
   isKeeper,
@@ -28,6 +29,8 @@ export function NextSessionCard({
   campaignId: string
   isKeeper: boolean
 }) {
+  const t = await getTranslations('sessions.nextCard')
+  const format = await getFormatter()
   if (diary.next?.confirmedStartUtc && diary.next.confirmedEndUtc) {
     const next = diary.next
 
@@ -36,7 +39,7 @@ export function NextSessionCard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarCheck className="size-4 text-status-positive" aria-hidden="true" />
-            Next session
+            {t('nextSession')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -62,10 +65,10 @@ export function NextSessionCard({
             */}
             <ButtonLink href={`/api/sessions/${next.id}/ics`} variant="outline" size="sm">
               <Download className="size-4" aria-hidden="true" />
-              Add to calendar
+              {t('addToCalendar')}
             </ButtonLink>
             <ButtonLink href={`/sessions/${next.id}`} variant="ghost" size="sm">
-              Open
+              {t('open')}
             </ButtonLink>
           </div>
         </CardContent>
@@ -79,11 +82,11 @@ export function NextSessionCard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarClock className="size-4 text-candle-11" aria-hidden="true" />
-            Being arranged
+            {t('beingArranged')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <p className="font-ui text-sm text-text-secondary">No date settled yet.</p>
+          <p className="font-ui text-sm text-text-secondary">{t('noDate')}</p>
 
           <ul className="flex flex-col gap-2">
             {diary.arranging.map((entry) => (
@@ -111,38 +114,34 @@ export function NextSessionCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CalendarX className="size-4 text-status-warning" aria-hidden="true" />
-          No next session
+          {t('noNextSession')}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <p className="font-ui text-sm text-text-secondary">
-          Nothing planned and nothing being arranged. This is the state campaigns quietly end in.
-        </p>
+        <p className="font-ui text-sm text-text-secondary">{t('nothingPlanned')}</p>
 
         {isKeeper ? (
           <div>
             <ButtonLink href={`/campaigns/${campaignId}/sessions/new`} variant="accent" size="sm">
               <CalendarPlus className="size-4" aria-hidden="true" />
-              Plan the next one
+              {t('planNext')}
             </ButtonLink>
           </div>
         ) : (
-          <p className="font-ui text-xs text-text-muted">
-            Only a Keeper can start one. A nudge usually does it.
-          </p>
+          <p className="font-ui text-xs text-text-muted">{t('keeperOnly')}</p>
         )}
 
         {diary.recent.length > 0 ? (
           <div className="flex flex-col gap-1 border-t border-border-subtle pt-3">
             <p className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-              Last played
+              {t('lastPlayed')}
             </p>
             {diary.recent.map((entry) => (
               <span key={entry.id} className="font-ui text-sm text-text-muted">
                 {entry.title}
                 {entry.confirmedStartUtc ? (
                   <span data-tabular className="ml-2 text-xs">
-                    {entry.confirmedStartUtc.toLocaleDateString('en-GB', {
+                    {format.dateTime(entry.confirmedStartUtc, {
                       day: 'numeric',
                       month: 'long',
                       timeZone: entry.timezone,
@@ -155,7 +154,7 @@ export function NextSessionCard({
         ) : (
           <div>
             {/* Wrapped: a badge in a column stretches to the column's width. */}
-            <Badge variant="muted">Nothing played yet</Badge>
+            <Badge variant="muted">{t('nothingPlayed')}</Badge>
           </div>
         )}
       </CardContent>

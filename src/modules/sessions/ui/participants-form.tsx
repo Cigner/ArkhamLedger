@@ -1,6 +1,7 @@
 'use client'
 
 import { Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -41,27 +42,6 @@ import type { ParticipantPriority, SessionDetail } from '../domain/types'
  * without the person running it is not a session, and the rule is enforced
  * server-side regardless.
  */
-const PRIORITY_LABELS = {
-  REQUIRED: 'Required',
-  PREFERRED: 'Preferred',
-  OPTIONAL: 'Optional',
-} as const
-
-const PRIORITY_HELP: Record<ParticipantPriority, string> = {
-  REQUIRED: 'No date works without them.',
-  PREFERRED: 'Counts towards a good date.',
-  OPTIONAL: 'Nice to have; never blocks.',
-}
-
-const MESSAGES: Record<string, string> = {
-  'sessions.errors.participantsLocked':
-    'The roster is fixed once a date has been proposed. Reopen availability to change it.',
-  'sessions.errors.noKeeperAmongParticipants': 'Somebody has to run the session.',
-  'sessions.errors.quorumAboveParticipantCount':
-    'The quorum is higher than the number of people invited, so no date could ever work.',
-  'sessions.errors.noParticipants': 'Invite at least one person.',
-}
-
 export function ParticipantsForm({
   session,
   candidates,
@@ -69,9 +49,26 @@ export function ParticipantsForm({
   session: SessionDetail
   candidates: readonly { userId: string; name: string; isKeeper: boolean }[]
 }) {
+  const t = useTranslations('sessions.participants')
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const priorityLabels = {
+    REQUIRED: t('priorities.REQUIRED.label'),
+    PREFERRED: t('priorities.PREFERRED.label'),
+    OPTIONAL: t('priorities.OPTIONAL.label'),
+  } as const
+  const priorityHelp: Record<ParticipantPriority, string> = {
+    REQUIRED: t('priorities.REQUIRED.help'),
+    PREFERRED: t('priorities.PREFERRED.help'),
+    OPTIONAL: t('priorities.OPTIONAL.help'),
+  }
+  const messages: Record<string, string> = {
+    'sessions.errors.participantsLocked': t('errors.participantsLocked'),
+    'sessions.errors.noKeeperAmongParticipants': t('errors.noKeeper'),
+    'sessions.errors.quorumAboveParticipantCount': t('errors.quorumTooHigh'),
+    'sessions.errors.noParticipants': t('errors.noParticipants'),
+  }
 
   const initial = new Map(
     session.participants.map((participant) => [participant.userId, participant.priority]),
@@ -89,8 +86,8 @@ export function ParticipantsForm({
     onError: ({ error: actionError }) => {
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not save the roster.',
+          messages,
+          t('errors.saveFailed'),
           actionError.serverError?.messageKey,
           actionError.validationErrors,
         ),
@@ -136,10 +133,10 @@ export function ParticipantsForm({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">Invited</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>How much their presence matters</TableHead>
-              <TableHead>Answered</TableHead>
+              <TableHead className="w-12">{t('invited')}</TableHead>
+              <TableHead>{t('name')}</TableHead>
+              <TableHead>{t('priority')}</TableHead>
+              <TableHead>{t('answered')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -156,14 +153,14 @@ export function ParticipantsForm({
                     <Checkbox
                       checked={invited}
                       onCheckedChange={() => toggle(candidate.userId, candidate.isKeeper)}
-                      aria-label={`Invite ${candidate.name}`}
+                      aria-label={t('invitePerson', { name: candidate.name })}
                     />
                   </TableCell>
                   <TableCell>
                     {candidate.name}
                     {candidate.isKeeper ? (
                       <span className="ml-2 font-ui text-2xs uppercase tracking-[--tracking-smallcaps] text-candle-11">
-                        Keeper
+                        {t('keeper')}
                       </span>
                     ) : null}
                   </TableCell>
@@ -171,7 +168,7 @@ export function ParticipantsForm({
                     {invited ? (
                       <div className="flex max-w-56 flex-col gap-1">
                         <Select
-                          items={PRIORITY_LABELS}
+                          items={priorityLabels}
                           value={candidate.isKeeper ? 'REQUIRED' : priority}
                           disabled={candidate.isKeeper}
                           onValueChange={(value) =>
@@ -182,7 +179,7 @@ export function ParticipantsForm({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                            {Object.entries(priorityLabels).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
                                 {label}
                               </SelectItem>
@@ -190,17 +187,15 @@ export function ParticipantsForm({
                           </SelectContent>
                         </Select>
                         <span className="font-ui text-2xs text-text-muted">
-                          {candidate.isKeeper
-                            ? 'Keepers are always required.'
-                            : PRIORITY_HELP[priority]}
+                          {candidate.isKeeper ? t('keeperRequired') : priorityHelp[priority]}
                         </span>
                       </div>
                     ) : (
-                      <span className="font-ui text-sm text-text-muted">Not invited</span>
+                      <span className="font-ui text-sm text-text-muted">{t('notInvited')}</span>
                     )}
                   </TableCell>
                   <TableCell className="text-text-secondary">
-                    {participant?.respondedAt ? 'Yes' : '-'}
+                    {participant?.respondedAt ? t('yes') : '—'}
                   </TableCell>
                 </TableRow>
               )
@@ -210,7 +205,7 @@ export function ParticipantsForm({
       </TableContainer>
 
       <Field className="max-w-56">
-        <FieldLabel htmlFor="quorum">Quorum</FieldLabel>
+        <FieldLabel htmlFor="quorum">{t('quorum')}</FieldLabel>
         <Input
           id="quorum"
           type="number"
@@ -221,9 +216,7 @@ export function ParticipantsForm({
           required
         />
         <FieldDescription>
-          How many of the invited have to be free for the session to happen. Half plus one -{' '}
-          {defaultQuorum(investigatorCount)} for this group - keeps a single busy person from
-          holding up the campaign.
+          {t('quorumHint', { count: defaultQuorum(investigatorCount) })}
         </FieldDescription>
       </Field>
 
@@ -232,11 +225,11 @@ export function ParticipantsForm({
       <div className="flex items-center gap-3">
         <Button type="submit" variant="accent" disabled={save.isPending}>
           <Check className="size-4" aria-hidden="true" />
-          {save.isPending ? 'Saving…' : 'Save roster'}
+          {save.isPending ? t('saving') : t('saveRoster')}
         </Button>
         {saved ? (
           <span role="status" className="font-ui text-xs text-status-positive">
-            Saved
+            {t('saved')}
           </span>
         ) : null}
       </div>

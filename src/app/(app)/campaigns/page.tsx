@@ -1,5 +1,6 @@
 import { Library, Plus } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { ButtonLink } from '@/components/ui/button-link'
 import { EmptyState } from '@/components/patterns/empty-state'
 import { PageHeader } from '@/components/patterns/page-header'
@@ -12,34 +13,38 @@ import { CampaignCard } from '@/modules/campaigns/ui/campaign-card'
  * Scoped by membership in the query itself, so a campaign the viewer does not
  * belong to never enters the result set.
  */
-export const metadata: Metadata = { title: 'Campaigns' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('campaigns.list')
+  return { title: t('title') }
+}
 export const dynamic = 'force-dynamic'
 
 export default async function CampaignsPage() {
+  const t = await getTranslations('campaigns.list')
   const campaigns = await listMyCampaigns()
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Campaigns"
+        title={t('title')}
         icon={<Library className="size-6" strokeWidth={1.5} />}
         actions={
           <ButtonLink variant="accent" href="/campaigns/new">
             <Plus className="size-4" aria-hidden="true" />
-            New campaign
+            {t('new')}
           </ButtonLink>
         }
       />
 
       {campaigns.length === 0 ? (
         <EmptyState
-          title="The archive is empty"
+          title={t('emptyTitle')}
           icon={<Library className="size-8" strokeWidth={1.25} />}
-          description="Create a campaign, or wait for a Keeper to invite you."
+          description={t('emptyDescription')}
           action={
             <ButtonLink variant="accent" href="/campaigns/new">
               <Plus className="size-4" aria-hidden="true" />
-              Create campaign
+              {t('create')}
             </ButtonLink>
           }
         />

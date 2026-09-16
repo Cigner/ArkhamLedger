@@ -1,18 +1,24 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { AuthCard } from '@/modules/identity/ui/auth-card'
 import { ForgotPasswordForm } from '@/modules/identity/ui/forgot-password-form'
 
-export const metadata: Metadata = { title: 'Reset your password' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.forgotPassword')
+  return { title: t('title') }
+}
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations('auth.forgotPassword')
+
   return (
     <AuthCard
-      title="Reset your password"
-      description="Enter the address your account uses and we will send a link to set a new password."
+      title={t('title')}
+      description={t('description')}
       footer={
         <Link href="/sign-in" className="text-accent-text underline-offset-4 hover:underline">
-          Back to sign in
+          {t('back')}
         </Link>
       }
     >

@@ -1,12 +1,5 @@
 import { z } from 'zod'
 
-/**
- * Input schemas for availability.
- *
- * The payload carries no user id. Whose answer this is comes from the session,
- * so there is no field through which one participant could submit another's
- * availability.
- */
 export const dayRangeSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { error: 'availability.errors.malformedDate' }),
   state: z.enum(['YES', 'IF_NEED_BE', 'NO']).nullable(),

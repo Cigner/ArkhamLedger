@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { type DbOrTx, db } from '@/db/client'
 import { campaignIntegration } from '@/db/schema'
 import { decryptSecret, encryptSecret } from '@/lib/crypto'
@@ -120,25 +120,14 @@ export async function recordIntegrationError(input: {
   readonly error: string | null
   readonly now: Date
 }): Promise<void> {
-  const [row] = await db
-    .select({ config: campaignIntegration.config })
-    .from(campaignIntegration)
-    .where(
-      and(
-        eq(campaignIntegration.campaignId, input.campaignId),
-        eq(campaignIntegration.type, 'DISCORD_WEBHOOK'),
-      ),
-    )
-    .limit(1)
-
-  if (!row) return
-
-  const config = row.config as Record<string, unknown>
+  const lastError = input.error?.slice(0, 300)
 
   await db
     .update(campaignIntegration)
     .set({
-      config: { ...config, lastError: input.error?.slice(0, 300) ?? null },
+      config: lastError
+        ? sql`json_set(${campaignIntegration.config}, '$.lastError', ${lastError})`
+        : sql`json_remove(${campaignIntegration.config}, '$.lastError')`,
       updatedAt: input.now,
     })
     .where(

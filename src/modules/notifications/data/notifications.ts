@@ -60,12 +60,13 @@ export async function enqueueNotifications(input: {
 
     const key = `${draft.campaignId ?? ''}:${draft.type}:${draft.gameSessionId ?? ''}`
 
-    const channels = channelsFor({
+    const preferredChannels = channelsFor({
       type: draft.type,
       disabledChannels: disabled.get(draft.userId) ?? new Set<DeliveryChannel>(),
       campaignHasWebhook: draft.campaignId ? webhooks.has(draft.campaignId) : false,
       carriesBroadcast: carriers.get(key) === draft.userId,
     })
+    const channels = [...new Set([...preferredChannels, ...(draft.requiredChannels ?? [])])]
 
     await input.executor.insert(notification).values({
       id: notificationId,

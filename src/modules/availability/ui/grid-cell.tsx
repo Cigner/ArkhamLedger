@@ -12,16 +12,16 @@ import type { SlotState } from '../domain/types'
  */
 const PRESENTATION: Record<
   SlotState | 'blank',
-  { className: string; glyph: string; label: string }
+  { className: string; glyph: string; labelKey: 'YES' | 'IF_NEED_BE' | 'NO' | 'blank' }
 > = {
-  YES: { className: 'bg-slot-yes text-text-on-candle', glyph: '●', label: 'free' },
+  YES: { className: 'bg-slot-yes text-text-on-candle', glyph: '●', labelKey: 'YES' },
   IF_NEED_BE: {
     className: 'bg-slot-if-need-be text-text-on-candle',
     glyph: '◐',
-    label: 'free at a push',
+    labelKey: 'IF_NEED_BE',
   },
-  NO: { className: 'bg-slot-no text-text-on-candle', glyph: '✕', label: 'not free' },
-  blank: { className: 'bg-slot-empty text-text-muted', glyph: '', label: 'no answer' },
+  NO: { className: 'bg-slot-no text-text-on-candle', glyph: '✕', labelKey: 'NO' },
+  blank: { className: 'bg-slot-empty text-text-muted', glyph: '', labelKey: 'blank' },
 }
 
 export function cellPresentation(state: SlotState | null) {
@@ -69,7 +69,6 @@ export function GridCell({
       className={cn(
         'flex h-full w-full select-none items-center justify-center rounded-sm border border-border-subtle',
         'font-ui text-xs leading-none',
-        // No transition on the fill: painting that fades reads as lag.
         'cursor-pointer',
         presentation.className,
         tooShort && state !== null && state !== 'NO' && 'ring-1 ring-inset ring-status-warning',

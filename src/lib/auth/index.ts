@@ -1,9 +1,3 @@
-/**
- * Public surface of the authentication layer.
- *
- * Everything outside this directory imports from here; the lint configuration
- * blocks direct imports of the underlying library anywhere else.
- */
 export { auth, type Auth } from './config'
 export {
   authPort,

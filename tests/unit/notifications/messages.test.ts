@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { renderNotification } from '@/modules/notifications/domain/messages'
 import type { NotificationType } from '@/modules/notifications/domain/types'
+import { createAppTranslator } from '@/lib/i18n/translator'
 
 /**
  * Notification wording.
@@ -15,6 +16,7 @@ const BASE = {
   baseUrl: 'https://arkham.test',
   campaignId: '01H00000000000000000000001',
   gameSessionId: '01H00000000000000000000002',
+  translate: createAppTranslator('en'),
 }
 
 const ALL_TYPES: NotificationType[] = [
@@ -28,6 +30,7 @@ const ALL_TYPES: NotificationType[] = [
   'SESSION_RESCHEDULED',
   'SESSION_CANCELLED',
   'NO_NEXT_SESSION',
+  'ISSUE_REPORTED',
 ]
 
 describe('every type', () => {

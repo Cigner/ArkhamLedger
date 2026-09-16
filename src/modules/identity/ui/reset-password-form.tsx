@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { readString } from '@/lib/form-data'
@@ -19,6 +20,7 @@ import { PasswordFields } from './password-fields'
  * in rather than being dropped into the application with a stale one.
  */
 export function ResetPasswordForm({ token }: { token: string }) {
+  const t = useTranslations('auth.resetPassword')
   const router = useRouter()
   const [navigating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +35,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     const confirmPassword = readString(form, 'confirmPassword')
 
     if (password !== confirmPassword) {
-      setError('The two passwords do not match.')
+      setError(t('errors.mismatch'))
       return
     }
 
@@ -42,11 +44,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     setPending(false)
 
     if (result.error) {
-      setError(
-        result.error.status === 400
-          ? 'This link is no longer valid. Request a new one.'
-          : 'Could not set your password. Try a longer passphrase.',
-      )
+      setError(result.error.status === 400 ? t('errors.invalidLink') : t('errors.failed'))
       return
     }
 
@@ -63,7 +61,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <PasswordFields disabled={busy} />
       <FormError>{error}</FormError>
       <Button type="submit" variant="accent" size="lg" disabled={busy}>
-        {busy ? 'Setting password…' : 'Set password'}
+        {busy ? t('pending') : t('submit')}
       </Button>
     </form>
   )

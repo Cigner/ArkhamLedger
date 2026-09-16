@@ -9,12 +9,14 @@ import {
   CheckCheck,
   Clock3,
   ListChecks,
+  MessageSquareWarning,
   UserPlus,
   Users,
 } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/patterns/empty-state'
@@ -39,6 +41,7 @@ const ICONS: Record<NotificationType, typeof CalendarCheck> = {
   SESSION_RESCHEDULED: CalendarClock,
   SESSION_CANCELLED: CalendarX,
   NO_NEXT_SESSION: BellOff,
+  ISSUE_REPORTED: MessageSquareWarning,
 }
 
 /**
@@ -61,6 +64,8 @@ export function NotificationList({
   timezone: string
 }) {
   const router = useRouter()
+  const t = useTranslations('notifications.inbox')
+  const format = useFormatter()
   const [busy, setBusy] = useState(false)
 
   const markOne = useAction(markNotificationsRead, { onSuccess: () => router.refresh() })
@@ -77,9 +82,9 @@ export function NotificationList({
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Nothing has happened yet"
+        title={t('emptyTitle')}
         icon={<BellOff className="size-8" strokeWidth={1.25} />}
-        description="Invitations, availability requests and confirmed dates arrive here."
+        description={t('emptyDescription')}
       />
     )
   }
@@ -88,7 +93,9 @@ export function NotificationList({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <p className="font-ui text-sm text-text-secondary">
-          {unread.length === 0 ? 'Nothing unread.' : `${unread.length} unread of ${items.length}.`}
+          {unread.length === 0
+            ? t('nothingUnread')
+            : t('unread', { unread: unread.length, total: items.length })}
         </p>
 
         {unread.length > 0 ? (
@@ -102,7 +109,7 @@ export function NotificationList({
             }}
           >
             <CheckCheck className="size-4" aria-hidden="true" />
-            Mark all as read
+            {t('markAllRead')}
           </Button>
         ) : null}
       </div>
@@ -128,7 +135,7 @@ export function NotificationList({
                   data-tabular
                   className="shrink-0 font-ui text-xs text-text-muted"
                 >
-                  {item.createdAt.toLocaleDateString('en-GB', {
+                  {format.dateTime(item.createdAt, {
                     day: 'numeric',
                     month: 'short',
                     hour: '2-digit',

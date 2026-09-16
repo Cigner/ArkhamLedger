@@ -28,9 +28,6 @@ export type ProvisionedAccount = {
 
 /**
  * Creates an account with a password already set.
- *
- * Idempotent by email: running it against an existing address is a no-op, so it
- * is safe to invoke on every deploy.
  */
 export async function provisionAccount(
   input: ProvisionedAccount,
@@ -44,10 +41,7 @@ export async function provisionAccount(
 
   /*
    * These functions write the account row directly and therefore skip the
-   * action layer, which is where every other password is checked. Applying the
-   * policy here too means a seed or a bootstrap cannot create an account whose
-   * password the application would refuse - a gap that is invisible until
-   * somebody tries to sign in.
+   * action layer, which is where every other password is checked.
    */
   const password = passwordSchema.safeParse(input.password)
   if (!password.success) {
@@ -88,7 +82,6 @@ export async function provisionAccount(
   return { id: userId, created: true }
 }
 
-/** The first administrator, who has nobody to issue them an activation link. */
 export async function bootstrapAdmin(input: {
   email: string
   name: string

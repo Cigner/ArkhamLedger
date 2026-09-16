@@ -1,50 +1,63 @@
 import { z } from 'zod'
 
-/**
- * Validated process environment.
- *
- * Parsed once at module load so a misconfigured deployment fails at startup
- * rather than at the first request that happens to need a missing variable.
- * Client-safe values must be prefixed NEXT_PUBLIC_ and read separately - they
- * are inlined at build time and cannot come from this module.
- */
-const serverEnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+const booleanString = z.enum(['true', 'false']).transform((value) => value === 'true')
+const optionalText = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z.string().trim().min(1).optional(),
+)
+const optionalSecret = z.preprocess(
+  (value) => (value === '' ? undefined : value),
+  z.string().optional(),
+)
+const optionalPort = z.preprocess(
+  (value) => (value === '' ? undefined : value),
+  z.coerce.number().int().positive().max(65_535).optional(),
+)
 
-  DATABASE_URL: z.string().min(1),
+const serverEnvSchema = z
+  .object({
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
-  BETTER_AUTH_SECRET: z.string().min(32),
-  BETTER_AUTH_URL: z.url(),
+    DATABASE_URL: z.string().min(1),
 
-  /**
-   * AES-256-GCM key for secrets at rest: base64 that decodes to exactly 32 bytes.
-   *
-   * Checked by decoding rather than by length. A 44-character string that is not
-   * a 32-byte key passes a length check and then fails at the first encryption -
-   * which happens in production, the first time somebody saves a webhook.
-   */
-  ENCRYPTION_KEY: z.string().refine((value) => decodedLength(value) === 32, {
-    error: 'must be base64 that decodes to exactly 32 bytes',
-  }),
+    BETTER_AUTH_SECRET: z.string().min(32),
+    BETTER_AUTH_URL: z.url(),
 
-  ALLOWED_ORIGINS: z.string().default(''),
+    /** AES-256-GCM key for secrets at rest: base64 that decodes to exactly 32 bytes. */
+    ENCRYPTION_KEY: z.string().refine((value) => decodedLength(value) === 32, {
+      error: 'must be base64 that decodes to exactly 32 bytes',
+    }),
 
-  SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.coerce.number().int().positive().optional(),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASSWORD: z.string().optional(),
-  SMTP_FROM: z.string().optional(),
-  SMTP_SECURE: z
-    .string()
-    .optional()
-    .transform((value) => value === 'true'),
+    ALLOWED_ORIGINS: z.string().default(''),
 
-  /** Pino levels, plus `silent` which suppresses output entirely (used by tests). */
-  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+    SMTP_HOST: optionalText,
+    SMTP_PORT: optionalPort,
+    SMTP_USER: optionalSecret,
+    SMTP_PASSWORD: optionalSecret,
+    SMTP_FROM: optionalText,
+    SMTP_SECURE: booleanString.default(false),
+    SMTP_REQUIRE_TLS: booleanString.default(false),
+    SMTP_TLS_REJECT_UNAUTHORIZED: booleanString.default(true),
+    SMTP_TLS_SERVERNAME: optionalText,
 
-  /** Default IANA zone for new campaigns and users. */
-  DEFAULT_TIMEZONE: z.string().default('Europe/Warsaw'),
-})
+    LOG_LEVEL: z
+      .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+      .default('info'),
+
+    DEFAULT_TIMEZONE: z.string().default('Europe/Warsaw'),
+  })
+  .superRefine((value, ctx) => {
+    const hasUser = Boolean(value.SMTP_USER)
+    const hasPassword = Boolean(value.SMTP_PASSWORD)
+
+    if (hasUser !== hasPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        path: hasUser ? ['SMTP_PASSWORD'] : ['SMTP_USER'],
+        message: 'SMTP_USER and SMTP_PASSWORD must be provided together',
+      })
+    }
+  })
 
 function decodedLength(value: string): number {
   try {

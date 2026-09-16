@@ -247,7 +247,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['*.mjs', '*.js'],
+    files: ['*.mjs', '*.js', 'scripts/**/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
     rules: { 'no-console': 'off' },
   },

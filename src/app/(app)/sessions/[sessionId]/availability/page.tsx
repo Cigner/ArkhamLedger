@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { guardPage } from '@/lib/page-guards'
 import { getAvailabilityView } from '@/modules/availability/data/availability'
@@ -12,8 +13,12 @@ import { KeeperAvailability } from '@/modules/availability/ui/keeper-availabilit
  * the same act for them. What differs is what comes back from the query: a
  * Keeper's view carries names, an Investigator's carries counts.
  */
-export const metadata: Metadata = { title: 'Availability' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('availability.page')
+  return { title: t('title') }
+}
 
 export default async function AvailabilityPage({
   params,
@@ -21,6 +26,7 @@ export default async function AvailabilityPage({
   params: Promise<{ sessionId: string }>
 }) {
   const { sessionId } = await params
+  const t = await getTranslations('availability.page')
   const view = await guardPage(() => getAvailabilityView(sessionId))
 
   return (
@@ -30,7 +36,7 @@ export default async function AvailabilityPage({
       {view.participants.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Keeper</CardTitle>
+            <CardTitle>{t('keeper')}</CardTitle>
           </CardHeader>
           <CardContent>
             <KeeperAvailability view={view} />

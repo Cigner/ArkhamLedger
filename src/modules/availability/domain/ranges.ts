@@ -15,7 +15,6 @@ export function rangeToCells(
 ): AvailabilityCell[] {
   if (range.state === null) return []
 
-  // A refusal covers the whole day: "I can't" is about the date, not the hours.
   const covered =
     range.state === 'NO'
       ? slotsForDate

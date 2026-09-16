@@ -2,6 +2,7 @@
 
 import { Plus, UserPlus } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { Button } from '@/components/ui/button'
 import { readString } from '@/lib/form-data'
@@ -36,15 +37,12 @@ import { ActivationLinkPanel } from './activation-link-panel'
  * passes it to the person through whatever channel the group already uses. That
  * keeps a home mail relay off the critical path for the very first credential.
  */
-const ROLE_LABELS = { user: 'User', admin: 'Administrator' } as const
-
-const MESSAGES: Record<string, string> = {
-  'identity.errors.emailAlreadyRegistered': 'An account with that address already exists.',
-  'identity.errors.nameControlCharacters':
-    'That name contains characters that cannot be displayed.',
-}
-
 export function CreateUserDialog() {
+  const t = useTranslations()
+  const roleLabels = {
+    user: t('admin.users.roles.user'),
+    admin: t('admin.users.roles.admin'),
+  }
   const [open, setOpen] = useState(false)
   const [role, setRole] = useState('user')
   const [error, setError] = useState<string | null>(null)
@@ -57,8 +55,11 @@ export function CreateUserDialog() {
     onError: ({ error: actionError }) => {
       setError(
         resolveActionError(
-          MESSAGES,
-          'Could not create the account.',
+          {
+            'identity.errors.emailAlreadyRegistered': t('identity.errors.emailAlreadyRegistered'),
+            'identity.errors.nameControlCharacters': t('identity.errors.nameControlCharacters'),
+          },
+          t('admin.createUser.errors.failed'),
           actionError.serverError?.messageKey,
           actionError.validationErrors,
         ),
@@ -91,15 +92,15 @@ export function CreateUserDialog() {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button variant="accent" />}>
         <Plus className="size-4" aria-hidden="true" />
-        New user
+        {t('admin.createUser.trigger')}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{issued ? 'Account created' : 'New user'}</DialogTitle>
+          <DialogTitle>
+            {issued ? t('admin.createUser.createdTitle') : t('admin.createUser.title')}
+          </DialogTitle>
           <DialogDescription>
-            {issued
-              ? 'Send this activation link to its owner. It will not be shown again.'
-              : 'Creates the account and issues an activation link.'}
+            {issued ? t('admin.createUser.createdDescription') : t('admin.createUser.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -110,7 +111,7 @@ export function CreateUserDialog() {
             </DialogBody>
             <DialogFooter>
               <Button variant="outline" onClick={() => handleOpenChange(false)}>
-                Done
+                {t('common.done')}
               </Button>
             </DialogFooter>
           </>
@@ -118,20 +119,20 @@ export function CreateUserDialog() {
           <form onSubmit={(event) => void handleSubmit(event)}>
             <DialogBody className="flex flex-col gap-4">
               <Field>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
+                <FieldLabel htmlFor="name">{t('admin.createUser.name')}</FieldLabel>
                 <Input id="name" name="name" required autoFocus disabled={isPending} />
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">{t('admin.createUser.email')}</FieldLabel>
                 <Input id="email" name="email" type="email" required disabled={isPending} />
-                <FieldDescription>Used to sign in and to reset the password.</FieldDescription>
+                <FieldDescription>{t('admin.createUser.emailHint')}</FieldDescription>
               </Field>
 
               <Field>
-                <FieldLabel>Role</FieldLabel>
+                <FieldLabel>{t('admin.createUser.role')}</FieldLabel>
                 <Select
-                  items={ROLE_LABELS}
+                  items={roleLabels}
                   value={role}
                   onValueChange={(value) => setRole(String(value))}
                 >
@@ -139,13 +140,11 @@ export function CreateUserDialog() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="admin">Administrator</SelectItem>
+                    <SelectItem value="user">{roleLabels.user}</SelectItem>
+                    <SelectItem value="admin">{roleLabels.admin}</SelectItem>
                   </SelectContent>
                 </Select>
-                <FieldDescription>
-                  Administrators manage accounts. Campaign roles are separate and set per campaign.
-                </FieldDescription>
+                <FieldDescription>{t('admin.createUser.roleHint')}</FieldDescription>
               </Field>
 
               <FormError>{error}</FormError>
@@ -153,11 +152,11 @@ export function CreateUserDialog() {
 
             <DialogFooter>
               <Button variant="ghost" onClick={() => handleOpenChange(false)} disabled={isPending}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit" variant="accent" disabled={isPending}>
                 <UserPlus className="size-4" aria-hidden="true" />
-                {isPending ? 'Creating…' : 'Create account'}
+                {isPending ? t('admin.createUser.creating') : t('admin.createUser.submit')}
               </Button>
             </DialogFooter>
           </form>

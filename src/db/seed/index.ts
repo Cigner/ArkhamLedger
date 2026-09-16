@@ -66,6 +66,9 @@ function printReport(report: SeedReport): void {
     console.log(`  ${session.status.padEnd(11)} ${session.title}  (${session.campaign})`)
   }
 
+  heading('Problem reports')
+  console.log(`  ${report.issueReports} reports covering every workflow status`)
+
   heading('Invitation links (shown once, nowhere else)')
   for (const link of report.invitationLinks) {
     console.log(`  ${link.label}\n    ${link.url}`)

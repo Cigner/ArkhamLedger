@@ -1,14 +1,7 @@
 import nodemailer, { type Transporter } from 'nodemailer'
 import { appLogger } from '@/lib/logger'
-import type { MailMessage, MailPort, MailResult } from './port'
+import type { MailMessage, MailPort, MailResult, MailVerificationResult } from './port'
 
-/**
- * SMTP transport.
- *
- * Failures are classified rather than thrown: a 4xx response or a connection
- * problem is retryable and the delivery worker will try again, while a 5xx
- * rejection is permanent and retrying only burns reputation with the relay.
- */
 export type SmtpConfig = {
   readonly host: string
   readonly port: number
@@ -16,15 +9,33 @@ export type SmtpConfig = {
   readonly user?: string
   readonly password?: string
   readonly from: string
+  readonly requireTls: boolean
+  readonly tlsRejectUnauthorized: boolean
+  readonly tlsServername?: string
 }
 
-const RETRYABLE_CODES = new Set(['ECONNECTION', 'ETIMEDOUT', 'ECONNRESET', 'ESOCKET', 'EDNS'])
+const RETRYABLE_CODES = new Set([
+  'ECONNECTION',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'ECONNRESET',
+  'ESOCKET',
+  'EDNS',
+])
 
 export function createSmtpTransport(config: SmtpConfig): MailPort {
   const transporter: Transporter = nodemailer.createTransport({
     host: config.host,
     port: config.port,
     secure: config.secure,
+    requireTLS: config.requireTls,
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 30_000,
+    tls: {
+      rejectUnauthorized: config.tlsRejectUnauthorized,
+      ...(config.tlsServername ? { servername: config.tlsServername } : {}),
+    },
     ...(config.user && config.password
       ? { auth: { user: config.user, pass: config.password } }
       : {}),
@@ -32,6 +43,19 @@ export function createSmtpTransport(config: SmtpConfig): MailPort {
 
   return {
     name: 'smtp',
+    async verify(): Promise<MailVerificationResult> {
+      try {
+        await transporter.verify()
+        return { ok: true }
+      } catch (error) {
+        const failure = smtpFailure(error)
+        appLogger.error(
+          { code: failure.code, responseCode: failure.responseCode },
+          'smtp verification failed',
+        )
+        return failure.result
+      }
+    },
     async send(message: MailMessage): Promise<MailResult> {
       try {
         const info = await transporter.sendMail({
@@ -52,20 +76,42 @@ export function createSmtpTransport(config: SmtpConfig): MailPort {
         })
         return { ok: true, messageId: info.messageId }
       } catch (error) {
-        const code = (error as { code?: string }).code
-        const responseCode = (error as { responseCode?: number }).responseCode
-        const retryable =
-          (code !== undefined && RETRYABLE_CODES.has(code)) ||
-          (responseCode !== undefined && responseCode >= 400 && responseCode < 500)
+        const failure = smtpFailure(error)
 
-        appLogger.warn({ to: message.to, code, responseCode, retryable }, 'smtp delivery failed')
+        appLogger.warn(
+          {
+            to: message.to,
+            code: failure.code,
+            responseCode: failure.responseCode,
+            retryable: failure.result.retryable,
+          },
+          'smtp delivery failed',
+        )
 
-        return {
-          ok: false,
-          retryable,
-          error: code ?? String(responseCode ?? 'unknown'),
-        }
+        return failure.result
       }
     },
+  }
+}
+
+export function smtpFailure(error: unknown): {
+  readonly code: string | undefined
+  readonly responseCode: number | undefined
+  readonly result: Extract<MailResult, { ok: false }>
+} {
+  const smtpError = error as { code?: unknown; responseCode?: unknown; message?: unknown }
+  const code = typeof smtpError.code === 'string' ? smtpError.code : undefined
+  const responseCode =
+    typeof smtpError.responseCode === 'number' ? smtpError.responseCode : undefined
+  const message = typeof smtpError.message === 'string' ? smtpError.message : 'Unknown SMTP error'
+  const retryable =
+    (code !== undefined && RETRYABLE_CODES.has(code)) ||
+    (responseCode !== undefined && responseCode >= 400 && responseCode < 500)
+  const label = code ?? (responseCode ? `SMTP ${responseCode}` : 'SMTP')
+
+  return {
+    code,
+    responseCode,
+    result: { ok: false, retryable, error: `${label}: ${message}`.slice(0, 500) },
   }
 }

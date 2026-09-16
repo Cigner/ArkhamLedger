@@ -1,5 +1,6 @@
 import { Pencil } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { PageHeader } from '@/components/patterns/page-header'
 import { guardPage } from '@/lib/page-guards'
 import { requireSessionKeeper } from '@/modules/sessions/data/guards'
@@ -14,8 +15,12 @@ import { SessionDefinitionForm } from '@/modules/sessions/ui/session-definition-
  * mistyped date should not cost the whole session, and the form warns about what
  * changing the dates does to the answers already given.
  */
-export const metadata: Metadata = { title: 'Edit session' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('sessions.edit')
+  return { title: t('title') }
+}
 
 export default async function EditSessionPage({
   params,
@@ -23,6 +28,7 @@ export default async function EditSessionPage({
   params: Promise<{ sessionId: string }>
 }) {
   const { sessionId } = await params
+  const t = await getTranslations('sessions.edit')
 
   const session = await guardPage(async () => {
     await requireSessionKeeper(sessionId)
@@ -36,7 +42,7 @@ export default async function EditSessionPage({
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Edit session"
+        title={t('title')}
         icon={<Pencil className="size-6" strokeWidth={1.5} />}
         description={session.title}
       />

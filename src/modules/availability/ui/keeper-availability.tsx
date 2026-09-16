@@ -1,6 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/cn'
 import { cellPresentation } from './grid-cell'
@@ -17,6 +18,9 @@ import type { AvailabilityView, SlotTally } from '../domain/types'
  * through a query that authorizes for it.
  */
 export function KeeperAvailability({ view }: { view: AvailabilityView }) {
+  const t = useTranslations('availability.keeper')
+  const stateT = useTranslations('availability.stateLabels')
+  const format = useFormatter()
   const hours = Array.from(
     { length: view.gridEndHour - view.gridStartHour },
     (_, index) => view.gridStartHour + index,
@@ -32,20 +36,14 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
   return (
     <Tabs defaultValue="heatmap">
       <TabsList>
-        <TabsTrigger value="heatmap">How the evenings compare</TabsTrigger>
-        <TabsTrigger value="people">What each person said</TabsTrigger>
-        <TabsTrigger value="pending">Who has not replied</TabsTrigger>
+        <TabsTrigger value="heatmap">{t('compare')}</TabsTrigger>
+        <TabsTrigger value="people">{t('people')}</TabsTrigger>
+        <TabsTrigger value="pending">{t('pending')}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="heatmap" className="pt-5">
         <div className="overflow-x-auto">
           <div
-            /*
-             * Both columns are fixed rather than fractional. `auto` on the first
-             * one collapsed to twelve pixels as soon as the dates overflowed -
-             * the names were still there, truncated to nothing - and a date
-             * column narrower than this clips "Wed 21".
-             */
             className="grid gap-1"
             style={{
               gridTemplateColumns: `3rem repeat(${view.dates.length}, 3rem)`,
@@ -54,7 +52,7 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
             <div />
             {view.dates.map((date) => (
               <div key={date} className="pb-1 text-center font-ui text-2xs text-text-muted">
-                {new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {
+                {format.dateTime(new Date(`${date}T12:00:00Z`), {
                   weekday: 'short',
                   day: 'numeric',
                   timeZone: 'UTC',
@@ -79,11 +77,10 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
                     <div
                       key={`${date}:${hour}`}
                       data-tabular
-                      title={`${free} of ${view.participantCount} free`}
+                      title={t('freeCount', { free, total: view.participantCount })}
                       className="flex h-8 items-center justify-center rounded-sm border border-border-subtle font-ui text-2xs text-text-primary"
                       style={{ background: step ? `var(--color-avail-${step})` : undefined }}
                     >
-                      {/* The number is always printed: colour alone is not the encoding. */}
                       {free > 0 ? free : ''}
                     </div>
                   )
@@ -97,8 +94,6 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
       <TabsContent value="people" className="pt-5">
         <div className="overflow-x-auto">
           <div
-            // Names need room, and at thirty columns they need to stay put
-            // while the dates scroll past them.
             className="grid gap-1"
             style={{
               gridTemplateColumns: `10rem repeat(${view.dates.length}, 3rem)`,
@@ -107,7 +102,7 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
             <div className="sticky left-0 z-10 bg-surface-raised" />
             {view.dates.map((date) => (
               <div key={date} className="pb-1 text-center font-ui text-2xs text-text-muted">
-                {new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {
+                {format.dateTime(new Date(`${date}T12:00:00Z`), {
                   weekday: 'short',
                   day: 'numeric',
                   timeZone: 'UTC',
@@ -143,7 +138,7 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
                     >
                       <span aria-hidden="true">{presentation.glyph}</span>
                       <span className="sr-only">
-                        {participant.name}: {presentation.label} {label}
+                        {participant.name}: {stateT(presentation.labelKey)} {label}
                       </span>
                     </div>
                   )
@@ -157,10 +152,10 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
       <TabsContent value="pending" className="flex flex-col gap-4 pt-5">
         <div className="flex flex-col gap-2">
           <h4 className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-            Still to answer ({pending.length})
+            {t('stillToAnswer', { count: pending.length })}
           </h4>
           {pending.length === 0 ? (
-            <p className="font-ui text-sm text-text-muted">Everybody has replied.</p>
+            <p className="font-ui text-sm text-text-muted">{t('everybodyReplied')}</p>
           ) : (
             <ul className="flex flex-wrap gap-2">
               {pending.map((participant) => (
@@ -174,7 +169,7 @@ export function KeeperAvailability({ view }: { view: AvailabilityView }) {
 
         <div className="flex flex-col gap-2">
           <h4 className="font-ui text-xs uppercase tracking-[--tracking-smallcaps] text-text-secondary">
-            Answered ({answered.length})
+            {t('answered', { count: answered.length })}
           </h4>
           <ul className="flex flex-wrap gap-2">
             {answered.map((participant) => (

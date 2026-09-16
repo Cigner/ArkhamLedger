@@ -10,11 +10,6 @@ import { securityLogger } from '@/lib/logger'
  *
  * Records the security-relevant actions: account creation and status changes,
  * token issuance and consumption, ownership transfer, authorization denials.
- *
- * Accepts a transaction so an audit entry commits with the change it describes -
- * a trail that can disagree with the data it claims to explain is worse than no
- * trail. Writing it must never break the operation, so failures are logged and
- * swallowed.
  */
 export type AuditEntry = {
   readonly actorId: string | null

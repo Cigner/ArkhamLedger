@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge'
+import { useTranslations } from 'next-intl'
 import type { SessionStatus } from '../domain/types'
 
 /**
@@ -9,17 +10,17 @@ import type { SessionStatus } from '../domain/types'
  */
 const STATUS_PRESENTATION: Record<
   SessionStatus,
-  { label: string; variant: 'neutral' | 'candle' | 'positive' | 'warning' | 'muted' | 'danger' }
+  'neutral' | 'candle' | 'positive' | 'warning' | 'muted' | 'danger'
 > = {
-  DRAFT: { label: 'Draft', variant: 'muted' },
-  COLLECTING: { label: 'Collecting availability', variant: 'warning' },
-  PROPOSED: { label: 'Awaiting a decision', variant: 'candle' },
-  SCHEDULED: { label: 'Scheduled', variant: 'positive' },
-  COMPLETED: { label: 'Played', variant: 'muted' },
-  CANCELLED: { label: 'Cancelled', variant: 'danger' },
+  DRAFT: 'muted',
+  COLLECTING: 'warning',
+  PROPOSED: 'candle',
+  SCHEDULED: 'positive',
+  COMPLETED: 'muted',
+  CANCELLED: 'danger',
 }
 
 export function SessionStatusBadge({ status }: { status: SessionStatus }) {
-  const presentation = STATUS_PRESENTATION[status]
-  return <Badge variant={presentation.variant}>{presentation.label}</Badge>
+  const t = useTranslations('sessions.statuses')
+  return <Badge variant={STATUS_PRESENTATION[status]}>{t(status)}</Badge>
 }

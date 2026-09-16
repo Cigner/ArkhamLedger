@@ -6,12 +6,14 @@ import type { MailMessage, MailPort, MailResult } from './port'
  *
  * Writes the message to the log instead of sending it, so the activation and
  * reset flows are exercisable without a mail server. It logs the full body on
- * purpose - that body contains the link a developer needs - which is exactly why
- * selecting it in production is refused at startup.
+ * purpose - that body contains the link a developer needs.
  */
 export function createLogTransport(): MailPort {
   return {
     name: 'log',
+    verify() {
+      return Promise.resolve({ ok: true })
+    },
     send(message: MailMessage): Promise<MailResult> {
       appLogger.info(
         {

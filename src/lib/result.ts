@@ -27,7 +27,6 @@ export function fail(key: string, params?: Record<string, string | number>): Res
   return { ok: false, error: params ? { key, params } : { key } }
 }
 
-/** Collects every failure from a set of independent rule checks. */
 export function collectErrors(results: readonly Result<unknown>[]): DomainError[] {
   return results.flatMap((result) => (result.ok ? [] : [result.error]))
 }

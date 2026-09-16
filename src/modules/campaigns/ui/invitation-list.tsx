@@ -1,6 +1,7 @@
 'use client'
 
 import { useAction } from 'next-safe-action/hooks'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -27,12 +28,12 @@ export function InvitationList({
   campaignId: string
   invitations: readonly InvitationListItem[]
 }) {
+  const t = useTranslations('campaigns.invitationList')
+  const format = useFormatter()
   const revoke = useAction(revokeInvitation)
 
   if (invitations.length === 0) {
-    return (
-      <p className="font-ui text-sm text-text-muted">No invitations are currently outstanding.</p>
-    )
+    return <p className="font-ui text-sm text-text-muted">{t('empty')}</p>
   }
 
   return (
@@ -40,11 +41,11 @@ export function InvitationList({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>For</TableHead>
-            <TableHead>Joins as</TableHead>
-            <TableHead>Uses</TableHead>
-            <TableHead>Expires</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>{t('columns.for')}</TableHead>
+            <TableHead>{t('columns.role')}</TableHead>
+            <TableHead>{t('columns.uses')}</TableHead>
+            <TableHead>{t('columns.expires')}</TableHead>
+            <TableHead className="text-right">{t('columns.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,18 +53,18 @@ export function InvitationList({
             <TableRow key={invitation.id}>
               <TableCell>
                 {invitation.targetUserName ?? (
-                  <span className="text-text-muted">Anyone with the link</span>
+                  <span className="text-text-muted">{t('anyone')}</span>
                 )}
               </TableCell>
               <TableCell className="text-text-secondary">
-                {invitation.roleOnJoin === 'KEEPER' ? 'Keeper' : 'Investigator'}
+                {invitation.roleOnJoin === 'KEEPER' ? t('keeper') : t('investigator')}
               </TableCell>
               <TableCell data-tabular className="text-text-secondary">
                 {invitation.usedCount} / {invitation.maxUses}
               </TableCell>
               <TableCell className="text-text-secondary">
                 <time dateTime={invitation.expiresAt.toISOString()}>
-                  {invitation.expiresAt.toLocaleDateString('en-GB', {
+                  {format.dateTime(invitation.expiresAt, {
                     day: 'numeric',
                     month: 'long',
                   })}
@@ -76,7 +77,7 @@ export function InvitationList({
                   disabled={revoke.isPending}
                   onClick={() => revoke.execute({ campaignId, invitationId: invitation.id })}
                 >
-                  Revoke
+                  {t('revoke')}
                 </Button>
               </TableCell>
             </TableRow>

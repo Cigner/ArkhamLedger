@@ -23,20 +23,27 @@ export const emailDispatcher: NotificationDispatcher = {
   },
 
   async send(context: DispatchContext): Promise<DeliveryOutcome> {
-    const attachments = calendarFor(context)
+    try {
+      const attachments = calendarFor(context)
 
-    const result = await mailer().send({
-      to: context.recipient.email,
-      subject: context.message.subject,
-      text: context.message.body,
-      ...(attachments ? { attachments } : {}),
-    })
+      const result = await mailer().send({
+        to: context.recipient.email,
+        subject: context.message.subject,
+        text: context.message.body,
+        ...(attachments ? { attachments } : {}),
+      })
 
-    if (result.ok) return { kind: 'SENT', reference: result.messageId }
+      if (result.ok) return { kind: 'SENT', reference: result.messageId }
 
-    return result.retryable
-      ? { kind: 'RETRYABLE', error: result.error }
-      : { kind: 'PERMANENT', error: result.error }
+      return result.retryable
+        ? { kind: 'RETRYABLE', error: result.error }
+        : { kind: 'PERMANENT', error: result.error }
+    } catch (error) {
+      return {
+        kind: 'PERMANENT',
+        error: error instanceof Error ? error.message.slice(0, 500) : 'Mail transport failed',
+      }
+    }
   },
 }
 

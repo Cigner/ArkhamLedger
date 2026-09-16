@@ -2,6 +2,7 @@
 
 import { Toast as ToastPrimitive } from '@base-ui/react/toast'
 import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/cn'
 
 /**
@@ -28,6 +29,7 @@ const TONE_STYLES: Record<string, string> = {
  */
 export function ToastViewport({ className }: { className?: string }) {
   const { toasts } = ToastPrimitive.useToastManager()
+  const t = useTranslations('common')
 
   return (
     <ToastPrimitive.Portal>
@@ -53,7 +55,7 @@ export function ToastViewport({ className }: { className?: string }) {
             <ToastPrimitive.Description className="mt-1 font-ui text-xs leading-[--leading-ui] text-text-secondary" />
             <ToastPrimitive.Close
               className="absolute right-2 top-2 rounded-sm p-1.5 text-text-muted transition-interactive hover:bg-surface-hover hover:text-text-primary active:bg-surface-active"
-              aria-label="Dismiss"
+              aria-label={t('dismiss')}
             >
               <X className="size-4" aria-hidden="true" />
             </ToastPrimitive.Close>

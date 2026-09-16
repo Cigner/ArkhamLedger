@@ -4,6 +4,8 @@ import { db } from '@/db/client'
 import { notification } from '@/db/schema'
 import { requireUser } from '@/lib/auth'
 import { env } from '@/lib/env'
+import { createAppTranslator } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE, isSupportedLocale } from '@/lib/i18n/locales'
 import { renderNotification } from '../domain/messages'
 import type { InboxItem, NotificationPayload } from '../domain/types'
 
@@ -23,6 +25,8 @@ import type { InboxItem, NotificationPayload } from '../domain/types'
  */
 export async function listInbox(limit = 50): Promise<InboxItem[]> {
   const user = await requireUser()
+  const locale = isSupportedLocale(user.locale) ? user.locale : DEFAULT_LOCALE
+  const translate = createAppTranslator(locale)
 
   const rows = await db
     .select()
@@ -39,6 +43,7 @@ export async function listInbox(limit = 50): Promise<InboxItem[]> {
       baseUrl: env.BETTER_AUTH_URL,
       campaignId: row.campaignId,
       gameSessionId: row.gameSessionId,
+      translate,
     })
 
     return {
