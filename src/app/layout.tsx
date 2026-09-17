@@ -46,6 +46,11 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s · ${t('common.appName')}`,
     },
     description: t('metadata.description'),
+    icons: {
+      icon: '/brand/logo.ico',
+      shortcut: '/brand/logo.ico',
+      apple: '/brand/logo.png',
+    },
     robots: { index: false, follow: false },
   }
 }

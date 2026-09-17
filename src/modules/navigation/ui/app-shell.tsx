@@ -13,6 +13,7 @@ import {
   Shield,
   X,
 } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
@@ -137,7 +138,14 @@ function SidebarContent({
           )}
           aria-label={t('appName')}
         >
-          <BookOpenText className="size-6 shrink-0 text-candle-11" aria-hidden="true" />
+          <Image
+            src="/brand/logo.png"
+            width={40}
+            height={40}
+            alt=""
+            priority
+            className="size-10 shrink-0 object-contain"
+          />
           {expanded ? (
             <span className="truncate font-display text-sm tracking-[--tracking-display]">
               {t('appName')}

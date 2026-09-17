@@ -1,3 +1,6 @@
+import Image from 'next/image'
+import { getTranslations } from 'next-intl/server'
+
 /**
  * Layout for the unauthenticated screens.
  *
@@ -12,6 +15,14 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
     <div className="relative z-10 flex min-h-dvh items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
+          <Image
+            src="/brand/logo.png"
+            width={144}
+            height={144}
+            alt=""
+            priority
+            className="mx-auto mb-4 size-36 object-contain"
+          />
           <p className="font-display text-2xl tracking-[--tracking-display] text-text-primary">
             {t('appName')}
           </p>
@@ -22,4 +33,3 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
     </div>
   )
 }
-import { getTranslations } from 'next-intl/server'
