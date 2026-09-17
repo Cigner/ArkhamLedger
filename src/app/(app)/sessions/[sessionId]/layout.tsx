@@ -8,8 +8,7 @@ import { SessionTabs } from '@/modules/sessions/ui/session-tabs'
 /**
  * Session shell.
  *
- * The query authorizes campaign membership and raises NOT FOUND otherwise, so a
- * session id reveals nothing to somebody outside the campaign.
+ * The query authorizes campaign membership and raises NOT FOUND otherwise.
  */
 export default async function SessionLayout({
   children,

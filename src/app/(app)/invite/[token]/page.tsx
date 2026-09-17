@@ -14,8 +14,7 @@ import { AcceptInvitation } from '@/modules/campaigns/ui/accept-invitation'
  * without an account cannot create one. The proxy sends an anonymous visitor to
  * sign in and back here afterwards.
  *
- * The preview is read-only - arriving, looking, and reloading never consume a
- * use of a shared link.
+ * The preview is read-only.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('campaigns.invitePage')

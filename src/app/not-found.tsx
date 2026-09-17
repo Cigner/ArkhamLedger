@@ -1,13 +1,6 @@
 import { ButtonLink } from '@/components/ui/button-link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-/**
- * 404.
- *
- * Also what a campaign you are not a member of looks like. That is deliberate:
- * answering "forbidden" for somebody else's campaign would let its existence be
- * discovered by walking identifiers.
- */
 export default async function NotFoundPage() {
   const t = await getTranslations('httpErrors.notFound')
 

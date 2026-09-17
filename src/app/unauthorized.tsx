@@ -1,12 +1,6 @@
 import { ButtonLink } from '@/components/ui/button-link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-/**
- * 401.
- *
- * A session that has expired or been revoked mid-visit. Distinct from 403: the
- * fix here is to sign in again, not to ask somebody for access.
- */
 export default async function UnauthorizedPage() {
   const t = await getTranslations('httpErrors.unauthorized')
 

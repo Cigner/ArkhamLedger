@@ -10,8 +10,7 @@ import { KeeperAvailability } from '@/modules/availability/ui/keeper-availabilit
  * Availability.
  *
  * One screen for both roles, because a Keeper is also a player and answering is
- * the same act for them. What differs is what comes back from the query: a
- * Keeper's view carries names, an Investigator's carries counts.
+ * the same act for them. A Keeper's view carries names, an Investigator's carries counts.
  */
 export const dynamic = 'force-dynamic'
 

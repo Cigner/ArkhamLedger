@@ -37,8 +37,6 @@ export async function GET(
       startUtc: session.confirmedStartUtc,
       endUtc: session.confirmedEndUtc,
       cancelled: session.status === 'CANCELLED',
-      // Any change to the session moves this, which is what tells a calendar
-      // client that the copy it already has is the older one.
       updatedAt: session.confirmedStartUtc,
       organizerName: session.campaignName,
       url: `${env.BETTER_AUTH_URL}/sessions/${session.id}`,

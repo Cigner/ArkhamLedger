@@ -13,7 +13,7 @@ import { ParticipantsForm } from '@/modules/sessions/ui/participants-form'
  *
  * Keeper-only: this is the one screen that shows priorities, and they are the
  * Keeper's private working notes rather than something the party sees about each
- * other. The guard refuses an Investigator here regardless of the missing tab.
+ * other.
  */
 export const dynamic = 'force-dynamic'
 

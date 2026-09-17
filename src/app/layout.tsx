@@ -4,13 +4,6 @@ import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { Cinzel, IM_Fell_English, Inter, Spectral } from 'next/font/google'
 import '@/design-system/globals.css'
 
-/**
- * Root layout.
- *
- * Fonts are loaded through next/font so they are self-hosted and hashed at build
- * time: no request leaves the deployment for a stylesheet, which keeps the
- * content security policy free of external font origins.
- */
 const cinzel = Cinzel({
   subsets: ['latin'],
   weight: ['400', '600'],
@@ -66,8 +59,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      // en-GB rather than en: it is what every formatted date in the
-      // application uses, and Firefox follows it for native date inputs too.
       lang={locale === 'en' ? 'en-GB' : locale}
       className={`${cinzel.variable} ${spectral.variable} ${inter.variable} ${imFell.variable}`}
     >

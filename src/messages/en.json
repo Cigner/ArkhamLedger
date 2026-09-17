@@ -205,7 +205,7 @@
     },
     "operations": {
       "title": "Operations",
-      "description": "Counts only - no campaign is named here."
+      "description": "App operations, workers and stats."
     },
     "reports": {
       "title": "Problem reports",

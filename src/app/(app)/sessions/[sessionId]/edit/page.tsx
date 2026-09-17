@@ -10,10 +10,9 @@ import { SessionDefinitionForm } from '@/modules/sessions/ui/session-definition-
 /**
  * Editing a session.
  *
- * Keeper only, and the guard says so rather than the missing link. Allowed while
- * answers are being collected as well as while the session is a draft: a
- * mistyped date should not cost the whole session, and the form warns about what
- * changing the dates does to the answers already given.
+ * Keeper only. Allowed while
+ * answers are being collected as well as while the session is a draft.
+ * The form warns about what changing the dates does to the answers already given.
  */
 export const dynamic = 'force-dynamic'
 

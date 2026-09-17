@@ -7,9 +7,7 @@ import { SchedulingPanel } from '@/modules/scheduling/ui/scheduling-panel'
 /**
  * Dates.
  *
- * Keeper only, and the query is what enforces that: a proposal is read against
- * named availability, which is the Keeper's to see and nobody else's. An
- * Investigator following this URL is told the page does not exist.
+ * Keeper only. A proposal is read against named availability.
  */
 export const dynamic = 'force-dynamic'
 

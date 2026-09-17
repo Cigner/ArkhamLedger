@@ -31,7 +31,6 @@ export const appLogger = root.child({ stream: 'app' })
 export const securityLogger = root.child({ stream: 'security' })
 export const httpLogger = root.child({ stream: 'http' })
 
-/** Binds a correlation id and actor to a logger for the lifetime of one request. */
 export function requestLogger(correlationId: string, userId?: string): Logger {
   return appLogger.child(userId ? { correlationId, userId } : { correlationId })
 }
