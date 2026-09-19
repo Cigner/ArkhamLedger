@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "families": [],
+  "skills": [
+    {
+      "id": "computer-use",
+      "nameKey": "investigators.skills.computerUse",
+      "availability": ["MODERN"],
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "diving",
+      "nameKey": "investigators.skills.diving",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "electronics",
+      "nameKey": "investigators.skills.electronics",
+      "availability": ["MODERN"],
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    }
+  ]
+}

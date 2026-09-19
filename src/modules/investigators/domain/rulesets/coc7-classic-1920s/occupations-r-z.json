@@ -1,0 +1,278 @@
+{
+  "version": "1.0.0",
+  "choiceGroups": {
+    "interpersonal": ["charm", "fast-talk", "intimidate", "persuade"],
+    "repair": ["electrical-repair", "mechanical-repair"],
+    "combat": ["@fighting", "@firearms"]
+  },
+  "occupations": [
+    {
+      "id": "researcher",
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "history",
+        "library-use",
+        { "group": "interpersonal", "count": 1 },
+        "@language-other",
+        "spot-hidden",
+        { "any": 3 }
+      ]
+    },
+    {
+      "id": "sailor-naval",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        { "group": "repair", "count": 1 },
+        "@fighting",
+        "@firearms",
+        "first-aid",
+        "navigate",
+        "@pilot:boat",
+        "@survival:sea",
+        "swim"
+      ]
+    },
+    {
+      "id": "sailor-commercial",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [20, 40],
+      "skills": [
+        "first-aid",
+        "mechanical-repair",
+        "natural-world",
+        "navigate",
+        { "group": "interpersonal", "count": 1 },
+        "@pilot:boat",
+        "spot-hidden",
+        "swim"
+      ]
+    },
+    {
+      "id": "salesperson",
+      "points": { "selected": ["APP"] },
+      "credit": [9, 40],
+      "skills": [
+        "accounting",
+        { "group": "interpersonal", "count": 2 },
+        "drive-auto",
+        "listen",
+        "psychology",
+        { "oneOf": ["stealth", "sleight-of-hand"] },
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "scientist",
+      "points": "EDU_X4",
+      "credit": [9, 50],
+      "skills": [
+        "@science",
+        "@science",
+        "@science",
+        { "oneOf": ["computer-use", "library-use"] },
+        "@language-other",
+        "language-own",
+        { "group": "interpersonal", "count": 1 },
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "secretary",
+      "points": { "selected": ["DEX", "APP"] },
+      "credit": [9, 30],
+      "skills": [
+        "accounting",
+        "@art-craft:typing-shorthand",
+        { "group": "interpersonal", "count": 2 },
+        "language-own",
+        { "oneOf": ["library-use", "computer-use"] },
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "shopkeeper",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [20, 40],
+      "skills": [
+        "accounting",
+        { "group": "interpersonal", "count": 2 },
+        "electrical-repair",
+        "listen",
+        "mechanical-repair",
+        "psychology",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "soldier-marine",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        { "oneOf": ["climb", "swim"] },
+        "dodge",
+        "@fighting",
+        "@firearms",
+        "stealth",
+        "@survival",
+        { "oneOf": ["first-aid", "mechanical-repair", "@language-other"], "count": 2 }
+      ]
+    },
+    {
+      "id": "spy",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [20, 60],
+      "skills": [
+        { "oneOf": ["@art-craft:acting", "disguise"] },
+        "@firearms",
+        "listen",
+        "@language-other",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "sleight-of-hand",
+        "stealth"
+      ]
+    },
+    {
+      "id": "student-intern",
+      "points": "EDU_X4",
+      "credit": [5, 10],
+      "skills": [
+        { "oneOf": ["language-own", "@language-other"] },
+        "library-use",
+        "listen",
+        { "any": 3 },
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "stunt-performer",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [10, 50],
+      "skills": [
+        "climb",
+        "dodge",
+        { "group": "repair", "count": 1 },
+        "@fighting",
+        "first-aid",
+        "jump",
+        "swim",
+        { "oneOf": ["diving", "drive-auto", "@pilot", "ride"] }
+      ]
+    },
+    {
+      "id": "tribe-member",
+      "points": "EDU_X2_PLUS_DEX_X2_PLUS_STR_X2",
+      "credit": [0, 15],
+      "skills": [
+        "climb",
+        { "oneOf": ["@fighting", "throw"] },
+        "listen",
+        "natural-world",
+        "occult",
+        "spot-hidden",
+        "swim",
+        "@survival"
+      ]
+    },
+    {
+      "id": "undertaker",
+      "points": "EDU_X4",
+      "credit": [20, 40],
+      "skills": [
+        "accounting",
+        "drive-auto",
+        { "group": "interpersonal", "count": 1 },
+        "history",
+        "occult",
+        "psychology",
+        "@science:biology",
+        "@science:chemistry"
+      ]
+    },
+    {
+      "id": "union-activist",
+      "points": "EDU_X4",
+      "credit": [5, 30],
+      "skills": [
+        "accounting",
+        { "group": "interpersonal", "count": 2 },
+        "fighting-brawl",
+        "law",
+        "listen",
+        "operate-heavy-machinery",
+        "psychology"
+      ]
+    },
+    {
+      "id": "waiter-waitress",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [9, 20],
+      "skills": [
+        "accounting",
+        "@art-craft",
+        "dodge",
+        "listen",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "white-collar-clerk-executive",
+      "points": "EDU_X4",
+      "credit": [9, 20],
+      "skills": [
+        "accounting",
+        { "oneOf": ["language-own", "@language-other"] },
+        "law",
+        { "oneOf": ["library-use", "computer-use"] },
+        "listen",
+        { "group": "interpersonal", "count": 1 },
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "white-collar-manager",
+      "points": "EDU_X4",
+      "credit": [20, 80],
+      "skills": [
+        "accounting",
+        "@language-other",
+        "law",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "zealot",
+      "points": { "selected": ["APP", "POW"] },
+      "credit": [0, 30],
+      "skills": [
+        "history",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        "stealth",
+        { "any": 3 }
+      ]
+    },
+    {
+      "id": "zookeeper",
+      "points": "EDU_X4",
+      "credit": [9, 40],
+      "skills": [
+        "@art-craft:animal-handling",
+        "accounting",
+        "dodge",
+        "first-aid",
+        "natural-world",
+        "medicine",
+        "@science:pharmacy",
+        "@science:zoology"
+      ]
+    }
+  ]
+}

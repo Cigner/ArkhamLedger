@@ -73,7 +73,10 @@ export async function listCampaignSessions(campaignId: string): Promise<SessionL
     )
     .orderBy(
       // Sessions that still need something come first; history sinks.
-      sql`field(${gameSession.status}, 'COLLECTING', 'PROPOSED', 'SCHEDULED', 'DRAFT', 'COMPLETED', 'CANCELLED')`,
+      sql`field(
+        ${gameSession.status},
+        'IN_PROGRESS', 'COLLECTING', 'PROPOSED', 'SCHEDULED', 'DRAFT', 'COMPLETED', 'CANCELLED'
+      )`,
       desc(gameSession.createdAt),
     )
 
@@ -116,6 +119,8 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
       timezone: gameSession.timezone,
       confirmedStartUtc: gameSession.confirmedStartUtc,
       confirmedEndUtc: gameSession.confirmedEndUtc,
+      startedAt: gameSession.startedAt,
+      endedAt: gameSession.endedAt,
       setManually: gameSession.setManually,
       cancelledReason: gameSession.cancelledReason,
     })
@@ -133,6 +138,7 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
       name: authUser.name,
       priority: sessionParticipant.priority,
       isKeeper: sessionParticipant.isKeeper,
+      playsInvestigator: sessionParticipant.playsInvestigator,
       respondedAt: sessionParticipant.respondedAt,
       attendance: sessionParticipant.attendance,
     })
@@ -149,6 +155,7 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
     name: participant.name,
     priority: isKeeper ? participant.priority : 'PREFERRED',
     isKeeper: participant.isKeeper,
+    playsInvestigator: participant.playsInvestigator,
     respondedAt: isKeeper ? participant.respondedAt : null,
     attendance: participant.attendance,
   }))
@@ -198,9 +205,9 @@ export async function getCampaignDiary(campaignId: string): Promise<CampaignDiar
   const scheduled = rows
     .filter(
       (row) =>
-        row.status === 'SCHEDULED' &&
         row.confirmedStartUtc !== null &&
-        row.confirmedStartUtc.getTime() >= now.getTime(),
+        (row.status === 'IN_PROGRESS' ||
+          (row.status === 'SCHEDULED' && row.confirmedStartUtc.getTime() >= now.getTime())),
     )
     .sort((a, b) => (a.confirmedStartUtc?.getTime() ?? 0) - (b.confirmedStartUtc?.getTime() ?? 0))
 

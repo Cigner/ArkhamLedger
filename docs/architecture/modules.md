@@ -17,6 +17,7 @@ src/
 │   ├── sessions/         sessions, lifecycle, participants, calendar export
 │   ├── availability/     answers, aggregation, the answering interface
 │   ├── scheduling/       the ranking algorithm and its runs
+│   ├── investigators/    character creation, rules, sheets, access and history
 │   ├── notifications/    outbox, dispatchers, preferences, integrations
 │   └── operations/       the deployment's own health
 │
@@ -123,24 +124,69 @@ stateDiagram-v2
     PROPOSED --> SCHEDULED: accept a proposal
     PROPOSED --> COLLECTING: reopen
     SCHEDULED --> COLLECTING: reopen
-    SCHEDULED --> COMPLETED: record attendance
+    SCHEDULED --> IN_PROGRESS: start the session
+    IN_PROGRESS --> COMPLETED: record attendance
     DRAFT --> CANCELLED
     COLLECTING --> CANCELLED
     PROPOSED --> CANCELLED
     SCHEDULED --> CANCELLED
+    IN_PROGRESS --> CANCELLED
     COMPLETED --> [*]
     CANCELLED --> [*]
 ```
 
 The table lives in `sessions/domain/lifecycle.ts` as data, not as a chain of
-conditionals, and every one of the 36 status pairs is covered by a test.
+conditionals, and every one of the 49 status pairs is covered by a test.
 `COMPLETED` and `CANCELLED` are terminal: a session that already happened is a
 historical record, and reviving a cancelled one would resurrect notifications
 people already acted on.
 
+`IN_PROGRESS` is entered by hand rather than by the clock. It is the moment the
+Keeper says the evening has begun, which is what fixes who is playing which
+Investigator; starting on the confirmed hour would freeze sheets while people
+are still arriving. Starting is refused while anybody marked as playing a
+character has not been given one.
+
 Changing the date of a session that already has one is **not** a transition —
 `SCHEDULED → SCHEDULED` is not in the table. It goes through `canSetDate`,
 because moving a session is a change of _when_, not of _state_.
+
+## Two kinds of Investigator history
+
+A character sheet is read by four audiences that must not be served from the same
+place: its owner, the Keeper of a campaign it is linked to, the other players,
+and somebody whose access has ended.
+
+`investigators/domain/visibility.ts` holds the field registry and the cascade
+that hides a calculated value whose source is hidden. `domain/sheet.ts` turns a
+sheet plus that map plus a reader's role into the one value that reader may see,
+and `data/` applies it before anything is returned. Nothing is hidden in a
+component: a value that reached the browser has already been disclosed.
+
+History is two tables and the difference matters.
+
+- **Snapshots** are the character as it was, with the privacy settings that were
+  in force over it. They are written at session start, at transfer, and before
+  access is reduced, and they are never served to a reader directly.
+- **Disclosure snapshots** are what one person had been shown, captured at the
+  moment their access ended. They are what makes the product's promise hold: a
+  Keeper keeps the sheets of a campaign that finished, and a player keeps what
+  they were shown by somebody who has since made it private.
+
+Both are append-only. A history that can be revised is not one.
+
+One person can hold several disclosures of the same character, and the newest is
+not always the richest: hiding a field captures one while everybody keeps their
+access, and a later capture taken when they leave the campaign records that
+field as already hidden. `/investigators/kept/[id]` therefore lists the moments
+somebody was shown a character rather than a single latest state, and the
+snapshot identifier is filtered by viewer inside the query — a capture taken for
+somebody else cannot be read by passing its id.
+
+Anything computed _from_ a snapshot is projected first. A session's
+before-and-after summary compares the pair of snapshots that evening took, with
+the reader's own role applied to both, because comparing the stored sheets would
+publish what the live sheet withholds.
 
 ## Adding a module
 

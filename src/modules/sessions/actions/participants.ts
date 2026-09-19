@@ -37,7 +37,14 @@ export const setSessionParticipants = authActionClient
       const member = eligibleById.get(participant.userId)
       if (!member) return []
       return [
-        { userId: participant.userId, priority: participant.priority, isKeeper: member.isKeeper },
+        {
+          userId: participant.userId,
+          priority: participant.priority,
+          isKeeper: member.isKeeper,
+          ...(participant.playsInvestigator === undefined
+            ? {}
+            : { playsInvestigator: participant.playsInvestigator }),
+        },
       ]
     })
 

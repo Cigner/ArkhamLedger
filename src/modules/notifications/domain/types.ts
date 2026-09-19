@@ -22,6 +22,16 @@ export type NotificationType =
   | 'SESSION_CANCELLED'
   | 'NO_NEXT_SESSION'
   | 'ISSUE_REPORTED'
+  | 'INVESTIGATOR_CREATED_FOR_YOU'
+  | 'INVESTIGATOR_LINKED'
+  | 'INVESTIGATOR_REQUESTED'
+  | 'INVESTIGATOR_EDIT_GRANT_CLOSED'
+  | 'INVESTIGATOR_TRANSFER_REQUESTED'
+  | 'INVESTIGATOR_TRANSFER_ACCEPTED'
+  | 'INVESTIGATOR_TRANSFER_REJECTED'
+  | 'INVESTIGATOR_TRANSFER_EXPIRED'
+  | 'SESSION_ASSIGNMENT_CHANGED'
+  | 'SESSION_ASSIGNMENT_MISSING'
 
 export type DeliveryChannel = 'IN_APP' | 'EMAIL' | 'DISCORD'
 export type DeliveryStatus = 'PENDING' | 'SENDING' | 'SENT' | 'FAILED'
@@ -50,6 +60,17 @@ export type NotificationPayload = {
   readonly reportMessage?: string
   readonly reporterEmail?: string
   readonly sourcePath?: string
+  /**
+   * The character an event is about.
+   *
+   * Safe to store because no Investigator event is a broadcast: every one of
+   * them is addressed to a person who may already read that sheet. It must never
+   * be added to a type that reaches a channel.
+   */
+  readonly investigatorName?: string
+  readonly investigatorId?: string
+  /** Who is missing a character, for the Keeper about to start a session. */
+  readonly players?: string
 }
 
 export type NotificationRecord = {

@@ -1,10 +1,19 @@
-import { CalendarClock, FileText, TriangleAlert, Users, Wand2 } from 'lucide-react'
+import { CalendarClock, FileText, ScrollText, TriangleAlert, Users, Wand2 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { formatDeadline } from '@/lib/datetime/format'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { listAssignmentRows } from '@/modules/investigators/data/assignments'
+import { resolveInvestigatorRole } from '@/modules/investigators/data/guards'
+import { findSessionSnapshots } from '@/modules/investigators/data/snapshots'
+import { buildSheetOptions } from '@/modules/investigators/data/sheet-options'
+import { compareSheets } from '@/modules/investigators/domain/comparison'
+import { SessionComparison } from '@/modules/investigators/ui/session-comparison'
+import { listCampaignInvestigators } from '@/modules/investigators/data/campaign-bindings'
+import { SessionAssignments } from '@/modules/investigators/ui/session-assignments'
 import { getSessionDetail } from '@/modules/sessions/data/sessions'
+import { canAssignInvestigators } from '@/modules/sessions/domain/lifecycle'
 import { KeeperActions } from '@/modules/sessions/ui/keeper-actions'
 import { ResponseProgress } from '@/modules/sessions/ui/response-progress'
 import { SessionWhen } from '@/modules/sessions/ui/session-when'
@@ -29,6 +38,72 @@ export default async function SessionOverviewPage({
   const { sessionId } = await params
   const t = await getTranslations('sessions.overview')
   const session = await getSessionDetail(sessionId)
+
+  /*
+   * Characters are only offered from what is already in the campaign, so a
+   * Keeper choosing for somebody never sees the rest of that person's Vault.
+   */
+  const [assignments, campaignCharacters] = await Promise.all([
+    listAssignmentRows(sessionId),
+    listCampaignInvestigators(session.campaignId),
+  ])
+
+  const choices = Object.fromEntries(
+    [...new Set(campaignCharacters.map((character) => character.ownerId))].map((ownerId) => [
+      ownerId,
+      campaignCharacters
+        .filter((character) => character.ownerId === ownerId && !character.isDraft)
+        .map((character) => ({
+          investigatorId: character.investigatorId,
+          name: character.name,
+        })),
+    ]),
+  )
+
+  /*
+   * Only once the session is over. A comparison needs both snapshots, and the
+   * second one is taken when the evening ends.
+   */
+  const comparisons =
+    session.status === 'COMPLETED'
+      ? (
+          await Promise.all(
+            assignments
+              .filter((row) => row.investigatorId !== null)
+              .map(async (row) => {
+                /*
+                 * Asked through the character's own guard rather than assumed
+                 * from being at this session. It answers both questions at
+                 * once: whether this reader may see the sheet at all, and with
+                 * what standing - and the pair comes back projected for it, so
+                 * a summary of the evening can never say more than the sheet
+                 * would.
+                 */
+                const context = await resolveInvestigatorRole(row.investigatorId!)
+                if (!context) return null
+
+                const pair = await findSessionSnapshots({
+                  sessionId,
+                  investigatorId: row.investigatorId!,
+                  role: context,
+                })
+                if (!pair) return null
+
+                return {
+                  name: row.investigatorName ?? row.name,
+                  comparison: compareSheets(pair.before, pair.after),
+                  options: buildSheetOptions({
+                    rulesetId: pair.after.rulesetId,
+                    rulesetVersion: pair.after.rulesetVersion,
+                    characteristics: pair.after.characteristics,
+                    occupationId: pair.after.identity.occupationId,
+                    occupationCharacteristic: pair.after.identity.occupationCharacteristic,
+                  }),
+                }
+              }),
+          )
+        ).flatMap((entry) => (entry === null ? [] : [entry]))
+      : []
 
   const responded = session.participants.filter(
     (participant) => participant.respondedAt !== null,
@@ -105,6 +180,46 @@ export default async function SessionOverviewPage({
             </CardHeader>
             <CardContent className="font-body text-base leading-[--leading-body] text-text-secondary">
               {session.description}
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {comparisons.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ScrollText className="size-4 text-text-muted" aria-hidden="true" />
+                {t('whatHappened')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {comparisons.map((entry) => (
+                <SessionComparison
+                  key={entry.name}
+                  name={entry.name}
+                  comparison={entry.comparison}
+                  options={entry.options}
+                />
+              ))}
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {assignments.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ScrollText className="size-4 text-text-muted" aria-hidden="true" />
+                {t('characters')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SessionAssignments
+                sessionId={sessionId}
+                rows={assignments}
+                choices={choices}
+                canEdit={session.viewer.isKeeper && canAssignInvestigators(session.status).ok}
+              />
             </CardContent>
           </Card>
         ) : null}

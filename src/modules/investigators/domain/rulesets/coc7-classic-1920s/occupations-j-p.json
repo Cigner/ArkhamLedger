@@ -1,0 +1,466 @@
+{
+  "version": "1.0.0",
+  "choiceGroups": {
+    "interpersonal": ["charm", "fast-talk", "intimidate", "persuade"],
+    "repair": ["electrical-repair", "mechanical-repair"],
+    "combat": ["@fighting", "@firearms"]
+  },
+  "occupations": [
+    {
+      "id": "journalist-investigative",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft",
+        { "group": "interpersonal", "count": 1 },
+        "history",
+        "library-use",
+        "language-own",
+        "psychology",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "journalist-reporter",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft:acting",
+        "history",
+        "listen",
+        "language-own",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "stealth",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "judge",
+      "points": "EDU_X4",
+      "credit": [50, 80],
+      "skills": [
+        "history",
+        "intimidate",
+        "law",
+        "library-use",
+        "listen",
+        "language-own",
+        "persuade",
+        "psychology"
+      ]
+    },
+    {
+      "id": "laboratory-assistant",
+      "points": "EDU_X4",
+      "credit": [10, 30],
+      "skills": [
+        { "oneOf": ["computer-use", "library-use"] },
+        "electrical-repair",
+        "@language-other",
+        "@science:chemistry",
+        "@science",
+        "@science",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "laborer-unskilled",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "drive-auto",
+        "electrical-repair",
+        "@fighting",
+        "first-aid",
+        "mechanical-repair",
+        "operate-heavy-machinery",
+        "throw",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "laborer-lumberjack",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "climb",
+        "dodge",
+        "@fighting:chainsaw",
+        "first-aid",
+        "jump",
+        "mechanical-repair",
+        { "oneOf": ["natural-world", "@science:biology", "@science:botany"] },
+        "throw"
+      ]
+    },
+    {
+      "id": "laborer-miner",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "climb",
+        "@science:geology",
+        "jump",
+        "mechanical-repair",
+        "operate-heavy-machinery",
+        "stealth",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "lawyer",
+      "points": "EDU_X4",
+      "credit": [30, 80],
+      "skills": [
+        "accounting",
+        "law",
+        "library-use",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "librarian",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [9, 35],
+      "skills": ["accounting", "library-use", "@language-other", "language-own", { "any": 4 }]
+    },
+    {
+      "id": "mechanic-skilled-trades",
+      "points": "EDU_X4",
+      "credit": [9, 40],
+      "skills": [
+        "@art-craft",
+        "climb",
+        "drive-auto",
+        "electrical-repair",
+        "mechanical-repair",
+        "operate-heavy-machinery",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "military-officer",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [20, 70],
+      "skills": [
+        "accounting",
+        "@firearms",
+        "navigate",
+        "first-aid",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "missionary",
+      "points": { "selected": ["APP"] },
+      "credit": [0, 30],
+      "skills": [
+        "@art-craft",
+        "first-aid",
+        "mechanical-repair",
+        "medicine",
+        "natural-world",
+        { "group": "interpersonal", "count": 1 },
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "mountain-climber",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [30, 60],
+      "skills": [
+        "climb",
+        "first-aid",
+        "jump",
+        "listen",
+        "navigate",
+        "@language-other",
+        "@survival:alpine",
+        "track"
+      ]
+    },
+    {
+      "id": "museum-curator",
+      "points": "EDU_X4",
+      "credit": [10, 30],
+      "skills": [
+        "accounting",
+        "appraise",
+        "archaeology",
+        "history",
+        "library-use",
+        "occult",
+        "@language-other",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "musician",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft:instrument",
+        { "group": "interpersonal", "count": 1 },
+        "listen",
+        "psychology",
+        { "any": 4 }
+      ]
+    },
+    {
+      "id": "nurse",
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "first-aid",
+        "listen",
+        "medicine",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "@science:biology",
+        "@science:chemistry",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "occultist",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [9, 65],
+      "skills": [
+        "anthropology",
+        "history",
+        "library-use",
+        { "group": "interpersonal", "count": 1 },
+        "occult",
+        "@language-other",
+        "@science:astronomy",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "outdoorsperson",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [5, 20],
+      "skills": [
+        "@firearms",
+        "first-aid",
+        "listen",
+        "natural-world",
+        "navigate",
+        "spot-hidden",
+        "@survival",
+        "track"
+      ]
+    },
+    {
+      "id": "parapsychologist",
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "anthropology",
+        "@art-craft:photography",
+        "history",
+        "library-use",
+        "occult",
+        "@language-other",
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "pharmacist",
+      "points": "EDU_X4",
+      "credit": [35, 75],
+      "skills": [
+        "accounting",
+        "first-aid",
+        "@language-other:latin",
+        "library-use",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "@science:pharmacy",
+        "@science:chemistry"
+      ]
+    },
+    {
+      "id": "photographer",
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft:photography",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "@science:chemistry",
+        "stealth",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "photojournalist",
+      "points": "EDU_X4",
+      "credit": [10, 30],
+      "skills": [
+        "@art-craft:photography",
+        "climb",
+        { "group": "interpersonal", "count": 1 },
+        "@language-other",
+        "psychology",
+        "@science:chemistry",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "pilot",
+      "points": { "selected": ["DEX"] },
+      "credit": [20, 70],
+      "skills": [
+        "electrical-repair",
+        "mechanical-repair",
+        "navigate",
+        "operate-heavy-machinery",
+        "@pilot:aircraft",
+        "@science:astronomy",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "pilot-aviator",
+      "eras": ["CLASSIC_1920S"],
+      "points": "EDU_X4",
+      "credit": [30, 60],
+      "skills": [
+        "accounting",
+        "electrical-repair",
+        "listen",
+        "mechanical-repair",
+        "navigate",
+        "@pilot:aircraft",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "police-detective",
+      "tags": ["LOVECRAFTIAN"],
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [20, 50],
+      "skills": [
+        { "oneOf": ["@art-craft:acting", "disguise"] },
+        "@firearms",
+        "law",
+        "listen",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "police-uniformed-officer",
+      "tags": ["LOVECRAFTIAN"],
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "fighting-brawl",
+        "@firearms",
+        "first-aid",
+        { "group": "interpersonal", "count": 1 },
+        "law",
+        "psychology",
+        "spot-hidden",
+        { "oneOf": ["drive-auto", "ride"] }
+      ]
+    },
+    {
+      "id": "private-investigator",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft:photography",
+        "disguise",
+        "law",
+        "library-use",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "professor",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [20, 70],
+      "skills": ["library-use", "@language-other", "language-own", "psychology", { "any": 4 }]
+    },
+    {
+      "id": "prospector",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [0, 10],
+      "skills": [
+        "climb",
+        "first-aid",
+        "history",
+        "mechanical-repair",
+        "navigate",
+        "@science:geology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "prostitute",
+      "points": { "selected": ["APP"] },
+      "credit": [5, 50],
+      "skills": [
+        "@art-craft",
+        { "group": "interpersonal", "count": 2 },
+        "dodge",
+        "psychology",
+        "sleight-of-hand",
+        "stealth",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "psychiatrist",
+      "points": "EDU_X4",
+      "credit": [30, 80],
+      "skills": [
+        "@language-other",
+        "listen",
+        "medicine",
+        "persuade",
+        "psychoanalysis",
+        "psychology",
+        "@science:biology",
+        "@science:chemistry"
+      ]
+    },
+    {
+      "id": "psychologist-psychoanalyst",
+      "points": "EDU_X4",
+      "credit": [10, 40],
+      "skills": [
+        "accounting",
+        "library-use",
+        "listen",
+        "persuade",
+        "psychoanalysis",
+        "psychology",
+        { "any": 2 }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import {
   CircleCheck,
   Lock,
   Pencil,
+  Play,
   Send,
   Undo2,
   XCircle,
@@ -40,6 +41,7 @@ import {
   publishSession,
   reopenCollection,
   setSessionDate,
+  startSession,
 } from '../actions/session'
 import type { SessionDetail } from '../domain/types'
 
@@ -74,6 +76,11 @@ function useMessage() {
     'sessions.errors.deadlineAfterWindowStarts': t('errors.deadlineAfterStart'),
     'sessions.errors.sessionMovedOn': t('errors.sessionMovedOn'),
     'sessions.errors.invalidTransition': t('errors.invalidTransition'),
+    'sessions.errors.missingInvestigatorAssignments': t('errors.missingInvestigators'),
+    'sessions.errors.notInProgress': t('errors.notInProgress'),
+    'sessions.errors.investigatorNotInCampaign': t('errors.investigatorNotInCampaign'),
+    'sessions.errors.investigatorNotOwnedByPlayer': t('errors.investigatorNotOwnedByPlayer'),
+    'investigators.errors.alreadyInPlay': t('errors.alreadyInPlay'),
     'sessions.errors.endBeforeStart': t('errors.endBeforeStart'),
   }
 
@@ -100,6 +107,7 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
   const [closeOpen, setCloseOpen] = useState(false)
   const [reopenOpen, setReopenOpen] = useState(false)
   const [cancelOpen, setCancelOpen] = useState(false)
+  const [startOpen, setStartOpen] = useState(false)
   const [completeOpen, setCompleteOpen] = useState(false)
 
   const refresh = () => router.refresh()
@@ -135,6 +143,13 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
       refresh()
     },
     onError: handle(t('errors.cancelFailed')),
+  })
+  const start = useAction(startSession, {
+    onSuccess: () => {
+      setStartOpen(false)
+      refresh()
+    },
+    onError: handle(t('errors.startFailed')),
   })
   const complete = useAction(completeSession, {
     onSuccess: () => {
@@ -185,7 +200,7 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
           </Button>
         ) : null}
 
-        {!terminal ? (
+        {!terminal && status !== 'IN_PROGRESS' ? (
           <Button variant="outline" onClick={() => setSchedulingOpen(true)}>
             {status === 'SCHEDULED' ? (
               <Pencil className="size-4" aria-hidden="true" />
@@ -204,6 +219,13 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
         ) : null}
 
         {status === 'SCHEDULED' ? (
+          <Button variant="accent" onClick={() => setStartOpen(true)}>
+            <Play className="size-4" aria-hidden="true" />
+            {t('start')}
+          </Button>
+        ) : null}
+
+        {status === 'IN_PROGRESS' ? (
           <Button variant="ghost" onClick={() => setCompleteOpen(true)}>
             <CircleCheck className="size-4" aria-hidden="true" />
             {t('markPlayed')}
@@ -376,6 +398,16 @@ export function KeeperActions({ session }: { session: SessionDetail }) {
         confirmLabel={t('closeAnswers')}
         pending={closeAnswers.isPending}
         onConfirm={() => closeAnswers.execute({ sessionId: session.id })}
+      />
+
+      <ConfirmDialog
+        open={startOpen}
+        onOpenChange={setStartOpen}
+        title={t('startDialog.title')}
+        description={t('startDialog.description')}
+        confirmLabel={t('start')}
+        pending={start.isPending}
+        onConfirm={() => start.execute({ sessionId: session.id })}
       />
 
       <ConfirmDialog

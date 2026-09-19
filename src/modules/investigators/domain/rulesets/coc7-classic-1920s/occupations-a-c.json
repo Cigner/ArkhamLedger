@@ -1,0 +1,385 @@
+{
+  "version": "1.0.0",
+  "choiceGroups": {
+    "interpersonal": ["charm", "fast-talk", "intimidate", "persuade"],
+    "repair": ["electrical-repair", "mechanical-repair"],
+    "combat": ["@fighting", "@firearms"]
+  },
+  "occupations": [
+    {
+      "id": "accountant",
+      "points": "EDU_X4",
+      "credit": [30, 70],
+      "skills": [
+        "accounting",
+        "law",
+        "library-use",
+        "listen",
+        "persuade",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "acrobat",
+      "points": { "selected": ["DEX"] },
+      "credit": [9, 20],
+      "skills": ["climb", "dodge", "jump", "throw", "spot-hidden", "swim", { "any": 2 }]
+    },
+    {
+      "id": "actor-stage",
+      "points": { "selected": ["APP"] },
+      "credit": [9, 40],
+      "skills": [
+        "@art-craft:acting",
+        "disguise",
+        "@fighting",
+        "history",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "actor-film-star",
+      "points": { "selected": ["APP"] },
+      "credit": [20, 90],
+      "skills": [
+        "@art-craft:acting",
+        "disguise",
+        "drive-auto",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "agency-detective",
+      "points": { "selected": ["STR", "DEX"] },
+      "credit": [20, 45],
+      "skills": [
+        { "group": "interpersonal", "count": 1 },
+        "fighting-brawl",
+        "@firearms",
+        "law",
+        "library-use",
+        "psychology",
+        "stealth",
+        "track"
+      ]
+    },
+    {
+      "id": "alienist",
+      "eras": ["CLASSIC_1920S"],
+      "points": "EDU_X4",
+      "credit": [10, 60],
+      "skills": [
+        "law",
+        "listen",
+        "medicine",
+        "@language-other",
+        "psychoanalysis",
+        "psychology",
+        "@science:biology",
+        "@science:chemistry"
+      ]
+    },
+    {
+      "id": "animal-trainer",
+      "points": { "selected": ["APP", "POW"] },
+      "credit": [10, 40],
+      "skills": [
+        "jump",
+        "listen",
+        "natural-world",
+        "psychology",
+        "@science:zoology",
+        "stealth",
+        "track",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "antiquarian",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [30, 70],
+      "skills": [
+        "appraise",
+        "@art-craft",
+        "history",
+        "library-use",
+        "@language-other",
+        { "group": "interpersonal", "count": 1 },
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "antique-dealer",
+      "points": "EDU_X4",
+      "credit": [30, 50],
+      "skills": [
+        "accounting",
+        "appraise",
+        "drive-auto",
+        { "group": "interpersonal", "count": 2 },
+        "history",
+        "library-use",
+        "navigate"
+      ]
+    },
+    {
+      "id": "archaeologist",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [10, 40],
+      "skills": [
+        "appraise",
+        "archaeology",
+        "history",
+        "@language-other",
+        "library-use",
+        "spot-hidden",
+        "mechanical-repair",
+        { "oneOf": ["navigate", "@science"] }
+      ]
+    },
+    {
+      "id": "architect",
+      "points": "EDU_X4",
+      "credit": [30, 70],
+      "skills": [
+        "accounting",
+        "@art-craft:technical-drawing",
+        "law",
+        "language-own",
+        { "oneOf": ["computer-use", "library-use"] },
+        "persuade",
+        "psychology",
+        "@science:mathematics"
+      ]
+    },
+    {
+      "id": "artist",
+      "points": { "selected": ["DEX", "POW"] },
+      "credit": [9, 50],
+      "skills": [
+        "@art-craft",
+        { "oneOf": ["history", "natural-world"] },
+        { "group": "interpersonal", "count": 1 },
+        "@language-other",
+        "psychology",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "asylum-attendant",
+      "points": { "selected": ["STR", "DEX"] },
+      "credit": [8, 20],
+      "skills": [
+        "dodge",
+        "fighting-brawl",
+        "first-aid",
+        { "group": "interpersonal", "count": 2 },
+        "listen",
+        "psychology",
+        "stealth"
+      ]
+    },
+    {
+      "id": "athlete",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 70],
+      "skills": [
+        "climb",
+        "jump",
+        "fighting-brawl",
+        "ride",
+        { "group": "interpersonal", "count": 1 },
+        "swim",
+        "throw",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "author",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft:literature",
+        "history",
+        "library-use",
+        { "oneOf": ["natural-world", "occult"] },
+        "@language-other",
+        "language-own",
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "bartender",
+      "points": { "selected": ["APP"] },
+      "credit": [8, 25],
+      "skills": [
+        "accounting",
+        { "group": "interpersonal", "count": 2 },
+        "fighting-brawl",
+        "listen",
+        "psychology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "big-game-hunter",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [20, 50],
+      "skills": [
+        "@firearms",
+        { "oneOf": ["listen", "spot-hidden"] },
+        "natural-world",
+        "navigate",
+        { "oneOf": ["@language-other", "@survival"] },
+        { "oneOf": ["@science:biology", "@science:botany"] },
+        "stealth",
+        "track"
+      ]
+    },
+    {
+      "id": "book-dealer",
+      "points": "EDU_X4",
+      "credit": [20, 40],
+      "skills": [
+        "accounting",
+        "appraise",
+        "drive-auto",
+        "history",
+        "library-use",
+        "language-own",
+        "@language-other",
+        { "group": "interpersonal", "count": 1 }
+      ]
+    },
+    {
+      "id": "bounty-hunter",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "drive-auto",
+        { "oneOf": ["electronics", "electrical-repair"] },
+        { "group": "combat", "count": 1 },
+        { "group": "interpersonal", "count": 1 },
+        "law",
+        "psychology",
+        "track",
+        "stealth"
+      ]
+    },
+    {
+      "id": "boxer-wrestler",
+      "points": { "selected": ["STR"] },
+      "credit": [9, 60],
+      "skills": [
+        "dodge",
+        "fighting-brawl",
+        "intimidate",
+        "jump",
+        "psychology",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "butler-valet-maid",
+      "points": "EDU_X4",
+      "credit": [9, 40],
+      "skills": [
+        { "oneOf": ["accounting", "appraise"] },
+        "@art-craft",
+        "first-aid",
+        "listen",
+        "@language-other",
+        "psychology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "clergy",
+      "points": "EDU_X4",
+      "credit": [9, 60],
+      "skills": [
+        "accounting",
+        "history",
+        "library-use",
+        "listen",
+        "@language-other",
+        { "group": "interpersonal", "count": 1 },
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "computer-programmer-technician",
+      "eras": ["MODERN"],
+      "points": "EDU_X4",
+      "credit": [10, 70],
+      "skills": [
+        "computer-use",
+        "electrical-repair",
+        "electronics",
+        "library-use",
+        "@science:mathematics",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "hacker",
+      "eras": ["MODERN"],
+      "points": "EDU_X4",
+      "credit": [10, 70],
+      "skills": [
+        "computer-use",
+        "electrical-repair",
+        "electronics",
+        "library-use",
+        "spot-hidden",
+        { "group": "interpersonal", "count": 1 },
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "cowboy-cowgirl",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 20],
+      "skills": [
+        "dodge",
+        { "group": "combat", "count": 1 },
+        { "oneOf": ["first-aid", "natural-world"] },
+        "jump",
+        "ride",
+        "@survival",
+        "throw",
+        "track"
+      ]
+    },
+    {
+      "id": "craftsperson",
+      "points": { "selected": ["DEX"] },
+      "credit": [10, 40],
+      "skills": [
+        "accounting",
+        "@art-craft",
+        "@art-craft",
+        "mechanical-repair",
+        "natural-world",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    }
+  ]
+}

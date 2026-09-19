@@ -10,12 +10,23 @@ import { requireKeeper } from '@/modules/campaigns/data/guards'
 import { findCampaignState } from '@/modules/campaigns/data/campaigns'
 import { canModifyContent } from '@/modules/campaigns/domain/rules'
 import { deleteAllAvailability } from '@/modules/availability/data/availability'
-import { announceToSession } from '@/modules/notifications/data/announce'
+import { announceToSession, announceToUser } from '@/modules/notifications/data/announce'
+import {
+  listAssignedInvestigators,
+  listSessionAssignments,
+  recordAssignmentSnapshot,
+} from '@/modules/investigators/data/assignments'
+import { findLiveSessionFor } from '@/modules/investigators/data/campaign-bindings'
+import { canPlayConcurrently } from '@/modules/investigators/domain/binding'
+import { closeEditGrants } from '@/modules/investigators/data/grants'
+import { markFirstUse } from '@/modules/investigators/data/investigator-store'
+import { captureSnapshot } from '@/modules/investigators/data/snapshots'
 import { defaultQuorum } from '../domain/constants'
 import {
   canEditDefinition,
   canRecordAttendance,
   canSetDate,
+  canStartSession,
   canTransition,
   editInvalidatesAnswers,
 } from '../domain/lifecycle'
@@ -25,6 +36,7 @@ import {
   normalizeParticipants,
   validateDeadline,
   validateGridBounds,
+  validateInvestigatorAssignments,
   validateQuorum,
   validateSearchWindow,
 } from '../domain/rules'
@@ -48,6 +60,7 @@ import {
   clearResponses,
   listEligibleParticipants,
   listParticipantRecords,
+  listPlayingParticipants,
   recordAttendance,
   replaceParticipants,
 } from '../data/participants'
@@ -524,6 +537,170 @@ export const cancelSession = authActionClient
   })
 
 /**
+ * Starts a session.
+ *
+ * The evening begins here rather than at the confirmed hour, because what makes
+ * a session live is the Keeper saying so - people arrive late, and a clock that
+ * starts on its own would freeze sheets nobody has opened yet.
+ *
+ * One transaction does five things that must not come apart: it refuses to start
+ * while somebody playing a character has not been given one, archives each sheet
+ * as it stands, records that those characters have now been played, closes the
+ * creating Keeper's right to edit them, and moves the session. A snapshot
+ * written outside this would describe a session that never started; a grant left
+ * open would let a Keeper keep editing a sheet that has been played.
+ */
+export const startSession = authActionClient
+  .metadata({ name: 'session.start' })
+  .inputSchema(sessionIdSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const context = await requireSessionKeeper(parsedInput.sessionId)
+    const session = await findSessionState(parsedInput.sessionId)
+
+    const allowed = canStartSession(session.status)
+    if (!allowed.ok) throw new DomainRuleError(allowed.error.key)
+
+    const now = new Date()
+
+    await db.transaction(async (tx) => {
+      const roster = await listPlayingParticipants(parsedInput.sessionId, tx)
+      const assignments = await listSessionAssignments(parsedInput.sessionId, tx)
+
+      const ready = validateInvestigatorAssignments(
+        roster.map((participant) => ({
+          userId: participant.userId,
+          name: participant.name,
+          playsInvestigator: participant.playsInvestigator,
+          investigatorId: assignments.get(participant.userId) ?? null,
+        })),
+      )
+      if (!ready.ok) throw new DomainRuleError(ready.error.key, ready.error.params)
+
+      const moved = await transitionSession({
+        sessionId: parsedInput.sessionId,
+        from: 'SCHEDULED',
+        to: 'IN_PROGRESS',
+        patch: { startedAt: now },
+        now,
+        executor: tx,
+      })
+      if (!moved) throw new ConflictError('sessions.errors.sessionMovedOn')
+
+      const played = await listAssignedInvestigators(parsedInput.sessionId, tx)
+
+      for (const character of played) {
+        if (character.campaignId !== context.campaignId) {
+          throw new DomainRuleError('sessions.errors.investigatorNotInCampaign')
+        }
+        if (character.ownerId !== character.playerId) {
+          throw new DomainRuleError('sessions.errors.investigatorNotOwnedByPlayer')
+        }
+
+        /*
+         * One sheet cannot be at two tables at once. Checked at the moment play
+         * begins rather than when the date is set, because two scheduled games
+         * with the same character are a plan and plans change.
+         */
+        const live = await findLiveSessionFor({
+          investigatorId: character.investigatorId,
+          exceptSessionId: parsedInput.sessionId,
+          executor: tx,
+        })
+        const free = canPlayConcurrently({ liveSessionTitle: live?.title ?? null })
+        if (!free.ok) throw new DomainRuleError(free.error.key, free.error.params)
+
+        const snapshotId = await captureSnapshot({
+          investigatorId: character.investigatorId,
+          kind: 'SESSION_START',
+          campaignId: context.campaignId,
+          gameSessionId: parsedInput.sessionId,
+          createdBy: ctx.user.id,
+          now,
+          executor: tx,
+        })
+
+        await recordAssignmentSnapshot({
+          sessionId: parsedInput.sessionId,
+          investigatorId: character.investigatorId,
+          snapshotId,
+          moment: 'START',
+          now,
+          executor: tx,
+        })
+
+        const first = await markFirstUse({
+          investigatorId: character.investigatorId,
+          now,
+          executor: tx,
+        })
+
+        if (first) {
+          const closed = await closeEditGrants({
+            investigatorId: character.investigatorId,
+            reason: 'FIRST_USE',
+            now,
+            executor: tx,
+          })
+
+          /*
+           * Recorded per character rather than counted in the session's own
+           * entry. Section 22 asks for permission changes to be audited, and
+           * "one grant closed somewhere tonight" does not say whose right to
+           * edit which sheet has just ended.
+           */
+          for (const keeperId of closed.keeperIds) {
+            await recordAudit(
+              {
+                actorId: ctx.user.id,
+                action: 'investigator.editGrantClosed',
+                entityType: 'investigator',
+                entityId: character.investigatorId,
+                metadata: { keeperId, reason: 'FIRST_USE', sessionId: parsedInput.sessionId },
+              },
+              tx,
+            )
+          }
+
+          /*
+           * Section 21 asks for this one by name, and it goes to the owner: the
+           * sheet becoming theirs alone is the change, and the Keeper asked for
+           * the grant to end by starting the session. Once per character rather
+           * than once per grant - two Keepers finishing their editing is still
+           * one thing that happened to one sheet.
+           */
+          if (closed.keeperIds.length > 0) {
+            await announceToUser({
+              userId: character.ownerId,
+              type: 'INVESTIGATOR_EDIT_GRANT_CLOSED',
+              campaignId: context.campaignId,
+              gameSessionId: parsedInput.sessionId,
+              payload: { investigatorId: character.investigatorId },
+              now,
+              executor: tx,
+            })
+          }
+        }
+      }
+
+      await recordAudit(
+        {
+          actorId: ctx.user.id,
+          action: 'session.started',
+          entityType: 'session',
+          entityId: parsedInput.sessionId,
+          metadata: { investigators: assignments.size },
+        },
+        tx,
+      )
+    })
+
+    revalidatePath(`/sessions/${parsedInput.sessionId}`)
+    revalidatePath(`/campaigns/${context.campaignId}/sessions`)
+
+    return { ok: true }
+  })
+
+/**
  * Closes a session and records who was there.
  *
  * Attendance is the input, not a side effect: completing a session is the moment
@@ -544,8 +721,9 @@ export const completeSession = authActionClient
     await db.transaction(async (tx) => {
       const moved = await transitionSession({
         sessionId: parsedInput.sessionId,
-        from: 'SCHEDULED',
+        from: 'IN_PROGRESS',
         to: 'COMPLETED',
+        patch: { endedAt: now },
         now,
         executor: tx,
       })
@@ -557,6 +735,32 @@ export const completeSession = authActionClient
         now,
         executor: tx,
       })
+
+      /*
+       * The closing half of the pair. Comparing an evening's start and end is
+       * what makes "what happened to us tonight" answerable, and it has to be
+       * captured here because the sheets carry on changing afterwards.
+       */
+      for (const character of await listAssignedInvestigators(parsedInput.sessionId, tx)) {
+        const snapshotId = await captureSnapshot({
+          investigatorId: character.investigatorId,
+          kind: 'SESSION_END',
+          campaignId: context.campaignId,
+          gameSessionId: parsedInput.sessionId,
+          createdBy: ctx.user.id,
+          now,
+          executor: tx,
+        })
+
+        await recordAssignmentSnapshot({
+          sessionId: parsedInput.sessionId,
+          investigatorId: character.investigatorId,
+          snapshotId,
+          moment: 'END',
+          now,
+          executor: tx,
+        })
+      }
 
       await recordAudit(
         {

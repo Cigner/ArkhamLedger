@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db/client'
 import { recordAudit } from '@/lib/audit'
+import { captureOnCampaignEnd } from '@/modules/investigators/data/snapshots'
 import { env } from '@/lib/env'
 import { DomainRuleError } from '@/lib/errors'
 import { isValidTimeZone } from '@/lib/datetime/temporal'
@@ -115,6 +116,17 @@ export const archiveCampaignAction = authActionClient
     const now = new Date()
 
     await db.transaction(async (tx) => {
+      /*
+       * Everybody at the table keeps the characters as they stood on the last
+       * day. Section 15: after a campaign ends a Keeper retains the final
+       * campaign-context projection, and so does everybody else.
+       */
+      await captureOnCampaignEnd({
+        campaignId: parsedInput.campaignId,
+        now,
+        executor: tx,
+      })
+
       await archiveCampaign(parsedInput.campaignId, now, tx)
       await recordAudit(
         {

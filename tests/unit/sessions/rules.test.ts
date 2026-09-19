@@ -8,8 +8,10 @@ import {
   presenceIsRequired,
   validateDeadline,
   validateGridBounds,
+  validateInvestigatorAssignments,
   validateQuorum,
   validateSearchWindow,
+  type ParticipantAssignment,
   type ParticipantDraft,
 } from '@/modules/sessions/domain/rules'
 
@@ -56,14 +58,46 @@ describe('normalizeParticipants', () => {
     ])
 
     expect(result).toEqual([
-      { userId: 'k', isKeeper: true, priority: 'REQUIRED' },
-      { userId: 'p', isKeeper: false, priority: 'OPTIONAL' },
+      { userId: 'k', isKeeper: true, priority: 'REQUIRED', playsInvestigator: false },
+      { userId: 'p', isKeeper: false, priority: 'OPTIONAL', playsInvestigator: true },
     ])
   })
 
-  it('leaves investigators alone', () => {
-    const input = [participant({ priority: 'REQUIRED' })]
-    expect(normalizeParticipants(input)).toEqual(input)
+  it('leaves an investigator\u2019s priority alone', () => {
+    const [normalized] = normalizeParticipants([participant({ priority: 'REQUIRED' })])
+
+    expect(normalized?.priority).toBe('REQUIRED')
+    expect(normalized?.isKeeper).toBe(false)
+  })
+
+  /*
+   * A player brings a character and a Keeper does not, unless either is told
+   * otherwise. Both are defaults for the common case: a Keeper who also plays
+   * has to be able to say so, which is why the flag exists at all.
+   */
+  it('assumes players play and Keepers run', () => {
+    const [keeper, player] = normalizeParticipants([
+      participant({ userId: 'k', isKeeper: true }),
+      participant({ userId: 'p' }),
+    ])
+
+    expect(keeper?.playsInvestigator).toBe(false)
+    expect(player?.playsInvestigator).toBe(true)
+  })
+
+  it('respects a Keeper who is also playing', () => {
+    const [keeper] = normalizeParticipants([
+      participant({ userId: 'k', isKeeper: true, playsInvestigator: true }),
+    ])
+
+    expect(keeper?.playsInvestigator).toBe(true)
+    expect(keeper?.priority).toBe('REQUIRED')
+  })
+
+  it('respects a player who is only watching', () => {
+    const [player] = normalizeParticipants([participant({ userId: 'p', playsInvestigator: false })])
+
+    expect(player?.playsInvestigator).toBe(false)
   })
 })
 
@@ -223,5 +257,56 @@ describe('presenceIsRequired', () => {
     expect(presenceIsRequired('REQUIRED')).toBe(true)
     expect(presenceIsRequired('PREFERRED')).toBe(false)
     expect(presenceIsRequired('OPTIONAL')).toBe(false)
+  })
+})
+
+describe('validateInvestigatorAssignments', () => {
+  function playing(overrides: Partial<ParticipantAssignment> = {}): ParticipantAssignment {
+    return {
+      userId: 'user-1',
+      name: 'Harriet',
+      playsInvestigator: true,
+      investigatorId: 'inv-1',
+      ...overrides,
+    }
+  }
+
+  it('passes when everybody playing has a character', () => {
+    expect(
+      validateInvestigatorAssignments([
+        playing(),
+        playing({ userId: 'user-2', name: 'Marcus', investigatorId: 'inv-2' }),
+      ]).ok,
+    ).toBe(true)
+  })
+
+  /*
+   * A Keeper who is only running the game is not missing anything. Counting them
+   * would make every session unstartable until somebody invented a character for
+   * the person behind the screen.
+   */
+  it('ignores participants who are not playing a character', () => {
+    expect(
+      validateInvestigatorAssignments([
+        playing({ userId: 'keeper', playsInvestigator: false, investigatorId: null }),
+      ]).ok,
+    ).toBe(true)
+  })
+
+  it('names everybody who is missing one', () => {
+    const result = validateInvestigatorAssignments([
+      playing(),
+      playing({ userId: 'user-2', name: 'Marcus', investigatorId: null }),
+      playing({ userId: 'user-3', name: 'Eleanor', investigatorId: null }),
+    ])
+
+    expect(result.ok).toBe(false)
+    if (result.ok) return
+    expect(result.error.key).toBe('sessions.errors.missingInvestigatorAssignments')
+    expect(result.error.params).toEqual({ count: 2, players: 'Marcus, Eleanor' })
+  })
+
+  it('passes for a session nobody is playing a character in', () => {
+    expect(validateInvestigatorAssignments([]).ok).toBe(true)
   })
 })

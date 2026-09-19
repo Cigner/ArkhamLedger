@@ -8,9 +8,14 @@ import {
   CalendarX,
   CheckCheck,
   Clock3,
+  HeartCrack,
   ListChecks,
+  Lock,
   MessageSquareWarning,
+  ScrollText,
   UserPlus,
+  UserRoundCheck,
+  UserRoundX,
   Users,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -42,6 +47,16 @@ const ICONS: Record<NotificationType, typeof CalendarCheck> = {
   SESSION_CANCELLED: CalendarX,
   NO_NEXT_SESSION: BellOff,
   ISSUE_REPORTED: MessageSquareWarning,
+  INVESTIGATOR_CREATED_FOR_YOU: ScrollText,
+  INVESTIGATOR_LINKED: ScrollText,
+  INVESTIGATOR_REQUESTED: UserRoundCheck,
+  INVESTIGATOR_EDIT_GRANT_CLOSED: Lock,
+  INVESTIGATOR_TRANSFER_REQUESTED: UserRoundCheck,
+  INVESTIGATOR_TRANSFER_ACCEPTED: UserRoundCheck,
+  INVESTIGATOR_TRANSFER_REJECTED: UserRoundX,
+  INVESTIGATOR_TRANSFER_EXPIRED: HeartCrack,
+  SESSION_ASSIGNMENT_CHANGED: ScrollText,
+  SESSION_ASSIGNMENT_MISSING: UserRoundX,
 }
 
 /**

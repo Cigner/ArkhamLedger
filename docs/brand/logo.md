@@ -12,14 +12,14 @@ The source uses only SVG geometry, flat fills, and strokes. It has no raster tex
 
 ## Palette
 
-| Role | Value | Design token |
-| --- | --- | --- |
-| Ink | `#171A13` | `ink-2` |
-| Brass | `#B98A3E` | `candle-9` |
-| Light brass | `#E0B872` | `candle-11` |
-| Oxblood | `#8A2B2B` | `sanguine-9` |
-| Bone | `#E6E9DC` | `ink-12` |
-| Page detail | `#7D8A63` | `ink-9` |
+| Role        | Value     | Design token |
+| ----------- | --------- | ------------ |
+| Ink         | `#171A13` | `ink-2`      |
+| Brass       | `#B98A3E` | `candle-9`   |
+| Light brass | `#E0B872` | `candle-11`  |
+| Oxblood     | `#8A2B2B` | `sanguine-9` |
+| Bone        | `#E6E9DC` | `ink-12`     |
+| Page detail | `#7D8A63` | `ink-9`      |
 
 ## Usage
 

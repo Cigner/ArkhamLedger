@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renderNotification } from '@/modules/notifications/domain/messages'
+import { isBroadcast } from '@/modules/notifications/domain/preferences'
 import type { NotificationType } from '@/modules/notifications/domain/types'
 import { createAppTranslator } from '@/lib/i18n/translator'
 
@@ -31,6 +32,16 @@ const ALL_TYPES: NotificationType[] = [
   'SESSION_CANCELLED',
   'NO_NEXT_SESSION',
   'ISSUE_REPORTED',
+  'INVESTIGATOR_CREATED_FOR_YOU',
+  'INVESTIGATOR_LINKED',
+  'INVESTIGATOR_REQUESTED',
+  'INVESTIGATOR_EDIT_GRANT_CLOSED',
+  'INVESTIGATOR_TRANSFER_REQUESTED',
+  'INVESTIGATOR_TRANSFER_ACCEPTED',
+  'INVESTIGATOR_TRANSFER_REJECTED',
+  'INVESTIGATOR_TRANSFER_EXPIRED',
+  'SESSION_ASSIGNMENT_CHANGED',
+  'SESSION_ASSIGNMENT_MISSING',
 ]
 
 describe('every type', () => {
@@ -169,5 +180,61 @@ describe('a cancellation', () => {
 
     expect(rendered.body).toContain('Half the table has the flu')
     expect(rendered.channelText).toContain('Half the table has the flu')
+  })
+})
+
+/**
+ * A character sheet is private, and a Discord channel is a room.
+ *
+ * Two independent guarantees, because either one alone fails quietly: no
+ * Investigator event may be a broadcast, and none of their channel texts may
+ * carry a character's name even if somebody later makes one a broadcast.
+ */
+describe('Investigator events never reach a channel', () => {
+  const INVESTIGATOR_TYPES = ALL_TYPES.filter(
+    (type) => type.startsWith('INVESTIGATOR_') || type.startsWith('SESSION_ASSIGNMENT_'),
+  )
+
+  it('covers every Investigator event', () => {
+    expect(INVESTIGATOR_TYPES).toHaveLength(10)
+  })
+
+  it.each(INVESTIGATOR_TYPES)('%s is not broadcast', (type) => {
+    expect(isBroadcast(type)).toBe(false)
+  })
+
+  function render(type: NotificationType) {
+    return renderNotification({
+      ...BASE,
+      type,
+      payload: {
+        campaignName: 'Masks of Nyarlathotep',
+        sessionTitle: 'Chapter Two',
+        investigatorName: 'Harriet Vane',
+        players: 'Marcus',
+      },
+    })
+  }
+
+  it.each(INVESTIGATOR_TYPES)('%s keeps the character out of the channel text', (type) => {
+    expect(render(type).channelText).not.toContain('Harriet Vane')
+  })
+
+  /*
+   * The name has to survive into the body, or the guarantee above would be
+   * satisfied by a message that says nothing at all.
+   */
+  it.each(INVESTIGATOR_TYPES.filter((type) => type !== 'SESSION_ASSIGNMENT_MISSING'))(
+    '%s names the character to the person it is addressed to',
+    (type) => {
+      expect(render(type).body).toContain('Harriet Vane')
+    },
+  )
+
+  it('tells the Keeper who is missing a character rather than which one', () => {
+    const rendered = render('SESSION_ASSIGNMENT_MISSING')
+
+    expect(rendered.body).toContain('Marcus')
+    expect(rendered.body).not.toContain('Harriet Vane')
   })
 })

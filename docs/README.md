@@ -13,6 +13,7 @@ and types are read from the code, which does not go stale.
 | Add something                       | [development/adding-a-module.md](development/adding-a-module.md) · [architecture/extension-points.md](architecture/extension-points.md) |
 | Deploy or fix a deployment          | [operations/deployment.md](operations/deployment.md) · [operations/troubleshooting.md](operations/troubleshooting.md)                   |
 | Know why something is the way it is | [adr/](adr/)                                                                                                                            |
+| Know what is not built yet          | [product/deferred-work.md](product/deferred-work.md)                                                                                    |
 | Speak the domain's language         | [product/glossary.md](product/glossary.md)                                                                                              |
 
 ## Architecture
@@ -46,6 +47,14 @@ choice, especially where it later turned out to be wrong.
   written, and why
 - [development/testing.md](development/testing.md) — what each kind of test
   proves, and what is not covered
+
+## Feature plans
+
+- [Investigator management](product/investigator-management-plan.md) — approved
+  product and technical plan for creating, playing, sharing, transferring, and
+  preserving Call of Cthulhu 7e Investigators
+- [Deferred work](product/deferred-work.md) — what was deliberately left out,
+  what was promised and not delivered, and what each one is waiting for
 
 ## Rules for this directory
 

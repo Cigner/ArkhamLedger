@@ -2,7 +2,7 @@
  * Session data transfer objects.
  */
 export type SessionStatus =
-  'DRAFT' | 'COLLECTING' | 'PROPOSED' | 'SCHEDULED' | 'COMPLETED' | 'CANCELLED'
+  'DRAFT' | 'COLLECTING' | 'PROPOSED' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 
 export type ParticipantPriority = 'REQUIRED' | 'PREFERRED' | 'OPTIONAL'
 export type Attendance = 'UNKNOWN' | 'ATTENDED' | 'ABSENT'
@@ -29,6 +29,7 @@ export type SessionParticipantDto = {
   readonly name: string
   readonly priority: ParticipantPriority
   readonly isKeeper: boolean
+  readonly playsInvestigator: boolean
   readonly respondedAt: Date | null
   readonly attendance: Attendance
 }
@@ -50,6 +51,8 @@ export type SessionDetail = {
   readonly timezone: string
   readonly confirmedStartUtc: Date | null
   readonly confirmedEndUtc: Date | null
+  readonly startedAt: Date | null
+  readonly endedAt: Date | null
   readonly setManually: boolean
   readonly cancelledReason: string | null
   readonly participants: readonly SessionParticipantDto[]

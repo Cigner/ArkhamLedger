@@ -8,7 +8,7 @@ import type { SessionStatus } from './types'
  * machine can be read at once and tested exhaustively: every pair of statuses is
  * either listed here or impossible, with no third case hiding in an else branch.
  *
- *   DRAFT ─────┬─▶ COLLECTING ─┬─▶ PROPOSED ─┬─▶ SCHEDULED ─▶ COMPLETED
+ *   DRAFT ─────┬─▶ COLLECTING ─┬─▶ PROPOSED ─┬─▶ SCHEDULED ─▶ IN_PROGRESS ─▶ COMPLETED
  *              │       ▲       │      │      │       │
  *              └───────┴───────┴──────┴──────┴───────┴─────▶ CANCELLED
  *
@@ -22,7 +22,8 @@ export const SESSION_TRANSITIONS: Readonly<Record<SessionStatus, readonly Sessio
   DRAFT: ['COLLECTING', 'SCHEDULED', 'CANCELLED'],
   COLLECTING: ['DRAFT', 'PROPOSED', 'SCHEDULED', 'CANCELLED'],
   PROPOSED: ['COLLECTING', 'SCHEDULED', 'CANCELLED'],
-  SCHEDULED: ['COLLECTING', 'COMPLETED', 'CANCELLED'],
+  SCHEDULED: ['COLLECTING', 'IN_PROGRESS', 'CANCELLED'],
+  IN_PROGRESS: ['COMPLETED', 'CANCELLED'],
   COMPLETED: [],
   CANCELLED: [],
 }
@@ -97,6 +98,22 @@ export function canSubmitAvailability(status: SessionStatus): Result<void> {
 }
 
 /**
+ * Whether the characters brought to a session may still be chosen or changed.
+ *
+ * Only before it starts. Starting takes a snapshot per character and points the
+ * assignment at it, so the assignment is the record of who played what that
+ * evening - and rewriting it afterwards would delete that record while leaving
+ * the snapshots behind as orphans. A mistake noticed later is a fact about the
+ * evening, not a row to correct.
+ */
+export function canAssignInvestigators(status: SessionStatus): Result<void> {
+  if (status === 'IN_PROGRESS' || TERMINAL_STATUSES.includes(status)) {
+    return fail('sessions.errors.assignmentsLocked')
+  }
+  return ok()
+}
+
+/**
  * Whether a date may be set or changed.
  *
  * Moving a session that already has a date is a change of when it happens, not a
@@ -109,8 +126,25 @@ export function canSetDate(status: SessionStatus): Result<void> {
   return canTransition(status, 'SCHEDULED')
 }
 
-/** Whether attendance may be recorded, which is what completing a session means. */
+/**
+ * Whether a session may be started.
+ *
+ * Starting is the moment a plan becomes an evening: it fixes who is playing
+ * which Investigator and takes the opening snapshots. Only a session with a date
+ * can be started, because there is nothing to start otherwise.
+ */
+export function canStartSession(status: SessionStatus): Result<void> {
+  return canTransition(status, 'IN_PROGRESS')
+}
+
+/**
+ * Whether attendance may be recorded, which is what completing a session means.
+ *
+ * A session is completed from IN_PROGRESS rather than from SCHEDULED, so that
+ * the sheets played on the night are the ones the end-of-session snapshot
+ * captures. A Keeper who never pressed start still gets there in two clicks.
+ */
 export function canRecordAttendance(status: SessionStatus): Result<void> {
-  if (status === 'SCHEDULED') return ok()
-  return fail('sessions.errors.notScheduled')
+  if (status === 'IN_PROGRESS') return ok()
+  return fail('sessions.errors.notInProgress')
 }

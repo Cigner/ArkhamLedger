@@ -46,6 +46,8 @@ function closedReason(
       return t('closed.PROPOSED')
     case 'SCHEDULED':
       return t('closed.SCHEDULED')
+    case 'IN_PROGRESS':
+      return t('closed.IN_PROGRESS')
     case 'COMPLETED':
       return t('closed.COMPLETED')
     case 'CANCELLED':

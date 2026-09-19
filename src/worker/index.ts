@@ -5,8 +5,10 @@ import { appLogger } from '@/lib/logger'
 import { mailer } from '@/lib/mail'
 import { cleanup } from './jobs/cleanup'
 import { closeDeadlines } from './jobs/close-deadlines'
+import { expireTransfers } from './jobs/expire-transfers'
 import { flushOutbox } from './jobs/flush-outbox'
 import { idleCampaigns } from './jobs/idle-campaigns'
+import { missingAssignments } from './jobs/missing-assignments'
 import { sendReminders } from './jobs/send-reminders'
 import { beat, createDrain, runJob, type Job } from './runtime'
 
@@ -31,6 +33,8 @@ const SCHEDULES: readonly { readonly job: Job; readonly pattern: string }[] = [
   { job: closeDeadlines, pattern: '0 */5 * * * *' },
   { job: sendReminders, pattern: '0 */15 * * * *' },
   { job: idleCampaigns, pattern: '0 0 8 * * *' },
+  { job: expireTransfers, pattern: '0 30 * * * *' },
+  { job: missingAssignments, pattern: '0 45 * * * *' },
   { job: cleanup, pattern: '0 0 3 * * *' },
 ]
 

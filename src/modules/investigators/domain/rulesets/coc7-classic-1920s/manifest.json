@@ -1,0 +1,27 @@
+{
+  "id": "coc7-classic-1920s",
+  "version": "1.0.0",
+  "era": "CLASSIC_1920S",
+  "nameKey": "investigators.rulesets.coc7Classic1920s",
+  "minimumAge": 15,
+  "maximumAge": 90,
+  "creationMethods": ["STANDARD_ROLLS", "ASSIGNED_ROLLS", "MANUAL_ENTRY"],
+  "characteristics": [
+    { "key": "STR", "rollFormula": "THREE_D6_TIMES_FIVE" },
+    { "key": "CON", "rollFormula": "THREE_D6_TIMES_FIVE" },
+    { "key": "SIZ", "rollFormula": "TWO_D6_PLUS_SIX_TIMES_FIVE" },
+    { "key": "DEX", "rollFormula": "THREE_D6_TIMES_FIVE" },
+    { "key": "APP", "rollFormula": "THREE_D6_TIMES_FIVE" },
+    { "key": "INT", "rollFormula": "TWO_D6_PLUS_SIX_TIMES_FIVE" },
+    { "key": "POW", "rollFormula": "THREE_D6_TIMES_FIVE" },
+    { "key": "EDU", "rollFormula": "TWO_D6_PLUS_SIX_TIMES_FIVE" }
+  ],
+  "luckRollFormula": "THREE_D6_TIMES_FIVE",
+  "skillFiles": ["skills.json", "skills-supplement.json"],
+  "occupationFiles": [
+    "occupations-a-c.json",
+    "occupations-d-h.json",
+    "occupations-j-p.json",
+    "occupations-r-z.json"
+  ]
+}

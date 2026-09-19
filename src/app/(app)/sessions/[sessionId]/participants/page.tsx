@@ -39,6 +39,10 @@ export default async function SessionParticipantsPage({
   })
 
   if (session.status === 'SCHEDULED') {
+    return <p className="font-ui text-sm text-text-muted">{t('notStarted')}</p>
+  }
+
+  if (session.status === 'IN_PROGRESS') {
     return (
       <div className="flex flex-col gap-6">
         <Card>

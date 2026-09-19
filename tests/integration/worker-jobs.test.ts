@@ -31,6 +31,7 @@ vi.mock('@/lib/auth', () => ({
 
 const { closeDeadlines } = await import('@/worker/jobs/close-deadlines')
 const { flushOutbox } = await import('@/worker/jobs/flush-outbox')
+const { missingAssignments } = await import('@/worker/jobs/missing-assignments')
 
 async function seedCollectingSession(deadline: Date) {
   const keeper = await createUserRow({ status: 'ACTIVE', name: 'Eleanor' })
@@ -184,5 +185,98 @@ describe('flushing the outbox', () => {
 
   it('has nothing to do when the queue is empty', async () => {
     expect((await flushOutbox.run(NOW)).handled).toBe(0)
+  })
+})
+
+/**
+ * The reminder that saves a session from starting badly.
+ *
+ * Section 12 refuses to start while somebody playing a character has not been
+ * given one. That check is right and it fires with everybody already sitting
+ * down; this job asks the same question a day earlier, when it is still a
+ * question somebody can answer.
+ */
+describe('missing assignments', () => {
+  async function seedScheduledSession(startsAt: Date) {
+    const keeper = await createUserRow({ status: 'ACTIVE', name: 'Eleanor' })
+    const player = await createUserRow({ status: 'ACTIVE', name: 'Anna' })
+    const campaign = await createCampaignRow({ ownerId: keeper.id, status: 'ACTIVE' })
+    await addMemberRow({ campaignId: campaign.id, userId: player.id })
+
+    const sessionId = newId()
+    await db.insert(gameSession).values({
+      id: sessionId,
+      campaignId: campaign.id,
+      title: 'Chapter Two',
+      status: 'SCHEDULED',
+      searchWindowStart: '2026-10-05',
+      searchWindowEnd: '2026-10-06',
+      gridStartHour: 12,
+      gridEndHour: 24,
+      minSessionHours: 6,
+      quorum: 1,
+      confirmedStartUtc: startsAt,
+      timezone: 'Europe/Warsaw',
+      createdBy: keeper.id,
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+
+    await db.insert(sessionParticipant).values({
+      id: newId(),
+      gameSessionId: sessionId,
+      userId: keeper.id,
+      priority: 'PREFERRED',
+      isKeeper: true,
+      playsInvestigator: false,
+      respondedAt: NOW,
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+
+    await db.insert(sessionParticipant).values({
+      id: newId(),
+      gameSessionId: sessionId,
+      userId: player.id,
+      priority: 'PREFERRED',
+      isKeeper: false,
+      playsInvestigator: true,
+      respondedAt: NOW,
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+
+    return { sessionId, keeper, player }
+  }
+
+  it('tells the Keeper who has not chosen a character', async () => {
+    const { sessionId, keeper } = await seedScheduledSession(
+      new Date(NOW.getTime() + 6 * 60 * 60_000),
+    )
+
+    expect(await missingAssignments.run(NOW)).toEqual({ handled: 1 })
+
+    const [queued] = await db
+      .select()
+      .from(notification)
+      .where(eq(notification.gameSessionId, sessionId))
+
+    expect(queued?.userId).toBe(keeper.id)
+    expect(queued?.type).toBe('SESSION_ASSIGNMENT_MISSING')
+    expect((queued?.payload as { players?: string }).players).toBe('Anna')
+  })
+
+  it('says nothing twice', async () => {
+    await seedScheduledSession(new Date(NOW.getTime() + 6 * 60 * 60_000))
+
+    await missingAssignments.run(NOW)
+
+    expect(await missingAssignments.run(NOW)).toEqual({ handled: 0 })
+  })
+
+  it('leaves a session that is still far off', async () => {
+    await seedScheduledSession(new Date(NOW.getTime() + 72 * 60 * 60_000))
+
+    expect(await missingAssignments.run(NOW)).toEqual({ handled: 0 })
   })
 })

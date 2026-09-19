@@ -187,6 +187,7 @@
       "COLLECTING": "collecting",
       "PROPOSED": "choosing",
       "SCHEDULED": "scheduled",
+      "IN_PROGRESS": "playing now",
       "COMPLETED": "played",
       "CANCELLED": "cancelled"
     },
@@ -195,13 +196,16 @@
       "emptyDescription": "Sessions from your campaigns will appear here.",
       "answersDue": "Answers due {date}",
       "dateNotSet": "Date not set"
-    }
+    },
+    "investigators": "Characters"
   },
   "admin": {
     "tabs": {
       "operations": "Operations",
       "users": "Users",
-      "reports": "Reports"
+      "reports": "Reports",
+      "rulesets": "Rulesets",
+      "characters": "Characters"
     },
     "operations": {
       "title": "Operations",
@@ -290,6 +294,48 @@
         "issuedActivationLinks": "They issued an activation link for somebody else. Close the account instead.",
         "removeFailed": "Could not remove this account."
       }
+    },
+    "rulesets": {
+      "title": "Rulesets",
+      "description": "The rule packages this deployment carries.",
+      "columns": {
+        "name": "Ruleset",
+        "id": "Identifier",
+        "version": "Version",
+        "skills": "Skills",
+        "occupations": "Occupations"
+      },
+      "immutableNote": "Packages are immutable and versioned. A character keeps the version it was created with, so publishing a new one never changes what an existing character’s numbers mean."
+    },
+    "characters": {
+      "title": "Characters",
+      "description": "Who holds which character. For moving one when its owner has stopped answering.",
+      "empty": "No characters are attached to a campaign.",
+      "unnamed": "Unnamed character",
+      "columns": {
+        "character": "Character",
+        "owner": "Held by",
+        "campaign": "Campaign",
+        "actions": "Actions"
+      }
+    },
+    "emergencyTransfer": {
+      "trigger": "Move without consent",
+      "title": "Move {investigator} without asking?",
+      "description": "{owner} will not be asked and cannot refuse. They keep the version they played; what is overridden is the asking. This is recorded against your account with the reason you give.",
+      "unnamed": "this character",
+      "to": "Hand it to",
+      "reason": "Why this cannot wait for consent",
+      "reasonHint": "At least a sentence. It is stored in the audit trail and shown to both people.",
+      "cancel": "Cancel",
+      "moving": "Moving…",
+      "confirm": "Move it anyway",
+      "errors": {
+        "alreadyTheirs": "That character already belongs to them.",
+        "notInCampaign": "That person is not in this campaign.",
+        "reasonRequired": "A reason of at least a sentence is required.",
+        "failed": "Could not move that character."
+      }
     }
   },
   "roles": {
@@ -312,7 +358,8 @@
       "overview": "Overview",
       "sessions": "Sessions",
       "members": "Members",
-      "settings": "Settings"
+      "settings": "Settings",
+      "investigators": "Characters"
     },
     "list": {
       "title": "Campaigns",
@@ -530,6 +577,7 @@
       "COLLECTING": "Collecting availability",
       "PROPOSED": "Awaiting a decision",
       "SCHEDULED": "Scheduled",
+      "IN_PROGRESS": "Being played",
       "COMPLETED": "Played",
       "CANCELLED": "Cancelled"
     },
@@ -594,9 +642,18 @@
       "saveRoster": "Save roster",
       "saved": "Saved",
       "priorities": {
-        "REQUIRED": { "label": "Required", "help": "No date works without them." },
-        "PREFERRED": { "label": "Preferred", "help": "Counts towards a good date." },
-        "OPTIONAL": { "label": "Optional", "help": "Nice to have; never blocks." }
+        "REQUIRED": {
+          "label": "Required",
+          "help": "No date works without them."
+        },
+        "PREFERRED": {
+          "label": "Preferred",
+          "help": "Counts towards a good date."
+        },
+        "OPTIONAL": {
+          "label": "Optional",
+          "help": "Nice to have; never blocks."
+        }
       },
       "errors": {
         "participantsLocked": "The roster is fixed once a date has been proposed. Reopen availability to change it.",
@@ -604,7 +661,8 @@
         "quorumTooHigh": "The quorum is higher than the number of people invited, so no date could ever work.",
         "noParticipants": "Invite at least one person.",
         "saveFailed": "Could not save the roster."
-      }
+      },
+      "playsCharacter": "Brings a character"
     },
     "responseProgress": {
       "ariaLabel": "{responded} of {total} participants have answered",
@@ -637,6 +695,7 @@
       "title": "Participants",
       "attendanceTitle": "Who was there",
       "attendanceDescription": "Record attendance and close the session. This cannot be undone.",
+      "notStarted": "Attendance is recorded once the session has started. Start it from the session overview.",
       "closed": "This session is closed. Its roster is on the overview."
     },
     "overview": {
@@ -655,7 +714,9 @@
         "attended": "Was there",
         "absent": "Missed it",
         "unknown": "Unknown"
-      }
+      },
+      "characters": "Characters",
+      "whatHappened": "What happened to the characters"
     },
     "keeperActions": {
       "edit": "Edit",
@@ -666,6 +727,7 @@
       "changeDate": "Change the date",
       "setDate": "Set a date",
       "reopen": "Reopen",
+      "start": "Start session",
       "markPlayed": "Mark as played",
       "cancel": "Cancel",
       "manual": {
@@ -699,6 +761,10 @@
         "title": "Stop asking for availability?",
         "description": "Nobody can change their answer afterwards, and the dates already suggested stay as they are. You can reopen it later if plans change."
       },
+      "startDialog": {
+        "title": "Start this session?",
+        "description": "The characters chosen for tonight are fixed at this point, and the session becomes the one being played."
+      },
       "completeDialog": {
         "title": "Mark this session as played?",
         "description": "Record who was there on the participants tab first if you have not already. A played session cannot be reopened."
@@ -711,12 +777,18 @@
         "sessionMovedOn": "Somebody else changed this session. Reload and try again.",
         "invalidTransition": "That is not possible from the session’s current state.",
         "endBeforeStart": "The session ends before it starts.",
+        "missingInvestigators": "Nobody has chosen a character for {players}.",
+        "notInProgress": "This session has not been started yet.",
+        "startFailed": "Could not start this session.",
         "publishFailed": "Could not open this session for availability.",
         "scheduleFailed": "Could not set that date.",
         "reopenFailed": "Could not reopen collection.",
         "closeFailed": "Could not close the answers.",
         "cancelFailed": "Could not cancel this session.",
-        "completeFailed": "Could not close this session."
+        "completeFailed": "Could not close this session.",
+        "investigatorNotInCampaign": "One of the chosen characters is no longer part of this campaign.",
+        "investigatorNotOwnedByPlayer": "One of the chosen characters does not belong to the player it was set for.",
+        "alreadyInPlay": "One of the chosen characters is already being played in {session}."
       }
     }
   },
@@ -776,7 +848,8 @@
         "newTimeTba": "new time to be announced",
         "user": "A user",
         "userLower": "a user",
-        "noEmail": "no email"
+        "noEmail": "no email",
+        "investigator": "a character"
       },
       "campaignInvited": {
         "subject": "You are invited to {campaign}",
@@ -835,7 +908,50 @@
         "channel": "A new issue report was submitted."
       },
       "deadline": "Answer by {deadline}.",
-      "reason": "Reason: {reason}"
+      "reason": "Reason: {reason}",
+      "investigatorGeneric": {
+        "channel": "Something changed for a character in {campaign}. Open the application to see it."
+      },
+      "investigatorCreated": {
+        "subject": "{investigator} is waiting for you",
+        "body": "{actor} made {investigator} for you in {campaign}. The sheet is yours — open it and change anything you like. They can help until the first session it is played in, and after that only you."
+      },
+      "investigatorLinked": {
+        "subject": "{investigator} joined {campaign}",
+        "body": "{investigator} is now part of {campaign}, so the Keeper and the rest of the party can see the sheet you have chosen to share."
+      },
+      "investigatorRequested": {
+        "subject": "A character was asked for in {campaign}",
+        "body": "{actor} would like to use {investigator} in {campaign}. Nothing happens until you agree."
+      },
+      "editGrantClosed": {
+        "subject": "{investigator} is yours alone now",
+        "body": "{investigator} has been played, so the Keeper who made the sheet can no longer change it. They can still read it."
+      },
+      "transferRequested": {
+        "subject": "Hand {investigator} to somebody else?",
+        "body": "{actor} has asked to move {investigator} to another player in {campaign}. You keep the sheet as it is today; the other player continues from there. Nothing moves until you accept."
+      },
+      "transferAccepted": {
+        "subject": "{investigator} is yours",
+        "body": "{investigator} has been handed over to you in {campaign}. The sheet continues from where it was left."
+      },
+      "transferRejected": {
+        "subject": "{investigator} stays where it is",
+        "body": "The request to hand {investigator} over in {campaign} was declined."
+      },
+      "transferExpired": {
+        "subject": "The request for {investigator} expired",
+        "body": "Nobody answered the request to hand {investigator} over in {campaign}, so it has lapsed. It can be asked again."
+      },
+      "assignmentChanged": {
+        "subject": "You are playing {investigator} in {session}",
+        "body": "{investigator} has been set as your character for {session}."
+      },
+      "assignmentMissing": {
+        "subject": "{session} has nobody for some of the party",
+        "body": "No character has been chosen for {players}. The session cannot start until every player has one."
+      }
     },
     "discord": {
       "title": "Discord",
@@ -1120,9 +1236,18 @@
       "announcement": "{date}: {state}.",
       "clearedAnnouncement": "{date}: answer cleared.",
       "states": {
-        "YES": { "label": "Free", "help": "Count me in." },
-        "IF_NEED_BE": { "label": "At a push", "help": "Only if the date depends on it." },
-        "NO": { "label": "Not free", "help": "I cannot make this evening." }
+        "YES": {
+          "label": "Free",
+          "help": "Count me in."
+        },
+        "IF_NEED_BE": {
+          "label": "At a push",
+          "help": "Only if the date depends on it."
+        },
+        "NO": {
+          "label": "Not free",
+          "help": "I cannot make this evening."
+        }
       }
     },
     "dayOverview": {
@@ -1154,6 +1279,7 @@
         "DRAFT": "Nobody has been asked yet. The Keeper opens this when the session is ready.",
         "PROPOSED": "Answers are closed. The Keeper is choosing between the dates that work.",
         "SCHEDULED": "The date is settled, so answers are closed.",
+        "IN_PROGRESS": "This session is being played.",
         "COMPLETED": "This session has been played.",
         "CANCELLED": "This session was cancelled.",
         "COLLECTING": "Answers are open."
@@ -1167,12 +1293,18 @@
           "label": "Weekends",
           "description": "Free on Saturdays and Sundays, the whole evening."
         },
-        "everyEvening": { "label": "Every evening", "description": "Free on every date offered." },
+        "everyEvening": {
+          "label": "Every evening",
+          "description": "Free on every date offered."
+        },
         "noneOfThese": {
           "label": "None of these",
           "description": "Cannot make any of the dates offered."
         },
-        "clear": { "label": "Start again", "description": "Clears every answer." }
+        "clear": {
+          "label": "Start again",
+          "description": "Clears every answer."
+        }
       },
       "errors": {
         "deadlinePassed": "The deadline has passed, so answers are closed. Ask the Keeper to reopen it.",
@@ -1197,6 +1329,953 @@
       "enough": "enough to play",
       "below": "below quorum",
       "timezone": "Times in {timezone}."
+    }
+  },
+  "investigators": {
+    "statuses": {
+      "DRAFT": "Draft",
+      "ACTIVE": "Active",
+      "RETIRED": "Retired",
+      "DECEASED": "Deceased"
+    },
+    "rulesets": {
+      "coc7Classic1920s": "Call of Cthulhu 7e — Classic 1920s"
+    },
+    "campaignList": {
+      "title": "Characters",
+      "emptyTitle": "No characters yet",
+      "emptyDescription": "Bring one of yours to the table, or ask the Keeper to start one for you.",
+      "unnamed": "Unnamed",
+      "nameHidden": "Kept private",
+      "you": "you",
+      "columns": {
+        "name": "Character",
+        "player": "Played by",
+        "status": "Status",
+        "actions": "Actions"
+      }
+    },
+    "createForPlayer": {
+      "trigger": "Start one for a player",
+      "title": "Start a character for a player",
+      "description": "It belongs to them from the moment you create it. You can finish the sheet until the first session it is played in.",
+      "player": "For",
+      "playerHint": "They are told, and can change anything on the sheet straight away.",
+      "name": "Name",
+      "nameHint": "Using {ruleset}. Everything else is filled in on the sheet.",
+      "cancel": "Cancel",
+      "creating": "Creating…",
+      "confirm": "Create character",
+      "errors": {
+        "notInCampaign": "That person is not in this campaign.",
+        "nameRequired": "A character needs a name.",
+        "failed": "Could not create that character."
+      }
+    },
+    "link": {
+      "trigger": "Add a character",
+      "title": "Bring a character to this campaign",
+      "description": "The Keeper and the rest of the party can then see what you have chosen to share.",
+      "which": "Character",
+      "newCharacter": "A new character",
+      "unnamed": "Unnamed",
+      "name": "Name",
+      "nameHint": "Using {ruleset}. Everything else is filled in on the sheet.",
+      "cancel": "Cancel",
+      "adding": "Adding…",
+      "confirm": "Add to campaign",
+      "errors": {
+        "alreadyLinked": "That character is already in this campaign.",
+        "archived": "That character has been archived.",
+        "deceased": "That character has died and cannot join a new campaign.",
+        "notYours": "That character does not belong to you.",
+        "nameRequired": "A character needs a name.",
+        "failed": "Could not add that character."
+      },
+      "alsoPlayedElsewhere": "{count, plural, one {This character is already in another campaign. Two campaigns cannot run a session with them at the same time.} other {This character is already in # other campaigns. No two of them can run a session with them at the same time.}}"
+    },
+    "rowActions": {
+      "unlink": "Remove from campaign",
+      "unlinkDialog": {
+        "title": "Remove this character from the campaign?",
+        "description": "It can no longer be chosen for sessions here. Everything the Keeper and the party have already seen stays with them, and the sessions it was played in are unchanged."
+      }
+    },
+    "errors": {
+      "notAllowed": "You cannot do that with this character.",
+      "nameRequired": "A character needs a name.",
+      "notYours": "That character does not belong to you.",
+      "playerNotInCampaign": "That person is not in this campaign.",
+      "ownerNotInCampaign": "The character’s player is not in this campaign.",
+      "alreadyLinked": "That character is already in this campaign.",
+      "notInCampaign": "That character is not in this campaign.",
+      "archived": "That character has been archived.",
+      "retired": "That character has been retired.",
+      "deceased": "That character has died.",
+      "stillADraft": "That character is still a draft.",
+      "alreadyInPlay": "That character is already being played in {session}.",
+      "ageRequired": "Age is not filled in.",
+      "characteristicRequired": "{characteristic} is not filled in.",
+      "characteristicOutOfRange": "{characteristic} must be between {minimum} and {maximum}.",
+      "luckRequired": "Luck is not filled in.",
+      "luckOutOfRange": "Luck must be a positive number.",
+      "occupationRequired": "No occupation has been chosen.",
+      "sheetMovedOn": "Somebody else changed this character. Reload and try again.",
+      "unknownOccupation": "That occupation is not in this character’s ruleset.",
+      "characteristicsRequiredFirst": "The characteristics have to be filled in first.",
+      "wrongOccupationChoiceCount": "This occupation needs {expected} choices, not {actual}.",
+      "skillNotOnOffer": "That skill is not one this occupation offers.",
+      "duplicateOccupationSkill": "The same skill was chosen twice.",
+      "occupationSkillCannotBeRemoved": "A skill the occupation grants cannot be removed.",
+      "unknownSkill": "That skill is not in this character’s ruleset.",
+      "specializationRequired": "That skill needs a specialization.",
+      "skillAlreadyOnSheet": "That skill is already on the sheet.",
+      "notInPlay": "This character is not in play.",
+      "nothingToUndo": "There is nothing to undo.",
+      "participantNotPlaying": "That person is not bringing a character to this session.",
+      "notTheirCharacter": "That character does not belong to that player.",
+      "noPreviousSession": "This campaign has no earlier session that was actually played.",
+      "transferAlreadyDecided": "That request has already been answered.",
+      "transferAlreadyPending": "That character is already being handed over.",
+      "transferExpired": "That request has lapsed.",
+      "newOwnerNotInCampaign": "That person is not in this campaign.",
+      "alreadyTheirs": "That character already belongs to them.",
+      "improvementRollRequired": "That roll earned an improvement; the 1D10 is still needed.",
+      "skillNotMarked": "That skill is not marked for development.",
+      "noteEmpty": "A note needs something in it.",
+      "invalidNoteVisibility": "That kind of note cannot be shared that way.",
+      "importNotJson": "That file is not readable JSON.",
+      "importInvalid": "That file is not a character this application can read.",
+      "importWrongRuleset": "That character was made for {actual}, not {expected}.",
+      "importDuplicateSkills": "That file lists the same skill twice: {skills}.",
+      "reasonRequired": "A reason of at least a sentence is required.",
+      "alreadyArchived": "That character is already archived.",
+      "notArchived": "That character is not archived.",
+      "deceasedStaysArchived": "A character who has died stays in the archive.",
+      "deleteBlocked": "That character has been used and can only be archived."
+    },
+    "skills": {
+      "accounting": "Accounting",
+      "anthropology": "Anthropology",
+      "appraise": "Appraise",
+      "archaeology": "Archaeology",
+      "charm": "Charm",
+      "climb": "Climb",
+      "computerUse": "Computer Use",
+      "creditRating": "Credit Rating",
+      "cthulhuMythos": "Cthulhu Mythos",
+      "disguise": "Disguise",
+      "diving": "Diving",
+      "dodge": "Dodge",
+      "driveAuto": "Drive Auto",
+      "electricalRepair": "Electrical Repair",
+      "electronics": "Electronics",
+      "fastTalk": "Fast Talk",
+      "fightingBrawl": "Fighting (Brawl)",
+      "firearmsHandgun": "Firearms (Handgun)",
+      "firearmsRifleShotgun": "Firearms (Rifle/Shotgun)",
+      "firstAid": "First Aid",
+      "history": "History",
+      "intimidate": "Intimidate",
+      "jump": "Jump",
+      "languageOwn": "Language (Own)",
+      "law": "Law",
+      "libraryUse": "Library Use",
+      "listen": "Listen",
+      "locksmith": "Locksmith",
+      "mechanicalRepair": "Mechanical Repair",
+      "medicine": "Medicine",
+      "naturalWorld": "Natural World",
+      "navigate": "Navigate",
+      "occult": "Occult",
+      "operateHeavyMachinery": "Operate Heavy Machinery",
+      "persuade": "Persuade",
+      "psychoanalysis": "Psychoanalysis",
+      "psychology": "Psychology",
+      "ride": "Ride",
+      "sleightOfHand": "Sleight of Hand",
+      "spotHidden": "Spot Hidden",
+      "stealth": "Stealth",
+      "swim": "Swim",
+      "throw": "Throw",
+      "track": "Track"
+    },
+    "skillFamilies": {
+      "artCraft": "Art/Craft",
+      "fighting": "Fighting",
+      "firearms": "Firearms",
+      "languageOther": "Language (Other)",
+      "pilot": "Pilot",
+      "science": "Science",
+      "survival": "Survival"
+    },
+    "specializations": {
+      "acting": "Acting",
+      "aircraft": "Aircraft",
+      "alpine": "Alpine",
+      "animalHandling": "Animal Handling",
+      "astronomy": "Astronomy",
+      "biology": "Biology",
+      "boat": "Boat",
+      "botany": "Botany",
+      "chainsaw": "Chainsaw",
+      "chemistry": "Chemistry",
+      "engineering": "Engineering",
+      "farming": "Farming",
+      "forensics": "Forensics",
+      "forgery": "Forgery",
+      "geology": "Geology",
+      "instrument": "Instrument",
+      "latin": "Latin",
+      "literature": "Literature",
+      "mathematics": "Mathematics",
+      "pharmacy": "Pharmacy",
+      "photography": "Photography",
+      "physics": "Physics",
+      "sea": "Sea",
+      "technicalDrawing": "Technical Drawing",
+      "typingShorthand": "Typing and Shorthand",
+      "zoology": "Zoology"
+    },
+    "occupations": {
+      "accountant": "Accountant",
+      "acrobat": "Acrobat",
+      "actorFilmStar": "Actor (Film Star)",
+      "actorStage": "Actor (Stage)",
+      "agencyDetective": "Agency Detective",
+      "alienist": "Alienist",
+      "animalTrainer": "Animal Trainer",
+      "antiquarian": "Antiquarian",
+      "antiqueDealer": "Antique Dealer",
+      "archaeologist": "Archaeologist",
+      "architect": "Architect",
+      "artist": "Artist",
+      "asylumAttendant": "Asylum Attendant",
+      "athlete": "Athlete",
+      "author": "Author",
+      "bartender": "Bartender",
+      "bigGameHunter": "Big Game Hunter",
+      "bookDealer": "Book Dealer",
+      "bountyHunter": "Bounty Hunter",
+      "boxerWrestler": "Boxer or Wrestler",
+      "butlerValetMaid": "Butler, Valet or Maid",
+      "clergy": "Clergy",
+      "computerProgrammerTechnician": "Computer Programmer or Technician",
+      "cowboyCowgirl": "Cowboy or Cowgirl",
+      "craftsperson": "Craftsperson",
+      "criminalAssassin": "Criminal (Assassin)",
+      "criminalBankRobber": "Criminal (Bank Robber)",
+      "criminalBootleggerThug": "Criminal (Bootlegger or Thug)",
+      "criminalBurglar": "Criminal (Burglar)",
+      "criminalConman": "Criminal (Con Artist)",
+      "criminalFence": "Criminal (Fence)",
+      "criminalForgerCounterfeiter": "Criminal (Forger or Counterfeiter)",
+      "criminalFreelance": "Criminal (Freelance)",
+      "criminalGunMoll": "Criminal (Gun Moll)",
+      "criminalSmuggler": "Criminal (Smuggler)",
+      "criminalStreetPunk": "Criminal (Street Punk)",
+      "cultLeader": "Cult Leader",
+      "deprogrammer": "Deprogrammer",
+      "designer": "Designer",
+      "dilettante": "Dilettante",
+      "diver": "Diver",
+      "doctorOfMedicine": "Doctor of Medicine",
+      "drifter": "Drifter",
+      "driver": "Driver",
+      "driverChauffeur": "Driver (Chauffeur)",
+      "driverTaxi": "Driver (Taxi)",
+      "editor": "Editor",
+      "electedOfficial": "Elected Official",
+      "engineer": "Engineer",
+      "entertainer": "Entertainer",
+      "explorer": "Explorer",
+      "farmer": "Farmer",
+      "federalAgent": "Federal Agent",
+      "firefighter": "Firefighter",
+      "foreignCorrespondent": "Foreign Correspondent",
+      "forensicSurgeon": "Forensic Surgeon",
+      "gambler": "Gambler",
+      "gangsterBoss": "Gangster (Boss)",
+      "gangsterUnderling": "Gangster (Underling)",
+      "gentlemanLady": "Gentleman or Lady",
+      "hacker": "Hacker",
+      "hobo": "Hobo",
+      "hospitalOrderly": "Hospital Orderly",
+      "journalistInvestigative": "Journalist (Investigative)",
+      "journalistReporter": "Journalist (Reporter)",
+      "judge": "Judge",
+      "laboratoryAssistant": "Laboratory Assistant",
+      "laborerLumberjack": "Laborer (Lumberjack)",
+      "laborerMiner": "Laborer (Miner)",
+      "laborerUnskilled": "Laborer (Unskilled)",
+      "lawyer": "Lawyer",
+      "librarian": "Librarian",
+      "mechanicSkilledTrades": "Mechanic or Skilled Trades",
+      "militaryOfficer": "Military Officer",
+      "missionary": "Missionary",
+      "mountainClimber": "Mountain Climber",
+      "museumCurator": "Museum Curator",
+      "musician": "Musician",
+      "nurse": "Nurse",
+      "occultist": "Occultist",
+      "outdoorsperson": "Outdoorsperson",
+      "parapsychologist": "Parapsychologist",
+      "pharmacist": "Pharmacist",
+      "photographer": "Photographer",
+      "photojournalist": "Photojournalist",
+      "pilot": "Pilot",
+      "pilotAviator": "Pilot (Aviator)",
+      "policeDetective": "Police Detective",
+      "policeUniformedOfficer": "Police (Uniformed Officer)",
+      "privateInvestigator": "Private Investigator",
+      "professor": "Professor",
+      "prospector": "Prospector",
+      "prostitute": "Prostitute",
+      "psychiatrist": "Psychiatrist",
+      "psychologistPsychoanalyst": "Psychologist or Psychoanalyst",
+      "researcher": "Researcher",
+      "sailorCommercial": "Sailor (Commercial)",
+      "sailorNaval": "Sailor (Naval)",
+      "salesperson": "Salesperson",
+      "scientist": "Scientist",
+      "secretary": "Secretary",
+      "shopkeeper": "Shopkeeper",
+      "soldierMarine": "Soldier or Marine",
+      "spy": "Spy",
+      "studentIntern": "Student or Intern",
+      "stuntPerformer": "Stunt Performer",
+      "tribeMember": "Tribe Member",
+      "undertaker": "Undertaker",
+      "unionActivist": "Union Activist",
+      "waiterWaitress": "Waiter or Waitress",
+      "whiteCollarClerkExecutive": "White-collar (Clerk or Executive)",
+      "whiteCollarManager": "White-collar (Manager)",
+      "zealot": "Zealot",
+      "zookeeper": "Zookeeper"
+    },
+    "vault": {
+      "title": "Character Vault",
+      "emptyTitle": "No characters yet",
+      "emptyDescription": "Characters you create live here, whichever campaigns they are played in.",
+      "unnamed": "Unnamed character",
+      "noCampaign": "Not in a campaign yet",
+      "inCampaigns": "{count, plural, one {In # campaign} other {In # campaigns}}",
+      "kept": "What I keep"
+    },
+    "sheet": {
+      "title": "Character",
+      "unnamed": "Unnamed character",
+      "draftDescription": "A draft. Fill in what you know; nothing is final until you finish it.",
+      "readOnly": "You can read this character but not change it.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "identity": {
+        "title": "Identity",
+        "description": "Who they are before any of the dice matter.",
+        "name": "Name",
+        "age": "Age",
+        "ageHint": "Between 15 and 90. Age changes the characteristics below.",
+        "sex": "Sex",
+        "residence": "Residence",
+        "birthplace": "Birthplace",
+        "species": "Species",
+        "speciesHint": "Human unless something has gone wrong."
+      },
+      "characteristics": {
+        "title": "Characteristics",
+        "description": "Enter the numbers you rolled. Under each one is its hard and extreme value.",
+        "luck": "Luck",
+        "keys": {
+          "STR": "Strength",
+          "CON": "Constitution",
+          "SIZ": "Size",
+          "DEX": "Dexterity",
+          "APP": "Appearance",
+          "INT": "Intelligence",
+          "POW": "Power",
+          "EDU": "Education"
+        },
+        "derived": {
+          "hitPoints": "Hit points",
+          "sanity": "Sanity",
+          "magicPoints": "Magic points",
+          "movementRate": "Movement",
+          "damageBonus": "Damage bonus",
+          "build": "Build"
+        },
+        "ageEffects": "At this age: reduce {physical} points across {eligible}, reduce Appearance by {appearance}, and make {education} Education improvement checks.",
+        "methods": {
+          "STANDARD_ROLLS": "Enter the dice as they fell. Under each one is its hard and extreme value.",
+          "ASSIGNED_ROLLS": "Put each rolled value where you want it. Under each one is its hard and extreme value.",
+          "MANUAL_ENTRY": "An existing character, so these are copied rather than rolled. Ranges are still checked."
+        }
+      },
+      "review": {
+        "title": "Before this character can be played",
+        "ready": "Everything needed is filled in.",
+        "activate": "Finish this character",
+        "activating": "Finishing…",
+        "activateFailed": "Could not finish this character."
+      },
+      "errors": {
+        "sheetMovedOn": "Somebody else changed this character while you were editing. Reload and try again.",
+        "nameRequired": "A character needs a name.",
+        "ageOutOfRange": "Age must be between 15 and 90.",
+        "saveFailed": "Could not save that section."
+      },
+      "occupation": {
+        "title": "Occupation",
+        "description": "What they did before any of this. It decides the skill points and which skills they may go on.",
+        "occupation": "Occupation",
+        "choose": "Choose…",
+        "characteristic": "Points from",
+        "characteristicHint": "This occupation lets you pick which characteristic the budget is built on.",
+        "creditRating": "Credit Rating between {minimum} and {maximum}.",
+        "budget": "{occupation} occupation points and {personal} personal interest points.",
+        "slots": {
+          "ONE_OF": "One of these",
+          "GROUP": "One from the group",
+          "ANY": "Any skill",
+          "FAMILY": "A specialization"
+        },
+        "errors": {
+          "characteristicsFirst": "Fill in the characteristics first — the budget is built from them.",
+          "chooseAll": "Every open choice has to be filled in.",
+          "duplicateChoice": "The same skill was chosen twice.",
+          "notOnOffer": "That skill is not one this occupation offers.",
+          "pickCharacteristic": "This occupation needs a characteristic chosen for its points."
+        },
+        "contact": "Contacts",
+        "contactHint": "Who the job knows: a name, a desk, a favour owed. Hidden with the occupation."
+      },
+      "skills": {
+        "title": "Skills",
+        "description": "Occupation points may only go on the occupation’s own skills. Personal interest points go anywhere.",
+        "chooseOccupationFirst": "Choose an occupation first; its skills appear here.",
+        "occupationPoints": "Occupation points left",
+        "personalPoints": "Personal interest left",
+        "occupationSkill": "occupation",
+        "columns": {
+          "skill": "Skill",
+          "base": "Base",
+          "occupation": "Occ.",
+          "personal": "Pers.",
+          "total": "Total"
+        },
+        "errors": {
+          "occupationExceeded": "That spends more occupation points than the occupation gives.",
+          "personalExceeded": "That spends more personal interest points than Intelligence allows.",
+          "creditRating": "Credit Rating has to stay inside the range the occupation allows.",
+          "mythos": "Cthulhu Mythos cannot be bought during creation. It is learned the hard way.",
+          "valueOutOfRange": "A skill cannot go below zero or above 99.",
+          "occupationFirst": "Choose an occupation before spending points.",
+          "alreadyOnSheet": "That skill is already on the sheet.",
+          "specializationRequired": "That skill needs a specialization written in.",
+          "cannotRemove": "A skill the occupation grants cannot be removed."
+        },
+        "remove": "Remove skill",
+        "addSkill": "Add a skill",
+        "specialization": "Specialization"
+      },
+      "finances": {
+        "title": "Finances",
+        "description": "Read out of Credit Rating. Only what play changes is typed in.",
+        "needsCreditRating": "Spend points on Credit Rating first; everything here comes from it.",
+        "creditRating": "Credit Rating",
+        "livingStandard": "Living standard",
+        "spendingLevel": "Spending level",
+        "startingCash": "Cash at the start",
+        "cash": "Cash now",
+        "cashHint": "What they are carrying today, which is not what they began with.",
+        "assets": "Assets",
+        "assetsHint": "Property and holdings, not money in a pocket.",
+        "assetsUnbounded": "At this Credit Rating the assets have no upper bound in the rules.",
+        "notes": "Notes"
+      },
+      "backstory": {
+        "title": "Backstory",
+        "description": "The ten boxes from the sheet, in the same order. Leave any of them empty.",
+        "keyConnection": "Key connection",
+        "keyConnectionHint": "The key connection is the one that would pull this character back in when any sensible person would walk away. Marking a second one unmarks the first."
+      },
+      "privacy": {
+        "title": "Privacy",
+        "description": "Everything is visible to the rest of the party unless you hide it here.",
+        "followsSource": "follows its source",
+        "keeperNote": "The Keeper of a campaign this character is in always sees the whole sheet.",
+        "presets": {
+          "open": "Show everything",
+          "closed": "Hide everything"
+        },
+        "groups": {
+          "identity": "Identity",
+          "characteristics": "Characteristics",
+          "derived": "Condition and calculated values",
+          "sheet": "Skills, money and belongings",
+          "backstory": "Backstory"
+        }
+      },
+      "possessions": {
+        "title": "Possessions",
+        "description": "Whatever they are carrying. A blank line is better than a catalogue.",
+        "name": "Item",
+        "note": "Note",
+        "quantity": "How many",
+        "value": "Value",
+        "add": "Add an item",
+        "remove": "Remove item",
+        "treasuredHint": "A starred item is a treasured possession: a piece of backstory that happens to be an object."
+      },
+      "weapons": {
+        "title": "Weapons",
+        "description": "Chosen from the character’s own skills, with the chance of hitting shown.",
+        "needsSkills": "Choose an occupation first; weapons are tied to the skills that use them.",
+        "name": "Weapon",
+        "skill": "Skill",
+        "damage": "Damage",
+        "range": "Range",
+        "attacks": "Attacks",
+        "ammunition": "Ammo",
+        "malfunction": "Malf.",
+        "add": "Add a weapon",
+        "remove": "Remove weapon",
+        "chance": "Regular {regular}, hard {hard}, extreme {extreme}."
+      }
+    },
+    "livingStandards": {
+      "PENNILESS": "Penniless",
+      "POOR": "Poor",
+      "AVERAGE": "Average",
+      "WEALTHY": "Wealthy",
+      "RICH": "Rich",
+      "SUPER_RICH": "Super rich"
+    },
+    "backstoryCategories": {
+      "PERSONAL_DESCRIPTION": "Personal description",
+      "IDEOLOGY_AND_BELIEFS": "Ideology and beliefs",
+      "SIGNIFICANT_PEOPLE": "Significant people",
+      "MEANINGFUL_LOCATIONS": "Meaningful locations",
+      "TREASURED_POSSESSIONS": "Treasured possessions",
+      "TRAITS": "Traits",
+      "INJURIES_AND_SCARS": "Injuries and scars",
+      "PHOBIAS_AND_MANIAS": "Phobias and manias",
+      "ARCANE_TOMES_AND_ARTIFACTS": "Arcane tomes and artefacts",
+      "ENCOUNTERS_WITH_STRANGE_ENTITIES": "Encounters with strange entities"
+    },
+    "fields": {
+      "identity_name": "Name",
+      "identity_age": "Age",
+      "identity_sex": "Sex",
+      "identity_residence": "Residence",
+      "identity_birthplace": "Birthplace",
+      "identity_species": "Species",
+      "identity_occupation": "Occupation",
+      "characteristics_STR": "Strength",
+      "characteristics_CON": "Constitution",
+      "characteristics_SIZ": "Size",
+      "characteristics_DEX": "Dexterity",
+      "characteristics_APP": "Appearance",
+      "characteristics_INT": "Intelligence",
+      "characteristics_POW": "Power",
+      "characteristics_EDU": "Education",
+      "characteristics_luck": "Luck",
+      "derived_hitPoints": "Hit points",
+      "derived_sanity": "Sanity",
+      "derived_magicPoints": "Magic points",
+      "derived_movementRate": "Movement",
+      "derived_damageBonus": "Damage bonus",
+      "derived_build": "Build",
+      "state_conditions": "Wounds and insanity",
+      "skills": "Skills",
+      "finances_creditRating": "Credit Rating",
+      "finances_cash": "Cash",
+      "finances_assets": "Assets",
+      "finances_spendingLevel": "Spending level",
+      "possessions": "Possessions",
+      "weapons": "Weapons"
+    },
+    "play": {
+      "resources": {
+        "HP": "Hit points",
+        "SAN": "Sanity",
+        "MP": "Magic points",
+        "LUCK": "Luck"
+      },
+      "amount": "Amount",
+      "lose": "Lose {resource}",
+      "gain": "Recover {resource}",
+      "undo": "Undo the last change",
+      "nothingToUndo": "There is nothing to undo.",
+      "failed": "Could not record that.",
+      "marked": "Marked for development",
+      "outcomes": {
+        "majorWound": "That is a major wound.",
+        "killed": "That is more than they can take. They die on the spot.",
+        "constitutionRoll": "A Constitution roll is needed to stay conscious.",
+        "intelligenceRoll": "Five or more at once: an Intelligence roll decides whether they realise what they saw.",
+        "indefiniteInsanity": "A fifth of today’s Sanity is gone — indefinite insanity.",
+        "conditionsKept": "The number is back. Wounds and insanity stay ticked until somebody unticks them."
+      },
+      "conditions": {
+        "majorWound": "Major wound",
+        "unconscious": "Unconscious",
+        "dying": "Dying",
+        "temporaryInsanity": "Temporary insanity",
+        "indefiniteInsanity": "Indefinite insanity"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "skills": "Skills",
+        "combat": "Combat",
+        "backstory": "Backstory",
+        "possessions": "Possessions",
+        "history": "History",
+        "notes": "Notes"
+      },
+      "movement": "Movement",
+      "build": "Build",
+      "cash": "Cash",
+      "assets": "Assets",
+      "spendingLevel": "Spending level",
+      "treasured": "treasured",
+      "keyConnection": "key connection",
+      "ammo": "{count} rounds",
+      "reversal": "undone",
+      "noWeapons": "No weapons on this sheet.",
+      "noBackstory": "Nothing written down yet.",
+      "noPossessions": "Nothing listed.",
+      "noHistory": "Nothing has happened to this character yet.",
+      "markFor": "Mark {skill} for development",
+      "searchSkills": "Search skills",
+      "byValue": "Sorted by value",
+      "byName": "Sorted by name"
+    },
+    "assignments": {
+      "nobodyPlaying": "Nobody at this session is bringing a character.",
+      "everybodyReady": "Everybody has a character.",
+      "stillMissing": "{count, plural, one {# person has no character yet} other {# people have no character yet}}.",
+      "character": "Character",
+      "notChosen": "Not chosen",
+      "unnamed": "Unnamed character",
+      "alsoKeeper": "also keeping",
+      "useSame": "Use the same characters",
+      "copying": "Copying…",
+      "copied": "Copied from {from}: {copied} set, {skipped} skipped.",
+      "errors": {
+        "stillADraft": "That character is still a draft and cannot be played.",
+        "notInCampaign": "That character is not in this campaign.",
+        "retired": "That character has been retired.",
+        "deceased": "That character has died.",
+        "notTheirs": "That character does not belong to that player.",
+        "noPrevious": "This campaign has no earlier session that was actually played.",
+        "locked": "The session has started. Who played which character that evening is part of its history now.",
+        "failed": "Could not set that character."
+      }
+    },
+    "transfer": {
+      "trigger": "Hand this character over",
+      "title": "Hand {investigator} to another player?",
+      "description": "You are asking, not moving it. The owner decides, and keeps the version they played either way.",
+      "to": "To",
+      "reason": "Why",
+      "reasonHint": "Shown to the owner. A request without one is hard to answer.",
+      "cancel": "Cancel",
+      "asking": "Asking…",
+      "confirm": "Ask the owner",
+      "unnamed": "an unnamed character",
+      "incomingTitle": "Waiting on you",
+      "incoming": "The Keeper has asked you to hand {investigator} to {to}.",
+      "expires": "This lapses on {date}.",
+      "accept": "Hand it over",
+      "reject": "Keep it",
+      "errors": {
+        "alreadyPending": "That character is already being handed over.",
+        "notInCampaign": "That person is not in this campaign.",
+        "alreadyTheirs": "That character already belongs to them.",
+        "archived": "That character has been archived.",
+        "expired": "That request has lapsed.",
+        "alreadyDecided": "That request has already been answered.",
+        "failed": "Could not do that."
+      }
+    },
+    "development": {
+      "title": "{count, plural, one {# skill to develop} other {# skills to develop}}",
+      "description": "One roll per skill, however often it was ticked. Beat the skill, or roll above 95, and add 1D10.",
+      "beat": "beat {value}",
+      "percentile": "1D100",
+      "improvement": "1D10",
+      "resolve": "Resolve",
+      "improved": "Improved by {increase}, now {current}.",
+      "noChange": "No improvement this time.",
+      "failed": "Could not record that roll."
+    },
+    "notes": {
+      "empty": "Nothing written about this character yet.",
+      "kind": "Kind",
+      "who": "Who can read it",
+      "content": "Note",
+      "add": "Add note",
+      "saving": "Saving…",
+      "revision": "revision {revision}",
+      "shareWith": "Share with {audience}",
+      "kinds": {
+        "KEEPER": "Keeper note",
+        "OWNER_PRIVATE": "My own note",
+        "PLAYER_OBSERVATION": "My observation"
+      },
+      "hints": {
+        "KEEPER": "Campaign business. You choose who reads it, and you can widen or narrow it later.",
+        "OWNER_PRIVATE": "Yours alone. Nobody else ever sees it, including the Keeper.",
+        "PLAYER_OBSERVATION": "Your own read of this character. It cannot be shared with anybody, and it stays with you if you leave the campaign."
+      },
+      "visibility": {
+        "AUTHOR_ONLY": "only me",
+        "KEEPERS": "Keepers",
+        "KEEPERS_AND_OWNER": "Keepers and the player",
+        "CAMPAIGN": "the whole campaign"
+      },
+      "errors": {
+        "empty": "A note needs something in it.",
+        "failed": "Could not save that note."
+      },
+      "edit": "Edit",
+      "saveEdit": "Save the change",
+      "cancelEdit": "Leave it"
+    },
+    "toolbar": {
+      "print": "Print",
+      "export": "Export",
+      "duplicate": "Duplicate",
+      "duplicateDialog": {
+        "title": "Make a copy of this character?",
+        "description": "The copy is a variant of the same character, in no campaign and with its own future. Its history stays with the original."
+      }
+    },
+    "print": {
+      "unnamed": "Unnamed character",
+      "print": "Print",
+      "occupation": "Occupation",
+      "age": "Age",
+      "sex": "Sex",
+      "residence": "Residence",
+      "birthplace": "Birthplace",
+      "species": "Species",
+      "hitPoints": "HP",
+      "sanity": "SAN",
+      "magicPoints": "MP",
+      "luck": "Luck",
+      "movement": "MOV",
+      "build": "Build",
+      "creditRating": "Credit Rating",
+      "cash": "Cash",
+      "skills": "Skills",
+      "weapons": "Weapons",
+      "backstory": "Backstory",
+      "possessions": "Possessions",
+      "redactedNote": "{count, plural, one {# field is kept private and prints blank} other {# fields are kept private and print blank}}.",
+      "contact": "Contacts"
+    },
+    "comparison": {
+      "unchanged": "Nothing on the sheet changed.",
+      "lost": "Lost {amount} {resource}, down to {after}.",
+      "recovered": "Recovered {amount} {resource}, up to {after}.",
+      "gained": "Came away with: {condition}.",
+      "improved": "{skill} improved by {amount}, now {value}.",
+      "learned": "Learned {skill} at {value}."
+    },
+    "planned": {
+      "title": "Planned for this module",
+      "description": "Not missing — not built yet. Everything here is played at the table for now.",
+      "tools": {
+        "dice": {
+          "name": "Rolling in the application",
+          "note": "Results usable anywhere, not only on a character sheet."
+        },
+        "combat": {
+          "name": "Combat",
+          "note": "Rounds, order and damage tracked for you."
+        },
+        "chases": {
+          "name": "Chases",
+          "note": "The full chase rules, with locations and obstacles."
+        },
+        "magic": {
+          "name": "Magic and tomes",
+          "note": "Spells, artefacts and what reading them costs."
+        }
+      }
+    },
+    "import": {
+      "differentVersion": "That file was made with version {detail} of this ruleset.",
+      "unknownSkill": "Dropped a skill this version does not have: {detail}.",
+      "unknownOccupation": "That occupation is not in this version: {detail}."
+    },
+    "importDialog": {
+      "trigger": "Import",
+      "title": "Import a character",
+      "description": "It arrives as a draft you own. What the file says about ownership, status or history is not read.",
+      "file": "File",
+      "fileHint": "A character exported from this application.",
+      "paste": "Or paste it",
+      "cancel": "Cancel",
+      "importing": "Importing…",
+      "confirm": "Import",
+      "errors": {
+        "notJson": "That file is not readable JSON.",
+        "invalid": "That file is not a character this application can read.",
+        "wrongRuleset": "That character was made for a different ruleset.",
+        "duplicate": "That file lists the same skill twice.",
+        "failed": "Could not import that file."
+      }
+    },
+    "creationMethod": {
+      "label": "How the numbers came about",
+      "STANDARD_ROLLS": "Rolled in order",
+      "ASSIGNED_ROLLS": "Rolled, then assigned",
+      "MANUAL_ENTRY": "An existing character",
+      "hints": {
+        "STANDARD_ROLLS": "The dice fell where they fell. Enter them as they came.",
+        "ASSIGNED_ROLLS": "Roll eight values, then put each one where you want it.",
+        "MANUAL_ENTRY": "A character who already exists somewhere else. Ranges are still checked."
+      }
+    },
+    "lifecycle": {
+      "retire": "Retire",
+      "unretire": "Bring back",
+      "died": "They died",
+      "archive": "Archive",
+      "restore": "Take out of the archive",
+      "delete": "Delete",
+      "confirm": "Confirm",
+      "statusDialog": {
+        "title": "Change this character’s standing?",
+        "description": "Nothing is lost. A retired character can be brought back at any time."
+      },
+      "diedDialog": {
+        "title": "Did this character die?",
+        "description": "The sheet and everything on it stays, and the campaigns they were in keep their history. A dead character cannot be brought back or joined to a new campaign."
+      },
+      "archiveDialog": {
+        "title": "Put this character away?",
+        "description": "It stops appearing in your Vault. Nothing is deleted and everybody who could read it still can."
+      },
+      "restoreDialog": {
+        "title": "Take this character out of the archive?",
+        "description": "It appears in your Vault again, exactly as it was."
+      },
+      "deleteDialog": {
+        "title": "Delete this draft for good?",
+        "description": "This cannot be undone. Only a draft nobody has seen can be deleted — anything that has been in a campaign or played is archived instead."
+      },
+      "errors": {
+        "movedOn": "Somebody else changed this character. Reload and try again.",
+        "notPossible": "That is not possible from where this character stands.",
+        "deceasedStays": "A character who has died stays in the archive.",
+        "deleteBlocked": "This character has been in {campaigns} campaign(s) and {sessions} session(s), so it is archived rather than deleted.",
+        "notYours": "Only the character’s player can delete it.",
+        "failed": "Could not do that."
+      }
+    },
+    "why": {
+      "label": "Why this value?",
+      "hitPoints": "Constitution {con} plus Size {siz} is {total}, and hit points are a tenth of that, rounded down.",
+      "magicPoints": "Magic points are a fifth of Power {pow}, rounded down.",
+      "sanity": "Sanity starts equal to Power {pow}.",
+      "maximumSanity": "Sanity can reach {base} less Cthulhu Mythos {mythos}.",
+      "movementLow": "Both Strength {str} and Dexterity {dex} are below Size {siz}, so movement is 7, less {penalty} for age {age}.",
+      "movementHigh": "Both Strength {str} and Dexterity {dex} are above Size {siz}, so movement is 9, less {penalty} for age {age}.",
+      "movementMiddle": "Strength {str} and Dexterity {dex} sit either side of Size {siz}, so movement is 8, less {penalty} for age {age}.",
+      "build": "Strength {str} plus Size {siz} is {total}, which falls in that band of the damage table.",
+      "skillFixed": "This skill starts at {value}.",
+      "skillCharacteristic": "This skill starts at the character’s {characteristic}.",
+      "skillFraction": "This skill starts at {characteristic} divided by {divisor}.",
+      "thresholds": "{value} succeeds normally; {hard} is a hard success and {extreme} an extreme one."
+    },
+    "provenance": {
+      "title": "Where this character came from",
+      "created": "Created",
+      "createdBy": "{date} by {who}",
+      "method": "Method",
+      "ruleset": "Ruleset",
+      "heldBy": "Held by",
+      "somebody": "somebody since removed",
+      "unnamed": "an unnamed character",
+      "branchedFrom": "Continued from {name}.",
+      "siblings": "{count, plural, one {# other version of this character exists} other {# other versions of this character exist}}.",
+      "transfer": {
+        "PENDING": "A hand-over from {from} to {to} is waiting.",
+        "ACCEPTED": "Handed from {from} to {to}.",
+        "REJECTED": "{from} was asked to hand it to {to} and declined.",
+        "EXPIRED": "A hand-over from {from} to {to} lapsed unanswered.",
+        "CANCELLED": "A hand-over from {from} to {to} was withdrawn."
+      }
+    },
+    "kept": {
+      "title": "What you keep",
+      "description": "Characters you were shown and can still read, frozen at the moment you stopped being able to see them change.",
+      "emptyTitle": "Nothing kept yet",
+      "emptyDescription": "When a campaign ends, or a character leaves one you are in, what you were shown at that moment stays here.",
+      "unnamed": "Unnamed character",
+      "stillLive": "still readable live",
+      "asOf": "As you last saw it on {date} — {reason}.",
+      "reasons": {
+        "FIELD_HIDDEN": "a field was hidden",
+        "CAMPAIGN_UNLINKED": "the character left the campaign",
+        "CAMPAIGN_LEFT": "you left the campaign",
+        "CAMPAIGN_ENDED": "the campaign ended",
+        "TRANSFERRED": "the character was handed over",
+        "NOTE_RESTRICTED": "a note was restricted",
+        "MANUAL": "captured by hand"
+      },
+      "observations": "What you wrote about them",
+      "moments": "Shown to you on"
+    },
+    "request": {
+      "trigger": "Ask for this character",
+      "sent": "Asked",
+      "title": "Ask for this character",
+      "description": "The owner decides. Nothing changes until they bring it in themselves.",
+      "campaign": "Campaign",
+      "hint": "Only campaigns you keep that the owner already plays in.",
+      "send": "Send the request",
+      "cancel": "Cancel",
+      "errors": {
+        "cannotRequest": "That character cannot be asked for in that campaign.",
+        "failed": "The request could not be sent."
+      }
+    },
+    "history": {
+      "campaigns": "Campaigns",
+      "noCampaigns": "This character has not been brought to a campaign yet.",
+      "since": "since {from}",
+      "between": "{from} to {to}",
+      "sessions": "Sessions",
+      "noSessions": "No sessions played yet.",
+      "whatHappened": "What that evening did",
+      "noComparison": "No before-and-after record for this evening.",
+      "snapshots": "Snapshots",
+      "noSnapshots": "Nothing recorded yet.",
+      "kinds": {
+        "SESSION_START": "Session start",
+        "SESSION_END": "Session end",
+        "TRANSFER": "Handover",
+        "ACCESS_REDUCTION": "Access ended",
+        "MANUAL": "Taken by hand"
+      }
+    },
+    "overrides": {
+      "title": "Values set by hand",
+      "description": "A number the rules would compute differently, kept because somebody at the table decided it. Hidden along with the field it replaces.",
+      "none": "Every value here is what the rules compute.",
+      "field": "Value",
+      "value": "Set to",
+      "reason": "Because",
+      "apply": "Set by hand",
+      "withdraw": "Back to the rules",
+      "withdrawnReason": "Returned to the calculated value.",
+      "valueRequired": "A whole number, please.",
+      "reasonRequired": "Say why, in a sentence."
     }
   }
 }

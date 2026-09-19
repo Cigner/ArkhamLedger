@@ -12,6 +12,15 @@ export type ParticipantDraft = {
   readonly userId: string
   readonly priority: ParticipantPriority
   readonly isKeeper: boolean
+  /**
+   * Whether this person brings a character.
+   *
+   * Independent of isKeeper on purpose: a Keeper may run the evening and play
+   * somebody in it, and a campaign with two Keepers has one of them at the
+   * table as a player. Tying the two together would make that impossible to
+   * express.
+   */
+  readonly playsInvestigator?: boolean
 }
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000
@@ -25,10 +34,17 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000
  */
 export function normalizeParticipants(
   participants: readonly ParticipantDraft[],
-): ParticipantDraft[] {
-  return participants.map((participant) =>
-    participant.isKeeper ? { ...participant, priority: 'REQUIRED' } : participant,
-  )
+): (ParticipantDraft & { playsInvestigator: boolean })[] {
+  return participants.map((participant) => ({
+    ...participant,
+    priority: participant.isKeeper ? 'REQUIRED' : participant.priority,
+    /*
+     * A player brings a character unless told otherwise; a Keeper does not
+     * unless told they do. Both are defaults for the common case rather than
+     * rules - the flag is what decides, and the Keeper sets it.
+     */
+    playsInvestigator: participant.playsInvestigator ?? !participant.isKeeper,
+  }))
 }
 
 export function validateSearchWindow(start: string, end: string): Result<void> {
@@ -148,6 +164,46 @@ export function validateQuorum(quorum: number, playerCount: number): Result<void
 /** Whether collection has closed on its own, which the worker acts on. */
 export function deadlineHasPassed(deadline: Date | null, now: Date): boolean {
   return deadline !== null && deadline.getTime() <= now.getTime()
+}
+
+/**
+ * One participant, as the start check sees them.
+ *
+ * Deliberately not the participant DTO: this rule needs a name to put in the
+ * message and nothing else about the person, and taking the full DTO would make
+ * every future field of it look like an input to the decision.
+ */
+export type ParticipantAssignment = {
+  readonly userId: string
+  readonly name: string
+  readonly playsInvestigator: boolean
+  readonly investigatorId: string | null
+}
+
+/**
+ * Whether everyone bringing a character has one.
+ *
+ * Checked when the session starts rather than when it is scheduled. Agreeing a
+ * date is what other people are waiting on, and holding that up over a sheet
+ * nobody has written yet would trade the useful half of the evening for the
+ * tidy one. The failure names the people involved, because "an assignment is
+ * missing" sends the Keeper back to read the whole list.
+ */
+export function validateInvestigatorAssignments(
+  participants: readonly ParticipantAssignment[],
+): Result<void> {
+  const missing = participants
+    .filter((participant) => participant.playsInvestigator && participant.investigatorId === null)
+    .map((participant) => participant.name)
+
+  if (missing.length > 0) {
+    return fail('sessions.errors.missingInvestigatorAssignments', {
+      count: missing.length,
+      players: missing.join(', '),
+    })
+  }
+
+  return ok()
 }
 
 /**

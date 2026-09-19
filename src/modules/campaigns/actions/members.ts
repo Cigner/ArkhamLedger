@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db/client'
 import { recordAudit } from '@/lib/audit'
+import { captureOnLeavingCampaign } from '@/modules/investigators/data/snapshots'
 import { DomainRuleError } from '@/lib/errors'
 import { authActionClient } from '@/lib/safe-action'
 import { listMemberRoles } from '../data/campaigns'
@@ -40,6 +41,19 @@ export const leaveCampaign = authActionClient
     const now = new Date()
 
     await db.transaction(async (tx) => {
+      /*
+       * Before the membership goes, not after. What somebody could see in this
+       * campaign is captured while they can still see it - the projection is
+       * computed from their role, and a moment later they have none.
+       */
+      const kept = await captureOnLeavingCampaign({
+        campaignId: parsedInput.campaignId,
+        viewerId: ctx.user.id,
+        reason: 'CAMPAIGN_LEFT',
+        now,
+        executor: tx,
+      })
+
       await setMembershipStatus({
         campaignId: parsedInput.campaignId,
         userId: ctx.user.id,
@@ -53,6 +67,7 @@ export const leaveCampaign = authActionClient
           action: 'campaign.memberLeft',
           entityType: 'campaign',
           entityId: parsedInput.campaignId,
+          metadata: { disclosures: kept },
         },
         tx,
       )
@@ -85,6 +100,18 @@ export const removeMember = authActionClient
     const now = new Date()
 
     await db.transaction(async (tx) => {
+      /*
+       * Being removed loses the same access as leaving, so it keeps the same
+       * thing. Somebody thrown out of a campaign still saw what they saw.
+       */
+      const kept = await captureOnLeavingCampaign({
+        campaignId: parsedInput.campaignId,
+        viewerId: parsedInput.userId,
+        reason: 'CAMPAIGN_LEFT',
+        now,
+        executor: tx,
+      })
+
       await setMembershipStatus({
         campaignId: parsedInput.campaignId,
         userId: parsedInput.userId,
@@ -98,7 +125,7 @@ export const removeMember = authActionClient
           action: 'campaign.memberRemoved',
           entityType: 'campaign',
           entityId: parsedInput.campaignId,
-          metadata: { userId: parsedInput.userId },
+          metadata: { userId: parsedInput.userId, disclosures: kept },
         },
         tx,
       )

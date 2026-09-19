@@ -108,9 +108,24 @@ describe('roster', () => {
     await addMemberRow({ campaignId, userId: other.id })
 
     const roster = [
-      { userId: keeper.id, priority: 'REQUIRED' as const, isKeeper: true },
-      { userId: player.id, priority: 'PREFERRED' as const, isKeeper: false },
-      { userId: other.id, priority: 'OPTIONAL' as const, isKeeper: false },
+      {
+        userId: keeper.id,
+        priority: 'REQUIRED' as const,
+        isKeeper: true,
+        playsInvestigator: false,
+      },
+      {
+        userId: player.id,
+        priority: 'PREFERRED' as const,
+        isKeeper: false,
+        playsInvestigator: true,
+      },
+      {
+        userId: other.id,
+        priority: 'OPTIONAL' as const,
+        isKeeper: false,
+        playsInvestigator: true,
+      },
     ]
 
     await db.transaction(async (tx) =>
@@ -148,8 +163,8 @@ describe('roster', () => {
       replaceParticipants({
         sessionId,
         participants: [
-          { userId: keeper.id, priority: 'REQUIRED', isKeeper: true },
-          { userId: player.id, priority: 'PREFERRED', isKeeper: false },
+          { userId: keeper.id, priority: 'REQUIRED', isKeeper: true, playsInvestigator: false },
+          { userId: player.id, priority: 'PREFERRED', isKeeper: false, playsInvestigator: true },
         ],
         now: NOW,
         executor: tx,
@@ -159,7 +174,9 @@ describe('roster', () => {
     await db.transaction(async (tx) =>
       replaceParticipants({
         sessionId,
-        participants: [{ userId: keeper.id, priority: 'REQUIRED', isKeeper: true }],
+        participants: [
+          { userId: keeper.id, priority: 'REQUIRED', isKeeper: true, playsInvestigator: false },
+        ],
         now: NOW,
         executor: tx,
       }),
@@ -175,7 +192,9 @@ describe('roster', () => {
     await db.transaction(async (tx) =>
       replaceParticipants({
         sessionId,
-        participants: [{ userId: keeper.id, priority: 'REQUIRED', isKeeper: true }],
+        participants: [
+          { userId: keeper.id, priority: 'REQUIRED', isKeeper: true, playsInvestigator: false },
+        ],
         now: NOW,
         executor: tx,
       }),

@@ -70,7 +70,14 @@ export const setParticipantsSchema = z.object({
   sessionId: idSchema,
   quorum: z.coerce.number().int().min(1).max(64),
   participants: z
-    .array(z.object({ userId: idSchema, priority: prioritySchema }))
+    .array(
+      z.object({
+        userId: idSchema,
+        priority: prioritySchema,
+        /** Absent means the default: players bring a character, Keepers do not. */
+        playsInvestigator: z.boolean().optional(),
+      }),
+    )
     .min(1, { error: 'sessions.errors.noParticipants' }),
 })
 

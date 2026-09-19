@@ -1,0 +1,256 @@
+{
+  "version": "1.0.0",
+  "families": [
+    {
+      "id": "art-craft",
+      "nameKey": "investigators.skillFamilies.artCraft",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "fighting",
+      "nameKey": "investigators.skillFamilies.fighting",
+      "baseValue": { "kind": "FIXED", "value": 0 }
+    },
+    {
+      "id": "firearms",
+      "nameKey": "investigators.skillFamilies.firearms",
+      "baseValue": { "kind": "FIXED", "value": 0 }
+    },
+    {
+      "id": "language-other",
+      "nameKey": "investigators.skillFamilies.languageOther",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "pilot",
+      "nameKey": "investigators.skillFamilies.pilot",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "science",
+      "nameKey": "investigators.skillFamilies.science",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "survival",
+      "nameKey": "investigators.skillFamilies.survival",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    }
+  ],
+  "skills": [
+    {
+      "id": "accounting",
+      "nameKey": "investigators.skills.accounting",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "anthropology",
+      "nameKey": "investigators.skills.anthropology",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "appraise",
+      "nameKey": "investigators.skills.appraise",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "archaeology",
+      "nameKey": "investigators.skills.archaeology",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "charm",
+      "nameKey": "investigators.skills.charm",
+      "baseValue": { "kind": "FIXED", "value": 15 }
+    },
+    {
+      "id": "climb",
+      "nameKey": "investigators.skills.climb",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "credit-rating",
+      "nameKey": "investigators.skills.creditRating",
+      "baseValue": { "kind": "FIXED", "value": 0 }
+    },
+    {
+      "id": "cthulhu-mythos",
+      "nameKey": "investigators.skills.cthulhuMythos",
+      "baseValue": { "kind": "FIXED", "value": 0 },
+      "creationRule": "KEEPER_OVERRIDE",
+      "developmentRule": "MYTHOS_ONLY"
+    },
+    {
+      "id": "disguise",
+      "nameKey": "investigators.skills.disguise",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "dodge",
+      "nameKey": "investigators.skills.dodge",
+      "baseValue": {
+        "kind": "CHARACTERISTIC_FRACTION",
+        "characteristic": "DEX",
+        "divisor": 2
+      }
+    },
+    {
+      "id": "drive-auto",
+      "nameKey": "investigators.skills.driveAuto",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "electrical-repair",
+      "nameKey": "investigators.skills.electricalRepair",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "fast-talk",
+      "nameKey": "investigators.skills.fastTalk",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "fighting-brawl",
+      "nameKey": "investigators.skills.fightingBrawl",
+      "familyId": "fighting",
+      "baseValue": { "kind": "FIXED", "value": 25 }
+    },
+    {
+      "id": "firearms-handgun",
+      "nameKey": "investigators.skills.firearmsHandgun",
+      "familyId": "firearms",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "firearms-rifle-shotgun",
+      "nameKey": "investigators.skills.firearmsRifleShotgun",
+      "familyId": "firearms",
+      "baseValue": { "kind": "FIXED", "value": 25 }
+    },
+    {
+      "id": "first-aid",
+      "nameKey": "investigators.skills.firstAid",
+      "baseValue": { "kind": "FIXED", "value": 30 }
+    },
+    {
+      "id": "history",
+      "nameKey": "investigators.skills.history",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "intimidate",
+      "nameKey": "investigators.skills.intimidate",
+      "baseValue": { "kind": "FIXED", "value": 15 }
+    },
+    {
+      "id": "jump",
+      "nameKey": "investigators.skills.jump",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "language-own",
+      "nameKey": "investigators.skills.languageOwn",
+      "baseValue": { "kind": "CHARACTERISTIC", "characteristic": "EDU" }
+    },
+    {
+      "id": "law",
+      "nameKey": "investigators.skills.law",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "library-use",
+      "nameKey": "investigators.skills.libraryUse",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "listen",
+      "nameKey": "investigators.skills.listen",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "locksmith",
+      "nameKey": "investigators.skills.locksmith",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "mechanical-repair",
+      "nameKey": "investigators.skills.mechanicalRepair",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "medicine",
+      "nameKey": "investigators.skills.medicine",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "natural-world",
+      "nameKey": "investigators.skills.naturalWorld",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "navigate",
+      "nameKey": "investigators.skills.navigate",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "occult",
+      "nameKey": "investigators.skills.occult",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "operate-heavy-machinery",
+      "nameKey": "investigators.skills.operateHeavyMachinery",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "persuade",
+      "nameKey": "investigators.skills.persuade",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "psychoanalysis",
+      "nameKey": "investigators.skills.psychoanalysis",
+      "baseValue": { "kind": "FIXED", "value": 1 }
+    },
+    {
+      "id": "psychology",
+      "nameKey": "investigators.skills.psychology",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "ride",
+      "nameKey": "investigators.skills.ride",
+      "baseValue": { "kind": "FIXED", "value": 5 }
+    },
+    {
+      "id": "sleight-of-hand",
+      "nameKey": "investigators.skills.sleightOfHand",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    },
+    {
+      "id": "spot-hidden",
+      "nameKey": "investigators.skills.spotHidden",
+      "baseValue": { "kind": "FIXED", "value": 25 }
+    },
+    {
+      "id": "stealth",
+      "nameKey": "investigators.skills.stealth",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "swim",
+      "nameKey": "investigators.skills.swim",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "throw",
+      "nameKey": "investigators.skills.throw",
+      "baseValue": { "kind": "FIXED", "value": 20 }
+    },
+    {
+      "id": "track",
+      "nameKey": "investigators.skills.track",
+      "baseValue": { "kind": "FIXED", "value": 10 }
+    }
+  ]
+}

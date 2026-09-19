@@ -147,6 +147,8 @@ export async function transitionSession(input: {
     acceptedProposalId: string | null
     setManually: boolean
     cancelledReason: string | null
+    startedAt: Date | null
+    endedAt: Date | null
   }>
   now: Date
   executor: DbOrTx
@@ -167,7 +169,7 @@ export async function countUpcomingSessions(campaignId: string, now: Date): Prom
     .where(
       and(
         eq(gameSession.campaignId, campaignId),
-        sql`${gameSession.status} in ('DRAFT','COLLECTING','PROPOSED','SCHEDULED')`,
+        sql`${gameSession.status} in ('DRAFT','COLLECTING','PROPOSED','SCHEDULED','IN_PROGRESS')`,
         sql`(${gameSession.confirmedStartUtc} is null or ${gameSession.confirmedStartUtc} >= ${now})`,
       ),
     )

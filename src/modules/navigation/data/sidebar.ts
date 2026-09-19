@@ -78,12 +78,15 @@ async function listCampaignShortcuts(
       recentAt: null,
     }
 
-    if (
-      row.sessionStatus === 'SCHEDULED' &&
-      row.sessionStart &&
-      row.sessionStart.getTime() >= now.getTime()
-    ) {
-      aggregate.upcomingAt = earlier(aggregate.upcomingAt, row.sessionStart)
+    const startsAt = row.sessionStart
+    const live =
+      row.sessionStatus === 'IN_PROGRESS' ||
+      (row.sessionStatus === 'SCHEDULED' &&
+        startsAt !== null &&
+        startsAt.getTime() >= now.getTime())
+
+    if (live && startsAt !== null) {
+      aggregate.upcomingAt = earlier(aggregate.upcomingAt, startsAt)
     } else if (
       row.sessionStatus === 'DRAFT' ||
       row.sessionStatus === 'COLLECTING' ||
@@ -218,9 +221,10 @@ function sessionGroup(
   now: Date,
 ): number {
   if (
-    value.status === 'SCHEDULED' &&
-    value.confirmedStartUtc &&
-    value.confirmedStartUtc.getTime() >= now.getTime()
+    value.status === 'IN_PROGRESS' ||
+    (value.status === 'SCHEDULED' &&
+      value.confirmedStartUtc &&
+      value.confirmedStartUtc.getTime() >= now.getTime())
   ) {
     return 0
   }

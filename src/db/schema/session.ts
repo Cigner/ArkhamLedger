@@ -31,6 +31,7 @@ export const sessionStatuses = [
   'COLLECTING',
   'PROPOSED',
   'SCHEDULED',
+  'IN_PROGRESS',
   'COMPLETED',
   'CANCELLED',
 ] as const
@@ -64,6 +65,8 @@ export const gameSession = mysqlTable(
 
     confirmedStartUtc: datetime('confirmed_start_utc', { mode: 'date', fsp: 3 }),
     confirmedEndUtc: datetime('confirmed_end_utc', { mode: 'date', fsp: 3 }),
+    startedAt: datetime('started_at', { mode: 'date', fsp: 3 }),
+    endedAt: datetime('ended_at', { mode: 'date', fsp: 3 }),
     acceptedProposalId: idColumn('accepted_proposal_id'),
     setManually: boolean('set_manually').notNull().default(false),
     cancelledReason: varchar('cancelled_reason', { length: 500 }),
@@ -103,6 +106,7 @@ export const sessionParticipant = mysqlTable(
       .references(() => authUser.id, { onDelete: 'cascade' }),
     priority: mysqlEnum('priority', participantPriorities).notNull().default('PREFERRED'),
     isKeeper: boolean('is_keeper').notNull().default(false),
+    playsInvestigator: boolean('plays_investigator').notNull().default(false),
     /** Null means the participant has not answered; distinct from answering "no". */
     respondedAt: datetime('responded_at', { mode: 'date', fsp: 3 }),
     attendance: mysqlEnum('attendance', attendanceStates).notNull().default('UNKNOWN'),

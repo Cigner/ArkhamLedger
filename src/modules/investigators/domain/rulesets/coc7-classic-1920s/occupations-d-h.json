@@ -1,0 +1,550 @@
+{
+  "version": "1.0.0",
+  "choiceGroups": {
+    "interpersonal": ["charm", "fast-talk", "intimidate", "persuade"],
+    "repair": ["electrical-repair", "mechanical-repair"],
+    "combat": ["@fighting", "@firearms"]
+  },
+  "occupations": [
+    {
+      "id": "criminal-assassin",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [30, 60],
+      "skills": [
+        "disguise",
+        "electrical-repair",
+        "@fighting",
+        "@firearms",
+        "locksmith",
+        "mechanical-repair",
+        "stealth",
+        "psychology"
+      ]
+    },
+    {
+      "id": "criminal-bank-robber",
+      "points": { "selected": ["STR", "DEX"] },
+      "credit": [5, 75],
+      "skills": [
+        "drive-auto",
+        { "group": "repair", "count": 1 },
+        "@fighting",
+        "@firearms",
+        "intimidate",
+        "locksmith",
+        "operate-heavy-machinery",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "criminal-bootlegger-thug",
+      "points": { "selected": ["STR"] },
+      "credit": [5, 30],
+      "skills": [
+        "drive-auto",
+        "@fighting",
+        "@firearms",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        "stealth",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "criminal-burglar",
+      "points": { "selected": ["DEX"] },
+      "credit": [5, 40],
+      "skills": [
+        "appraise",
+        "climb",
+        { "group": "repair", "count": 1 },
+        "listen",
+        "locksmith",
+        "sleight-of-hand",
+        "stealth",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "criminal-conman",
+      "points": { "selected": ["APP"] },
+      "credit": [10, 65],
+      "skills": [
+        "appraise",
+        "@art-craft:acting",
+        { "oneOf": ["law", "@language-other"] },
+        "listen",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        "sleight-of-hand"
+      ]
+    },
+    {
+      "id": "criminal-freelance",
+      "points": { "selected": ["DEX", "APP"] },
+      "credit": [5, 65],
+      "skills": [
+        { "oneOf": ["@art-craft:acting", "disguise"] },
+        "appraise",
+        { "oneOf": ["charm", "fast-talk", "intimidate"] },
+        { "group": "combat", "count": 1 },
+        { "oneOf": ["locksmith", "mechanical-repair"] },
+        "stealth",
+        "psychology",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "criminal-gun-moll",
+      "eras": ["CLASSIC_1920S"],
+      "points": { "selected": ["APP"] },
+      "credit": [10, 80],
+      "skills": [
+        "@art-craft",
+        { "group": "interpersonal", "count": 2 },
+        { "oneOf": ["fighting-brawl", "firearms-handgun"] },
+        "drive-auto",
+        "listen",
+        "stealth",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "criminal-fence",
+      "points": { "selected": ["APP"] },
+      "credit": [20, 40],
+      "skills": [
+        "accounting",
+        "appraise",
+        "@art-craft:forgery",
+        "history",
+        { "group": "interpersonal", "count": 1 },
+        "library-use",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "criminal-forger-counterfeiter",
+      "points": "EDU_X4",
+      "credit": [20, 60],
+      "skills": [
+        "accounting",
+        "appraise",
+        "@art-craft:forgery",
+        "history",
+        "library-use",
+        "spot-hidden",
+        "sleight-of-hand",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "criminal-smuggler",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [20, 60],
+      "skills": [
+        "@firearms",
+        "listen",
+        "navigate",
+        { "group": "interpersonal", "count": 1 },
+        { "oneOf": ["drive-auto", "@pilot:aircraft", "@pilot:boat"] },
+        "psychology",
+        "sleight-of-hand",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "criminal-street-punk",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [3, 10],
+      "skills": [
+        "climb",
+        { "group": "interpersonal", "count": 1 },
+        "@fighting",
+        "@firearms",
+        "jump",
+        "sleight-of-hand",
+        "stealth",
+        "throw"
+      ]
+    },
+    {
+      "id": "cult-leader",
+      "points": { "selected": ["APP"] },
+      "credit": [30, 60],
+      "skills": [
+        "accounting",
+        { "group": "interpersonal", "count": 2 },
+        "occult",
+        "psychology",
+        "spot-hidden",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "deprogrammer",
+      "eras": ["MODERN"],
+      "points": "EDU_X4",
+      "credit": [20, 50],
+      "skills": [
+        { "group": "interpersonal", "count": 2 },
+        "drive-auto",
+        { "oneOf": ["fighting-brawl", "@firearms"] },
+        "history",
+        "occult",
+        "psychology",
+        "stealth"
+      ]
+    },
+    {
+      "id": "designer",
+      "points": "EDU_X4",
+      "credit": [20, 60],
+      "skills": [
+        "accounting",
+        "@art-craft:photography",
+        "@art-craft",
+        { "oneOf": ["computer-use", "library-use"] },
+        "mechanical-repair",
+        "psychology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "dilettante",
+      "tags": ["LOVECRAFTIAN"],
+      "points": { "selected": ["APP"] },
+      "credit": [50, 99],
+      "skills": [
+        "@art-craft",
+        "@firearms",
+        "@language-other",
+        "ride",
+        { "group": "interpersonal", "count": 1 },
+        { "any": 3 }
+      ]
+    },
+    {
+      "id": "diver",
+      "points": { "selected": ["DEX"] },
+      "credit": [9, 30],
+      "skills": [
+        "diving",
+        "first-aid",
+        "mechanical-repair",
+        "@pilot:boat",
+        "@science:biology",
+        "spot-hidden",
+        "swim",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "doctor-of-medicine",
+      "tags": ["LOVECRAFTIAN"],
+      "points": "EDU_X4",
+      "credit": [30, 80],
+      "skills": [
+        "first-aid",
+        "medicine",
+        "@language-other:latin",
+        "psychology",
+        "@science:biology",
+        "@science:pharmacy",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "drifter",
+      "points": { "selected": ["APP", "DEX", "STR"] },
+      "credit": [0, 5],
+      "skills": [
+        "climb",
+        "jump",
+        "listen",
+        "navigate",
+        { "group": "interpersonal", "count": 1 },
+        "stealth",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "driver-chauffeur",
+      "points": { "selected": ["DEX"] },
+      "credit": [10, 40],
+      "skills": [
+        "drive-auto",
+        { "group": "interpersonal", "count": 2 },
+        "listen",
+        "mechanical-repair",
+        "navigate",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "driver",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 20],
+      "skills": [
+        "accounting",
+        "drive-auto",
+        "listen",
+        { "group": "interpersonal", "count": 1 },
+        "mechanical-repair",
+        "navigate",
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "driver-taxi",
+      "points": { "selected": ["DEX"] },
+      "credit": [9, 30],
+      "skills": [
+        "accounting",
+        "drive-auto",
+        "electrical-repair",
+        "fast-talk",
+        "mechanical-repair",
+        "navigate",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "editor",
+      "points": "EDU_X4",
+      "credit": [10, 30],
+      "skills": [
+        "accounting",
+        "history",
+        "language-own",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "elected-official",
+      "points": { "selected": ["APP"] },
+      "credit": [50, 90],
+      "skills": [
+        "charm",
+        "history",
+        "intimidate",
+        "fast-talk",
+        "listen",
+        "language-own",
+        "persuade",
+        "psychology"
+      ]
+    },
+    {
+      "id": "engineer",
+      "points": "EDU_X4",
+      "credit": [30, 60],
+      "skills": [
+        "@art-craft:technical-drawing",
+        "electrical-repair",
+        "library-use",
+        "mechanical-repair",
+        "operate-heavy-machinery",
+        "@science:engineering",
+        "@science:physics",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "entertainer",
+      "points": { "selected": ["APP"] },
+      "credit": [9, 70],
+      "skills": [
+        "@art-craft",
+        "disguise",
+        { "group": "interpersonal", "count": 2 },
+        "listen",
+        "psychology",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "explorer",
+      "eras": ["CLASSIC_1920S"],
+      "points": { "selected": ["APP", "DEX", "STR"] },
+      "credit": [55, 80],
+      "skills": [
+        { "oneOf": ["climb", "swim"] },
+        "@firearms",
+        "history",
+        "jump",
+        "natural-world",
+        "navigate",
+        "@language-other",
+        "@survival"
+      ]
+    },
+    {
+      "id": "farmer",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "@art-craft:farming",
+        "drive-auto",
+        { "group": "interpersonal", "count": 1 },
+        "mechanical-repair",
+        "natural-world",
+        "operate-heavy-machinery",
+        "track",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "federal-agent",
+      "points": "EDU_X4",
+      "credit": [20, 40],
+      "skills": [
+        "drive-auto",
+        "fighting-brawl",
+        "@firearms",
+        "law",
+        "persuade",
+        "stealth",
+        "spot-hidden",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "firefighter",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 30],
+      "skills": [
+        "climb",
+        "dodge",
+        "drive-auto",
+        "first-aid",
+        "jump",
+        "mechanical-repair",
+        "operate-heavy-machinery",
+        "throw"
+      ]
+    },
+    {
+      "id": "foreign-correspondent",
+      "points": "EDU_X4",
+      "credit": [10, 40],
+      "skills": [
+        "history",
+        "@language-other",
+        "language-own",
+        "listen",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "forensic-surgeon",
+      "points": "EDU_X4",
+      "credit": [40, 60],
+      "skills": [
+        "@language-other:latin",
+        "library-use",
+        "medicine",
+        "persuade",
+        "@science:biology",
+        "@science:forensics",
+        "@science:pharmacy",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "gambler",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [8, 50],
+      "skills": [
+        "accounting",
+        "@art-craft:acting",
+        { "group": "interpersonal", "count": 2 },
+        "listen",
+        "psychology",
+        "sleight-of-hand",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "gangster-boss",
+      "points": { "selected": ["APP"] },
+      "credit": [60, 95],
+      "skills": [
+        "@fighting",
+        "@firearms",
+        "law",
+        "listen",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        "spot-hidden"
+      ]
+    },
+    {
+      "id": "gangster-underling",
+      "points": { "selected": ["DEX", "STR"] },
+      "credit": [9, 20],
+      "skills": [
+        "drive-auto",
+        "@fighting",
+        "@firearms",
+        { "group": "interpersonal", "count": 2 },
+        "psychology",
+        { "any": 2 }
+      ]
+    },
+    {
+      "id": "gentleman-lady",
+      "points": { "selected": ["APP"] },
+      "credit": [40, 90],
+      "skills": [
+        "@art-craft",
+        { "group": "interpersonal", "count": 2 },
+        "firearms-rifle-shotgun",
+        "history",
+        "@language-other",
+        "navigate",
+        "ride"
+      ]
+    },
+    {
+      "id": "hobo",
+      "points": { "selected": ["APP", "DEX"] },
+      "credit": [0, 5],
+      "skills": [
+        "@art-craft",
+        "climb",
+        "jump",
+        "listen",
+        { "oneOf": ["locksmith", "sleight-of-hand"] },
+        "navigate",
+        "stealth",
+        { "any": 1 }
+      ]
+    },
+    {
+      "id": "hospital-orderly",
+      "points": { "selected": ["STR"] },
+      "credit": [6, 15],
+      "skills": [
+        "electrical-repair",
+        { "group": "interpersonal", "count": 1 },
+        "fighting-brawl",
+        "first-aid",
+        "listen",
+        "mechanical-repair",
+        "psychology",
+        "stealth"
+      ]
+    }
+  ]
+}

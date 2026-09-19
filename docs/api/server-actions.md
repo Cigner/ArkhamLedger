@@ -86,11 +86,19 @@ refusal. Being already a member is reported as information, not an error.
 | `session.reopenCollection` | `sessionId, availabilityDeadline?`                                                | `ok`        | Keeper                       |
 | `session.setDate`          | `sessionId, date, startHour, endHour, acknowledgeWarnings`                        | `ok`        | Keeper                       |
 | `session.cancel`           | `sessionId, reason`                                                               | `ok`        | Keeper                       |
-| `session.complete`         | `sessionId, attendance[]`                                                         | `ok`        | Keeper, `SCHEDULED`          |
+| `session.start`            | `sessionId`                                                                       | `ok`        | Keeper, `SCHEDULED`          |
+| `session.complete`         | `sessionId, attendance[]`                                                         | `ok`        | Keeper, `IN_PROGRESS`        |
 
 A new session invites the whole campaign by default; the Keeper narrows it
 afterwards. Keepers are normalised to `REQUIRED` regardless of what was
 submitted.
+
+`session.start` is one transaction. It refuses while a participant marked as
+playing a character has not been given one and names who, checks every chosen
+character is owned by the player and still linked to the campaign, archives each
+sheet as a `SESSION_START` snapshot, records first use, closes the creating
+Keeper's edit grant on any character being played for the first time, and stamps
+`startedAt`. Completing the session stamps `endedAt`.
 
 `session.reopenCollection` clears every answer. Answers given for a window that
 has changed look like participation while meaning nothing, which is worse than
@@ -99,6 +107,115 @@ no answers.
 Every transition names the status it moves _from_ in its `WHERE` clause, so two
 Keepers acting at once cannot both apply the same change — the second is told
 the session moved on.
+
+## Investigators
+
+| Action                           | Input                                                          | Returns                          | Requires                          |
+| -------------------------------- | -------------------------------------------------------------- | -------------------------------- | --------------------------------- |
+| `investigator.create`            | `name, creationMethod, rulesetId, rulesetVersion, campaignId?` | `investigatorId`                 | Signed in                         |
+| `investigator.createForPlayer`   | `campaignId, playerId, name, creationMethod, ruleset…`         | `investigatorId`                 | Keeper of that campaign           |
+| `investigator.link`              | `investigatorId, campaignId`                                   | `ok`                             | The character's owner, a member   |
+| `investigator.unlink`            | `investigatorId, campaignId, reason?`                          | `ok, disclosures`                | The owner or a Keeper             |
+| `investigator.duplicate`         | `investigatorId, name?`                                        | `ok, investigatorId`             | The owner, or the creating Keeper |
+| `investigator.request`           | `investigatorId, campaignId`                                   | `ok`                             | A Keeper who can see the sheet    |
+| `investigator.import`            | `document`                                                     | `ok, investigatorId, warnings[]` | Signed in                         |
+| `investigator.emergencyTransfer` | `investigatorId, campaignId, toOwnerId, reason`                | `ok, investigatorId`             | Administrator                     |
+
+`investigator.createForPlayer` makes the player the owner immediately and gives
+the Keeper an edit grant that closes at the character's first use. The player is
+notified; the Keeper never gains access to their other characters.
+
+| Action                             | Input                                                                       | Returns                         | Requires                          |
+| ---------------------------------- | --------------------------------------------------------------------------- | ------------------------------- | --------------------------------- |
+| `investigator.saveIdentity`        | `investigatorId, expectedVersion, name, age, …`                             | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.saveCharacteristics` | `investigatorId, expectedVersion, STR…EDU, luck`                            | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.activate`            | `investigatorId, expectedVersion`                                           | `ok`                            | Owner or creator-Keeper           |
+| `investigator.saveOccupation`      | `investigatorId, expectedVersion, occupationId, characteristic?, choices[]` | `ok, version, budgets`          | Owner or creator-Keeper           |
+| `investigator.saveSkills`          | `investigatorId, expectedVersion, allocations[]`                            | `ok, version, summary`          | Owner or creator-Keeper           |
+| `investigator.removeSkill`         | `investigatorId, skillKey`                                                  | `ok`                            | Owner or creator-Keeper           |
+| `investigator.saveBackstory`       | `investigatorId, expectedVersion, entries[]`                                | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.saveFinances`        | `investigatorId, expectedVersion, cash, assets, notes?`                     | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.savePrivacy`         | `investigatorId, hidden[]`                                                  | `ok, hidden`                    | Owner or creator-Keeper           |
+| `investigator.addSkill`            | `investigatorId, expectedVersion, definitionId, specialization?`            | `ok, version, skillKey`         | Owner or creator-Keeper           |
+| `investigator.savePossessions`     | `investigatorId, expectedVersion, entries[]`                                | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.saveWeapons`         | `investigatorId, expectedVersion, entries[]`                                | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.adjustResource`      | `investigatorId, resource, amount, reason?, gameSessionId?`                 | `ok, value, rolls required`     | Owner or creator-Keeper, `ACTIVE` |
+| `investigator.reverseResource`     | `investigatorId`                                                            | `ok, resource, value`           | Owner or creator-Keeper           |
+| `investigator.setConditions`       | `investigatorId, five flags`                                                | `ok`                            | Owner or creator-Keeper           |
+| `session.assignInvestigator`       | `sessionId, participantId, investigatorId`                                  | `ok, assigned`                  | Keeper                            |
+| `session.useSameInvestigators`     | `sessionId`                                                                 | `ok, from, copied[], skipped[]` | Keeper                            |
+| `investigator.requestTransfer`     | `campaignId, investigatorId, toOwnerId, reason?`                            | `ok, transferId`                | Keeper                            |
+| `investigator.decideTransfer`      | `transferId, accept`                                                        | `ok, accepted, investigatorId?` | The current owner                 |
+| `investigator.cancelTransfer`      | `transferId`                                                                | `ok`                            | Keeper                            |
+| `investigator.markSkill`           | `investigatorId, skillKey, marked, gameSessionId?`                          | `ok, marked`                    | Owner or creator-Keeper           |
+| `investigator.resolveDevelopment`  | `investigatorId, skillKey, percentileRoll, improvementRoll?`                | `ok, improved, increase, basis` | Owner or creator-Keeper           |
+| `investigator.writeNote`           | `investigatorId, campaignId?, kind, content, visibility`                    | `ok, noteId`                    | Depends on the kind               |
+| `investigator.reviseNote`          | `noteId, content, visibility`                                               | `ok, disclosures`               | The note's author                 |
+| `investigator.setOverride`         | `investigatorId, expectedVersion, fieldKey, value, reason`                  | `ok, version`                   | Owner or creator-Keeper           |
+| `investigator.changeStatus`        | `investigatorId, expectedVersion, status, reason?`                          | `ok, status`                    | Owner or creator-Keeper           |
+| `investigator.archive`             | `investigatorId, archived`                                                  | `ok, archived`                  | Owner or creator-Keeper           |
+| `investigator.delete`              | `investigatorId`                                                            | `ok`                            | Owner, draft nobody has seen      |
+
+`investigator.saveOccupation` resolves the occupation's eight skills from the
+catalog and the choices made against it, then reconciles the character's skill
+rows. Occupation points on a skill the new occupation does not grant are lost;
+personal interest is not.
+
+`investigator.decideTransfer` with `accept` performs section 13's transaction:
+snapshot, branch, move the binding, redirect the sessions that have not
+happened. The previous owner keeps the branch they played — nothing is taken
+from anybody.
+
+`session.useSameInvestigators` copies from the campaign's most recently
+**started** session and returns what it could not place, so a Keeper is told
+about the two people who still have no sheet rather than discovering it on the
+night.
+
+`investigator.reviseNote` adds a revision rather than replacing one. When the
+visibility narrows it first captures the outgoing revision for everybody losing
+access, and reports how many — narrowing a note never takes back what was
+already read.
+
+`investigator.adjustResource` takes an amount, not a new total: eight points at
+once is a major wound and eight in four blows is not, and the rules cannot tell
+them apart from a total. It answers with the rolls the rules call for rather
+than making them.
+
+The play actions carry no version either. They are events in time — two people
+recording damage during a fight are recording two blows, not competing to
+describe one.
+
+`investigator.savePrivacy` is the exception: it carries no version, because
+privacy is not sheet content and only one person may set it. Keys outside the
+registry are dropped rather than stored, so a field somebody believes they hid
+is one the resolver actually knows about. A save that hides something new first
+captures a disclosure for every player who could read it, and reports how many:
+section 15 lists hiding a field among the moments that reduce access, and it is
+the only one where nobody's access ends.
+
+`investigator.setOverride` replaces a calculated value with one somebody
+insisted on, or withdraws the replacement when `value` is null. The reason is
+required either way. Overrides are a history rather than a setting: setting one
+twice closes the first decision and records the second.
+
+`investigator.request` asks an owner to bring a character into a campaign the
+caller keeps. It changes nothing — the owner links it themselves or does not —
+and the campaign it names is re-derived from the same query that offered it, so
+a hand-made request cannot reach a campaign the caller does not run or one the
+owner cannot join.
+
+`session.assignInvestigator` and `session.useSameInvestigators` refuse once the
+session has started. An assignment carries the snapshots taken for that evening,
+so rewriting one afterwards would delete the record of who played what.
+
+Every sheet write carries the version it was read at and refuses with `CONFLICT`
+if the character moved underneath it. Two people editing one character is the
+ordinary case — the owner at the table and the Keeper who started the sheet — so
+last-write-wins would silently discard whichever of them was slower.
+
+`investigator.unlink` captures a disclosure for everybody who could see the sheet
+before closing the binding, and reports how many it wrote. Session history is
+untouched — unlinking decides what happens next, not what already happened.
 
 ## Availability
 

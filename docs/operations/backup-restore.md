@@ -75,6 +75,35 @@ leaves no scratch database behind.
 
 Run it weekly from cron. A backup nobody has restored is a hypothesis.
 
+## Rolling back a release that migrated the schema
+
+Every migration in this repository so far is additive: new tables, new columns
+with defaults, wider enums. An older application runs against a migrated
+database unharmed, so the first move in an emergency is to put the previous
+image back and stop, rather than to touch the schema at all. A schema rollback
+is for the decision to abandon a feature, and it is the destructive option -
+everything the feature stored goes with it.
+
+For `0005_investigator_management`:
+
+```bash
+scripts/backup.sh predeploy
+docker compose exec -T db mysql -u root -p"$MYSQL_ROOT_PASSWORD" arkham < scripts/rollback-0005.sql
+```
+
+The script drops the twenty-five Investigator tables, removes the columns the
+migration added to `game_session` and `session_participant`, narrows both
+widened enums, and deletes the journal row so the migration can be applied again
+later. It handles the rows a narrowing would otherwise corrupt: a session left
+`IN_PROGRESS` becomes `SCHEDULED`, and notifications of the ten new types are
+deleted with their deliveries before the enum loses those values.
+
+Verified by migrating a scratch database to `0005`, seeding exactly those rows,
+running the script, and diffing `mysqldump --no-data` against a database
+migrated only to `0004`: identical. The project owners repeat this against a
+restored copy of production before the release gate is signed off, because a
+rollback proven only on an empty database has not been proven.
+
 ## Off the machine
 
 The scripts write to `backups/` on the host, which protects against human error

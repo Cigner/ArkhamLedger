@@ -37,6 +37,21 @@ export const notificationTypes = [
   'SESSION_CANCELLED',
   'NO_NEXT_SESSION',
   'ISSUE_REPORTED',
+  /*
+   * Investigator events. None of them broadcast: a character sheet belongs to
+   * one person, and a Discord room is not where somebody learns that a Keeper
+   * made them a character.
+   */
+  'INVESTIGATOR_CREATED_FOR_YOU',
+  'INVESTIGATOR_LINKED',
+  'INVESTIGATOR_REQUESTED',
+  'INVESTIGATOR_EDIT_GRANT_CLOSED',
+  'INVESTIGATOR_TRANSFER_REQUESTED',
+  'INVESTIGATOR_TRANSFER_ACCEPTED',
+  'INVESTIGATOR_TRANSFER_REJECTED',
+  'INVESTIGATOR_TRANSFER_EXPIRED',
+  'SESSION_ASSIGNMENT_CHANGED',
+  'SESSION_ASSIGNMENT_MISSING',
 ] as const
 
 export const deliveryChannels = ['IN_APP', 'EMAIL', 'DISCORD'] as const

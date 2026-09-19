@@ -9,6 +9,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  ScrollText,
   Settings,
   Shield,
   X,
@@ -210,6 +211,16 @@ function SidebarContent({
             ))}
           </ShortcutList>
         ) : null}
+
+        <SidebarLink
+          href="/investigators"
+          label={t('investigators')}
+          icon={ScrollText}
+          active={pathname.startsWith('/investigators')}
+          expanded={expanded}
+          onNavigate={onClose}
+          className={expanded ? 'mt-3' : 'mt-1'}
+        />
 
         <div className="mt-3 border-t border-border-subtle pt-3">
           <SidebarLink

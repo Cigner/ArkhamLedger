@@ -2,10 +2,12 @@ import 'server-only'
 import { and, eq, gt, gte, inArray, isNotNull, isNull, lte, notExists, sql } from 'drizzle-orm'
 import { db } from '@/db/client'
 import {
+  authUser,
   campaign,
   campaignMember,
   gameSession,
   notification,
+  sessionInvestigatorAssignment,
   sessionParticipant,
 } from '@/db/schema'
 
@@ -117,7 +119,7 @@ export async function findIdleCampaigns(input: {
                 eq(gameSession.campaignId, campaign.id),
                 sql`(
                   (${gameSession.status} = 'SCHEDULED' AND ${gameSession.confirmedStartUtc} > ${input.now})
-                  OR ${gameSession.status} IN ('DRAFT','COLLECTING','PROPOSED')
+                  OR ${gameSession.status} IN ('DRAFT','COLLECTING','PROPOSED','IN_PROGRESS')
                 )`,
               ),
             ),
@@ -226,4 +228,87 @@ export async function listKeeperIds(campaignId: string): Promise<string[]> {
     )
 
   return rows.map((row) => row.userId)
+}
+
+export type MissingAssignment = {
+  readonly sessionId: string
+  readonly campaignId: string
+  readonly sessionTitle: string
+  readonly playerName: string
+  readonly startsAt: Date
+}
+
+/**
+ * Who is bringing a character to a session that starts soon and has not chosen
+ * one.
+ *
+ * Section 12 refuses to start a session while somebody playing a character has
+ * not been given one, which is correct and happens with everybody already in
+ * the room. This is the same question asked early enough to be answered.
+ *
+ * Told to the Keeper rather than the player, because chasing the table is what
+ * a Keeper does before a session and the assignment can be made by either of
+ * them. The Keeper is only told once per session; that guard is applied where
+ * the recipients are known.
+ */
+export async function findMissingAssignments(input: {
+  readonly now: Date
+  readonly horizonMs: number
+}): Promise<MissingAssignment[]> {
+  const horizon = new Date(input.now.getTime() + input.horizonMs)
+
+  const rows = await db
+    .select({
+      sessionId: gameSession.id,
+      campaignId: gameSession.campaignId,
+      sessionTitle: gameSession.title,
+      playerName: authUser.name,
+      startsAt: gameSession.confirmedStartUtc,
+    })
+    .from(gameSession)
+    .innerJoin(campaign, eq(campaign.id, gameSession.campaignId))
+    .innerJoin(sessionParticipant, eq(sessionParticipant.gameSessionId, gameSession.id))
+    .innerJoin(authUser, eq(authUser.id, sessionParticipant.userId))
+    .where(
+      and(
+        eq(gameSession.status, 'SCHEDULED'),
+        eq(sessionParticipant.playsInvestigator, true),
+        isNotNull(gameSession.confirmedStartUtc),
+        gt(gameSession.confirmedStartUtc, input.now),
+        lte(gameSession.confirmedStartUtc, horizon),
+        isNull(campaign.deletedAt),
+        notExists(
+          db
+            .select({ one: sql`1` })
+            .from(sessionInvestigatorAssignment)
+            .where(eq(sessionInvestigatorAssignment.sessionParticipantId, sessionParticipant.id)),
+        ),
+      ),
+    )
+
+  return rows.flatMap((row) => (row.startsAt ? [{ ...row, startsAt: row.startsAt }] : []))
+}
+
+/** Which of these people have not already been told this about this session. */
+export async function filterAlreadyNotified(input: {
+  readonly userIds: readonly string[]
+  readonly gameSessionId: string
+  readonly type: 'SESSION_ASSIGNMENT_MISSING'
+}): Promise<string[]> {
+  if (input.userIds.length === 0) return []
+
+  const rows = await db
+    .select({ userId: notification.userId })
+    .from(notification)
+    .where(
+      and(
+        inArray(notification.userId, [...input.userIds]),
+        eq(notification.gameSessionId, input.gameSessionId),
+        eq(notification.type, input.type),
+      ),
+    )
+
+  const told = new Set(rows.map((row) => row.userId))
+
+  return input.userIds.filter((userId) => !told.has(userId))
 }

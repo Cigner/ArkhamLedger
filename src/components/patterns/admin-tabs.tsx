@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, MessageSquareWarning, Users } from 'lucide-react'
+import { Activity, MessageSquareWarning, ScrollText, UserRoundCog, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -20,6 +20,8 @@ export function AdminTabs() {
     { href: '/admin', label: t('operations'), icon: Activity },
     { href: '/admin/users', label: t('users'), icon: Users },
     { href: '/admin/reports', label: t('reports'), icon: MessageSquareWarning },
+    { href: '/admin/characters', label: t('characters'), icon: UserRoundCog },
+    { href: '/admin/rulesets', label: t('rulesets'), icon: ScrollText },
   ]
 
   return (

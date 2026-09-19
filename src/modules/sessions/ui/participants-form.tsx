@@ -75,6 +75,20 @@ export function ParticipantsForm({
   )
 
   const [selected, setSelected] = useState<Map<string, ParticipantPriority>>(() => new Map(initial))
+  /*
+   * Who is bringing a character. Held separately from the priority because the
+   * two are independent: a Keeper may play, and somebody may sit in without a
+   * sheet. Only people who differ from the default are tracked.
+   */
+  const [playing, setPlaying] = useState<Map<string, boolean>>(
+    () =>
+      new Map(
+        session.participants.map((participant) => [
+          participant.userId,
+          participant.playsInvestigator,
+        ]),
+      ),
+  )
   const [quorum, setQuorum] = useState(String(session.quorum))
 
   const save = useAction(setSessionParticipants, {
@@ -108,6 +122,11 @@ export function ParticipantsForm({
     setSelected((current) => new Map(current).set(userId, priority))
   }
 
+  const playsByDefault = (userId: string): boolean =>
+    !candidates.find((candidate) => candidate.userId === userId)?.isKeeper
+
+  const plays = (userId: string): boolean => playing.get(userId) ?? playsByDefault(userId)
+
   const investigatorCount = [...selected.keys()].filter(
     (userId) => !candidates.find((candidate) => candidate.userId === userId)?.isKeeper,
   ).length
@@ -123,6 +142,7 @@ export function ParticipantsForm({
           participants: [...selected.entries()].map(([userId, priority]) => ({
             userId,
             priority,
+            playsInvestigator: plays(userId),
           })),
         })
       }}
@@ -136,6 +156,7 @@ export function ParticipantsForm({
               <TableHead className="w-12">{t('invited')}</TableHead>
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('priority')}</TableHead>
+              <TableHead>{t('playsCharacter')}</TableHead>
               <TableHead>{t('answered')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -192,6 +213,21 @@ export function ParticipantsForm({
                       </div>
                     ) : (
                       <span className="font-ui text-sm text-text-muted">{t('notInvited')}</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {invited ? (
+                      <Checkbox
+                        aria-label={t('playsCharacter')}
+                        checked={plays(candidate.userId)}
+                        onCheckedChange={(checked) =>
+                          setPlaying((current) =>
+                            new Map(current).set(candidate.userId, Boolean(checked)),
+                          )
+                        }
+                      />
+                    ) : (
+                      <span className="font-ui text-sm text-text-muted">—</span>
                     )}
                   </TableCell>
                   <TableCell className="text-text-secondary">

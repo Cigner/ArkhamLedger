@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, FileText, Settings2, Users } from 'lucide-react'
+import { CalendarDays, FileText, ScrollText, Settings2, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -21,6 +21,7 @@ export function CampaignTabs({ campaignId, isKeeper }: { campaignId: string; isK
   const tabs = [
     { href: base, label: t('overview'), icon: FileText },
     { href: `${base}/sessions`, label: t('sessions'), icon: CalendarDays },
+    { href: `${base}/investigators`, label: t('investigators'), icon: ScrollText },
     { href: `${base}/members`, label: t('members'), icon: Users },
     ...(isKeeper ? [{ href: `${base}/settings`, label: t('settings'), icon: Settings2 }] : []),
   ]

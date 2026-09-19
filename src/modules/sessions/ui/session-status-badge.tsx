@@ -16,6 +16,7 @@ const STATUS_PRESENTATION: Record<
   COLLECTING: 'warning',
   PROPOSED: 'candle',
   SCHEDULED: 'positive',
+  IN_PROGRESS: 'candle',
   COMPLETED: 'muted',
   CANCELLED: 'danger',
 }

@@ -35,6 +35,28 @@ export async function listParticipantRecords(
     .where(eq(sessionParticipant.gameSessionId, sessionId))
 }
 
+/**
+ * The roster as the start check reads it.
+ *
+ * Separate from ParticipantRecord because it needs the person's name: the rule
+ * it feeds reports who is missing a character, and a list of identifiers would
+ * make the Keeper go and look them up.
+ */
+export async function listPlayingParticipants(
+  sessionId: string,
+  executor: DbOrTx = db,
+): Promise<{ userId: string; name: string; playsInvestigator: boolean }[]> {
+  return executor
+    .select({
+      userId: sessionParticipant.userId,
+      name: authUser.name,
+      playsInvestigator: sessionParticipant.playsInvestigator,
+    })
+    .from(sessionParticipant)
+    .innerJoin(authUser, eq(authUser.id, sessionParticipant.userId))
+    .where(eq(sessionParticipant.gameSessionId, sessionId))
+}
+
 /** Campaign members eligible to be invited, with their campaign role. */
 export async function listEligibleParticipants(
   campaignId: string,
@@ -66,7 +88,12 @@ export async function listEligibleParticipants(
  */
 export async function replaceParticipants(input: {
   sessionId: string
-  participants: readonly { userId: string; priority: ParticipantPriority; isKeeper: boolean }[]
+  participants: readonly {
+    userId: string
+    priority: ParticipantPriority
+    isKeeper: boolean
+    playsInvestigator: boolean
+  }[]
   now: Date
   executor: DbOrTx
 }): Promise<void> {
@@ -97,6 +124,7 @@ export async function replaceParticipants(input: {
         userId: participant.userId,
         priority: participant.priority,
         isKeeper: participant.isKeeper,
+        playsInvestigator: participant.playsInvestigator,
         respondedAt: null,
         attendance: 'UNKNOWN',
         createdAt: input.now,
@@ -108,6 +136,7 @@ export async function replaceParticipants(input: {
         set: {
           priority: participant.priority,
           isKeeper: participant.isKeeper,
+          playsInvestigator: participant.playsInvestigator,
           updatedAt: input.now,
         },
       })
